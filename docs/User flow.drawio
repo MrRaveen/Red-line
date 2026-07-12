@@ -1,201 +1,213 @@
-<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.5.2 Chrome/142.0.7444.265 Electron/39.6.1 Safari/537.36" version="29.5.2">
-  <diagram name="Page-1" id="O5TYu1DmqLOa9ZbvIiQ2">
-    <mxGraphModel dx="1253" dy="737" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
-      <root>
-        <mxCell id="0" />
-        <mxCell id="1" parent="0" />
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-53" edge="1" parent="1" source="uJsAeMgTt_hyVV5fETGL-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="uJsAeMgTt_hyVV5fETGL-51" value="">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-1" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="User" vertex="1">
-          <mxGeometry height="40" width="100" x="130" y="20" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-40" edge="1" parent="1" source="uJsAeMgTt_hyVV5fETGL-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="uJsAeMgTt_hyVV5fETGL-3" value="">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-2" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="Create an app name and insert details related to the testing app" vertex="1">
-          <mxGeometry height="60" width="190" x="580" y="10" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-41" edge="1" parent="1" source="uJsAeMgTt_hyVV5fETGL-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="uJsAeMgTt_hyVV5fETGL-4" value="">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-3" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="Configure the attack targets (endpoints, parameters, settings) and order of testing (optional)" vertex="1">
-          <mxGeometry height="60" width="190" x="580" y="110" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-42" edge="1" parent="1" source="uJsAeMgTt_hyVV5fETGL-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="uJsAeMgTt_hyVV5fETGL-5" value="">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-4" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="Configure executions settings (like limits and starting time to run automatically)" vertex="1">
-          <mxGeometry height="60" width="190" x="580" y="220" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-43" edge="1" parent="1" source="uJsAeMgTt_hyVV5fETGL-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="uJsAeMgTt_hyVV5fETGL-6" value="">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-5" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="Select the category and budget (or multiple categories)" vertex="1">
-          <mxGeometry height="60" width="190" x="580" y="320" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-44" edge="1" parent="1" source="uJsAeMgTt_hyVV5fETGL-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="uJsAeMgTt_hyVV5fETGL-7" value="">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-6" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="start the process (create the job and start to handle tasks at the orchestrator level)" vertex="1">
-          <mxGeometry height="70" width="190" x="580" y="420" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-24" edge="1" parent="1" source="uJsAeMgTt_hyVV5fETGL-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="uJsAeMgTt_hyVV5fETGL-10" value="">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-48" connectable="0" parent="uJsAeMgTt_hyVV5fETGL-24" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="how to&lt;div&gt;attack the&amp;nbsp;&lt;/div&gt;&lt;div&gt;system&lt;/div&gt;" vertex="1">
-          <mxGeometry relative="1" x="-0.1696" y="3" as="geometry">
-            <mxPoint as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-35" edge="1" parent="1" source="uJsAeMgTt_hyVV5fETGL-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="uJsAeMgTt_hyVV5fETGL-34" value="">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-7" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="Attack agent part&lt;div&gt;1 agent = selected category&lt;/div&gt;" vertex="1">
-          <mxGeometry height="40" width="190" x="580" y="540" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-8" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="langGraph part" vertex="1">
-          <mxGeometry height="40" width="190" x="915" y="460" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-9" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="Agentic part" vertex="1">
-          <mxGeometry height="40" width="190" x="915" y="525" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-22" edge="1" parent="1" source="uJsAeMgTt_hyVV5fETGL-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="uJsAeMgTt_hyVV5fETGL-14">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="1010" y="370" />
-              <mxPoint x="1398" y="370" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-47" connectable="0" parent="uJsAeMgTt_hyVV5fETGL-22" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="interation&lt;div&gt;to find&amp;nbsp;&lt;/div&gt;&lt;div&gt;vulnerabilities&lt;/div&gt;" vertex="1">
-          <mxGeometry relative="1" x="0.4113" y="2" as="geometry">
-            <mxPoint as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-10" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" value="" vertex="1">
-          <mxGeometry height="240" width="270" x="875" y="440" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-20" edge="1" parent="1" source="uJsAeMgTt_hyVV5fETGL-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="uJsAeMgTt_hyVV5fETGL-13" value="T">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-31" edge="1" parent="1" source="uJsAeMgTt_hyVV5fETGL-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="uJsAeMgTt_hyVV5fETGL-25">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="1570" y="545" />
-              <mxPoint x="1570" y="820" />
-              <mxPoint x="675" y="820" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-33" connectable="0" parent="uJsAeMgTt_hyVV5fETGL-31" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="F" vertex="1">
-          <mxGeometry relative="1" x="-0.9681" as="geometry">
-            <mxPoint as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-12" parent="1" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;" value="loop until budget and&amp;nbsp;&lt;div&gt;until breaching&lt;/div&gt;" vertex="1">
-          <mxGeometry height="90" width="160" x="1317.5" y="500" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-21" edge="1" parent="1" source="uJsAeMgTt_hyVV5fETGL-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="uJsAeMgTt_hyVV5fETGL-17" value="">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-13" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="Modify (adupt) the parameters of the existing graph and re-execute the attack agent process (mutate &amp;amp; retry)" vertex="1">
-          <mxGeometry height="60" width="235" x="1280" y="640" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-14" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="Observe the agent output (perform logging part)" vertex="1">
-          <mxGeometry height="60" width="235" x="1280" y="390" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-15" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="chackpoint state processes relared to the langGraph and agent processes" vertex="1">
-          <mxGeometry height="60" width="220" x="900" y="595" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-23" edge="1" parent="1" source="uJsAeMgTt_hyVV5fETGL-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="uJsAeMgTt_hyVV5fETGL-10">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-17" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="Use the output of the previous state and the new input" vertex="1">
-          <mxGeometry height="60" width="180" x="1307.5" y="730" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-18" edge="1" parent="1" source="uJsAeMgTt_hyVV5fETGL-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" target="uJsAeMgTt_hyVV5fETGL-12">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-38" edge="1" parent="1" source="uJsAeMgTt_hyVV5fETGL-25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="uJsAeMgTt_hyVV5fETGL-37">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="630" y="820" />
-              <mxPoint x="630" y="820" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="FhtVEL9CX_XB3g_jvIci-3" connectable="0" parent="uJsAeMgTt_hyVV5fETGL-38" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="findings + aligned with reproducable trabscript + decision graph" vertex="1">
-          <mxGeometry relative="1" x="0.2888" y="2" as="geometry">
-            <mxPoint as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-25" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="Judge agent (breached or not, how severe, and why) for evaluation of the attack agent results (also generate insights)" vertex="1">
-          <mxGeometry height="90" width="210" x="570" y="760" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-28" edge="1" parent="1" source="uJsAeMgTt_hyVV5fETGL-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="uJsAeMgTt_hyVV5fETGL-15">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="1160" y="625" />
-            </Array>
-            <mxPoint x="1160" y="710.0000000000002" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-27" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="Manual live observation and human interaction" vertex="1">
-          <mxGeometry height="40" width="160" x="1050" y="380" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-30" edge="1" parent="1" source="uJsAeMgTt_hyVV5fETGL-29" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="uJsAeMgTt_hyVV5fETGL-25" value="">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="380" y="800" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-29" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="Detect 1 or more vulnerabilities under the same category according to the attack agent results" vertex="1">
-          <mxGeometry height="60" width="220" x="270" y="695" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-36" edge="1" parent="1" source="uJsAeMgTt_hyVV5fETGL-34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="uJsAeMgTt_hyVV5fETGL-25" value="">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-34" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="Transcript preparation:&amp;nbsp;&lt;b data-path-to-node=&quot;4&quot; data-index-in-node=&quot;116&quot;&gt; record of the conversation&lt;/b&gt; or interaction between attack and target" vertex="1">
-          <mxGeometry height="50" width="190" x="580" y="645" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-37" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="Final ranked report with the conclutions and findings related to analysis results (with transcript reproducability linked to findings)" vertex="1">
-          <mxGeometry height="70" width="220" x="560" y="1010" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-46" edge="1" parent="1" source="uJsAeMgTt_hyVV5fETGL-45" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="uJsAeMgTt_hyVV5fETGL-29" value="">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-45" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="Include vulnerability info and vulnerability categorization" vertex="1">
-          <mxGeometry height="40" width="220" x="270" y="605" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-50" edge="1" parent="1" source="uJsAeMgTt_hyVV5fETGL-49" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="uJsAeMgTt_hyVV5fETGL-25">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="340" y="820" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-49" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="also judge whether the endpoint is safe or not (in context of the category)" vertex="1">
-          <mxGeometry height="60" width="220" x="260" y="860" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-52" edge="1" parent="1" source="uJsAeMgTt_hyVV5fETGL-51" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="uJsAeMgTt_hyVV5fETGL-2" value="">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="uJsAeMgTt_hyVV5fETGL-51" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="SAAS fectures like accounts and subscritions (Optional and later)" vertex="1">
-          <mxGeometry height="60" width="210" x="300" y="10" as="geometry" />
-        </mxCell>
-        <mxCell id="FhtVEL9CX_XB3g_jvIci-2" edge="1" parent="1" source="FhtVEL9CX_XB3g_jvIci-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="uJsAeMgTt_hyVV5fETGL-25">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="690" y="885" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="FhtVEL9CX_XB3g_jvIci-1" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="Scoring the transcription part by the judge" vertex="1">
-          <mxGeometry height="50" width="190" x="820" y="860" as="geometry" />
-        </mxCell>
-      </root>
-    </mxGraphModel>
-  </diagram>
+<mxfile host="65bd71144e">
+    <diagram name="Page-1" id="O5TYu1DmqLOa9ZbvIiQ2">
+        <mxGraphModel dx="2013" dy="1129" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-53" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="uJsAeMgTt_hyVV5fETGL-1" target="uJsAeMgTt_hyVV5fETGL-51" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-1" value="User" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="130" y="20" width="100" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-40" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="uJsAeMgTt_hyVV5fETGL-2" target="uJsAeMgTt_hyVV5fETGL-3" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-2" value="Create an app name and insert details related to the testing app" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="580" y="10" width="190" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-41" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="uJsAeMgTt_hyVV5fETGL-3" target="uJsAeMgTt_hyVV5fETGL-4" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-3" value="Configure the attack targets (endpoints, parameters, settings) and order of testing (optional)" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="580" y="110" width="190" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-42" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="uJsAeMgTt_hyVV5fETGL-4" target="uJsAeMgTt_hyVV5fETGL-5" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-4" value="Configure executions settings (like limits and starting time to run automatically)" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="580" y="220" width="190" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-43" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="uJsAeMgTt_hyVV5fETGL-5" target="uJsAeMgTt_hyVV5fETGL-6" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-5" value="Select the category and budget (or multiple categories)" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="580" y="320" width="190" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-44" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="uJsAeMgTt_hyVV5fETGL-6" target="uJsAeMgTt_hyVV5fETGL-7" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-6" value="start the process (create the job and start to handle tasks at the orchestrator level)" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="580" y="420" width="190" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-24" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="uJsAeMgTt_hyVV5fETGL-7" target="uJsAeMgTt_hyVV5fETGL-10" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-48" value="how to&lt;div&gt;attack the&amp;nbsp;&lt;/div&gt;&lt;div&gt;system&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="uJsAeMgTt_hyVV5fETGL-24" connectable="0" vertex="1">
+                    <mxGeometry x="-0.1696" y="3" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-35" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="uJsAeMgTt_hyVV5fETGL-7" target="uJsAeMgTt_hyVV5fETGL-34" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-7" value="Attack agent part&lt;div&gt;1 agent = selected category&lt;/div&gt;" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="580" y="540" width="190" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="uJsAeMgTt_hyVV5fETGL-10" target="uJsAeMgTt_hyVV5fETGL-14" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="883" y="310"/>
+                            <mxPoint x="1397" y="310"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-47" value="interation&lt;div&gt;to find&amp;nbsp;&lt;/div&gt;&lt;div&gt;vulnerabilities&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="uJsAeMgTt_hyVV5fETGL-22" connectable="0" vertex="1">
+                    <mxGeometry x="0.4113" y="2" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-10" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="875" y="340" width="265" height="340" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-20" value="T" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="uJsAeMgTt_hyVV5fETGL-12" target="uJsAeMgTt_hyVV5fETGL-13" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="uJsAeMgTt_hyVV5fETGL-12" target="uJsAeMgTt_hyVV5fETGL-25" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1570" y="545"/>
+                            <mxPoint x="1570" y="820"/>
+                            <mxPoint x="675" y="820"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-33" value="F" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="uJsAeMgTt_hyVV5fETGL-31" connectable="0" vertex="1">
+                    <mxGeometry x="-0.9681" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-12" value="loop until budget and&amp;nbsp;&lt;div&gt;until breaching&lt;/div&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;" parent="1" vertex="1">
+                    <mxGeometry x="1317.5" y="500" width="160" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-21" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="uJsAeMgTt_hyVV5fETGL-13" target="uJsAeMgTt_hyVV5fETGL-17" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-13" value="Modify (adupt) the parameters of the existing graph and re-execute the attack agent process (mutate &amp;amp; retry)" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="1280" y="640" width="235" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-14" value="Observe the agent output (perform logging part)" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="1280" y="390" width="235" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" style="edgeStyle=none;html=1;" edge="1" parent="1" source="uJsAeMgTt_hyVV5fETGL-15" target="2">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-15" value="chackpoint state processes relared to the langGraph and agent processes" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="900" y="610" width="220" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="uJsAeMgTt_hyVV5fETGL-17" target="uJsAeMgTt_hyVV5fETGL-15" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-17" value="Use the output of the previous state and the new input" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="1307.5" y="730" width="180" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="uJsAeMgTt_hyVV5fETGL-14" target="uJsAeMgTt_hyVV5fETGL-12" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-38" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="uJsAeMgTt_hyVV5fETGL-25" target="uJsAeMgTt_hyVV5fETGL-37" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="630" y="820"/>
+                            <mxPoint x="630" y="820"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="FhtVEL9CX_XB3g_jvIci-3" value="findings + aligned with reproducable trabscript + decision graph" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="uJsAeMgTt_hyVV5fETGL-38" connectable="0" vertex="1">
+                    <mxGeometry x="0.2888" y="2" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-25" value="Judge agent (breached or not, how severe, and why) for evaluation of the attack agent results (also generate insights)" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="570" y="760" width="210" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-28" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="uJsAeMgTt_hyVV5fETGL-27" target="uJsAeMgTt_hyVV5fETGL-15" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1160" y="625"/>
+                        </Array>
+                        <mxPoint x="1160" y="710.0000000000002" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-27" value="Manual live observation and human interaction" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="1170" y="470" width="160" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-30" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="uJsAeMgTt_hyVV5fETGL-29" target="uJsAeMgTt_hyVV5fETGL-25" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="380" y="800"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-29" value="Detect 1 or more vulnerabilities under the same category according to the attack agent results" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="270" y="695" width="220" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-36" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="uJsAeMgTt_hyVV5fETGL-34" target="uJsAeMgTt_hyVV5fETGL-25" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-34" value="Transcript preparation:&amp;nbsp;&lt;b data-path-to-node=&quot;4&quot; data-index-in-node=&quot;116&quot;&gt; record of the conversation&lt;/b&gt; or interaction between attack and target" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="580" y="645" width="190" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-37" value="Final ranked report with the conclutions and findings related to analysis results (with transcript reproducability linked to findings)" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="560" y="1010" width="220" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-46" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="uJsAeMgTt_hyVV5fETGL-45" target="uJsAeMgTt_hyVV5fETGL-29" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-45" value="Include vulnerability info and vulnerability categorization" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="270" y="605" width="220" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-50" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="uJsAeMgTt_hyVV5fETGL-49" target="uJsAeMgTt_hyVV5fETGL-25" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="340" y="820"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-49" value="also judge whether the endpoint is safe or not (in context of the category)" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="260" y="860" width="220" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-52" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="uJsAeMgTt_hyVV5fETGL-51" target="uJsAeMgTt_hyVV5fETGL-2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uJsAeMgTt_hyVV5fETGL-51" value="SAAS fectures like accounts and subscritions (Optional and later)" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="300" y="10" width="210" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="FhtVEL9CX_XB3g_jvIci-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="FhtVEL9CX_XB3g_jvIci-1" target="uJsAeMgTt_hyVV5fETGL-25" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="690" y="885"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="FhtVEL9CX_XB3g_jvIci-1" value="Scoring the transcription part by the judge" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="820" y="860" width="190" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="2" target="3">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="2" value="Agent" style="whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+                    <mxGeometry x="920" y="540" width="100" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="3" target="5">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="pluggin to langGraph" style="whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+                    <mxGeometry x="920" y="450" width="100" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="langGraph process and definition" style="whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+                    <mxGeometry x="920" y="360" width="100" height="60" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
 </mxfile>
