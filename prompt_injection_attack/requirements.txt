@@ -4,4 +4,8 @@ semantic-kernel
 openai
 pydantic-settings
 python-dotenv
-
+langgraph
+langchain-core     
+langgraph-checkpoint-postgres   
+pydantic
+requests
