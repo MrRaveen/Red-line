@@ -1,0 +1,5 @@
+grpcio-tools
+confluent-kafka
+protobuf
+grpcio-tools
+faust-streaming
