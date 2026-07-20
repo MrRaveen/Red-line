@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package events;
+
+import "google/protobuf/timestamp.proto";
+
+//trabsaction in the langGraph = one node execution of the graph
+message Log {
+  string job_service_name = 1;
+  string nodeName = 2;
+  string user_id = 3;
+  string nodeInput = 4;
+  string nodeOutput = 5;
+  string targetUrl = 6;
+  google.protobuf.Timestamp timeRunning = 7;
+  string budget_remaining = 8;
+  string additionalMessage = 9;
+  string jobRequest = 10;
+  string job_response = 11;
+  string executionLogSectionForTheTransaction = 12;
+}
