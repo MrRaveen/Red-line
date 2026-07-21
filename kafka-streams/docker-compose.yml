@@ -1,17 +1,20 @@
-      #for each listener I have, here's the address to reach me through that specific listener.
-      #It's a per-listener address mapping, not one single address for the broker. Each entry pairs a listener name with the address a client should use if it's connecting via that listener:
-      #client --> listener --> brocker --> topics --> partitions
-      #first client --> get details about the cluster from boostrap server request defined in client separately via the container port mapping--> then connect to the brocker, topic and partition. 
-      
-      #A single Kafka broker (one JVM process, one node ID) can open several listener sockets simultaneously — that's exactly what the earlier INTERNAL/EXTERNAL/CONTROLLER example showed:
-      # KAFKA_ADVERTISED_LISTENERS is the broker's address — or, when there are multiple listeners, the broker's set of addresses, one per listener, each valid only for clients connecting through that specific listener.
+#only use this doe development via docker compose up -d to up kafka.
+#use docker compose at the root level to up this in release branch.
+
+#for each listener I have, here's the address to reach me through that specific listener.
+#It's a per-listener address mapping, not one single address for the broker. Each entry pairs a listener name with the address a client should use if it's connecting via that listener:
+#client --> listener --> brocker --> topics --> partitions
+#first client --> get details about the cluster from boostrap server request defined in client separately via the container port mapping--> then connect to the brocker, topic and partition. 
+
+#A single Kafka broker (one JVM process, one node ID) can open several listener sockets simultaneously — that's exactly what the earlier INTERNAL/EXTERNAL/CONTROLLER example showed:
+# KAFKA_ADVERTISED_LISTENERS is the broker's address — or, when there are multiple listeners, the broker's set of addresses, one per listener, each valid only for clients connecting through that specific listener.
 services:
   kafka:
     image: confluentinc/cp-kafka:7.6.1
     container_name: kafka
     ports:
-      - "9094:9094"  
       - "9093:9093"
+      - "9094:9094"
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
@@ -34,6 +37,14 @@ services:
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    depends_on:
+      - kafka
+
+  faust-worker:
+    build: .
+    container_name: streamer-worker
+    volumes:
+      - .:/app
     depends_on:
       - kafka
 
