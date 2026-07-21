@@ -1,2 +1,11 @@
-Flask==3.0.0
-gunicorn==21.2.0
+Flask
+gunicorn
+semantic-kernel
+openai
+pydantic-settings
+python-dotenv
+langgraph
+langchain-core     
+langgraph-checkpoint-postgres   
+pydantic
+requests
