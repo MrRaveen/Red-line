@@ -2,6 +2,7 @@
 - source .venv/bin/activate
 - ./script/setup_venvs.sh
 - ./script/run_all.sh
+.\.venv\Scripts\Activate.ps1
 
 - Create a testing topic (kafka-stream)
 docker exec -it kafka kafka-topics --create \

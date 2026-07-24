@@ -4,6 +4,12 @@ from app.graphs.state import JobState
 from app.agent.kernel_factory import build_kernel
 from semantic_kernel.contents import ChatHistory
 from semantic_kernel.connectors.ai.open_ai import OpenAIChatPromptExecutionSettings
+from langchain_core.messages import HumanMessage
+import json
+import os
+from flask import jsonify 
+import asyncio
+from app.services.agent_service import AgentService
 
 def firstRequestNode(state: JobState) -> dict:
     """
@@ -80,18 +86,46 @@ async def getJobContextNode(state: JobState) -> dict:
         kernel=kernel,
     )
     return result
+import re
+async def loopPatterns(state: JobState) -> dict:
+    agent = AgentService()
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    # BASE_DIR is .../prompt_injection_attack/app/graphs
+    JSON_PATH = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), "prompt_injection_patterns_text_only.json")   
+    
+    try:
+        with open(JSON_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception as e:
+        print(f"Error loading JSON patterns: {e}")
+        return {}
 
-# def getCategoryNode(state: JobState):
-#     attack_cat_list = list(attack_cat_enum)
-#     if state.current_job_category == "":
-#         state.current_job_category = attack_cat_list.CATEGORY_1
-#     else:
-#         current_category_index = attack_cat_list.index(JobState(state.current_job_category))
-#         state.current_job_category = attack_cat_list[current_category_index + 1].value     
+    if data:
+        for pattern in data:
+            template_info = pattern.get('templateNormalMali', {})
+            if not isinstance(template_info, dict):
+                continue
+            
+            normal_text = template_info.get('normal', '')
+            mali_text = template_info.get('mali', '')
+            
+            normalPlaceholders = re.findall(r"\{\{(.*?)\}\}", normal_text)
+            badPlaceholders = re.findall(r"\{\{(.*?)\}\}", mali_text)
+            
+            if normalPlaceholders:
+                for n in normalPlaceholders:
+                    result = await agent.get_response(n)
+                    print(f"[Normal Placeholder: {n}]\nResult:\n{result}\n")
+            if badPlaceholders:
+                for b in badPlaceholders:
+                    result = await agent.get_response(b)
+                    print(f"[Malicious Placeholder: {b}]\nResult:\n{result}\n")
+    return {}
+
 
 if __name__ == "__main__":
     import json
-    from langchain_core.messages import HumanMessage
+    
     
     print("=" * 40)
     print("TESTING GRAPH NODES")
@@ -132,5 +166,14 @@ if __name__ == "__main__":
         print("✓ firstRequest executed successfully.")
     except Exception as e:
         print(f"✗ firstRequest failed: {e}")
+
+    # 3. Test loopPatterns
+    print("\n--- Testing: loopPatterns ---")
+    try:
+        loop_result = asyncio.run(loopPatterns(mock_state))
+        print(f"loopPatterns result: {loop_result}")
+        print("✓ loopPatterns executed successfully.")
+    except Exception as e:
+        print(f"✗ loopPatterns failed: {e}")
 
     print("=" * 40)

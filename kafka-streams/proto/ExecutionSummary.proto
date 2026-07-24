@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package events;
+
+import "google/protobuf/timestamp.proto";
+
+message Variation {
+  string newPrompt = 1;
+  string thinkingForTheVariation = 2;
+}
+
+message PerformedJob {
+  string jobCategory = 1;
+  google.protobuf.Timestamp performedTime = 2;
+  double duration = 3;
+  string request = 4;
+  string response = 5;
+  string responseCode = 6;
+  int32 variationAttempts = 7;
+  repeated Variation variations = 8;
+  bool isBreached = 9;
+}
+
+message ExecutionSummary {
+  string totalTimeSeconds = 1;
+  string finalResponse = 2;
+  string finalResponseResCode = 3;
+  string targetUrl = 4;
+  repeated PerformedJob performedJobs = 5;
+}
