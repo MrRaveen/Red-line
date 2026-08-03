@@ -1,8 +1,10 @@
-- python -m venv .venv
-- source .venv/bin/activate
-- ./script/setup_venvs.sh
-- ./script/run_all.sh
-.\.venv\Scripts\Activate.ps1
+- Linux activation
+  - python -m venv .venv
+  - source .venv/bin/activate
+- Windows configuration
+  - ./script/setup_venvs.sh
+  - ./script/run_all.sh
+  - .\.venv\Scripts\Activate.ps1
 
 - Create a testing topic (kafka-stream)
 docker exec -it kafka kafka-topics --create \
@@ -30,6 +32,12 @@ docker compose up -d
 - test the producer with the protobuf payload
 cd "test"
 python test-producer.py
+
+- PI test run (lang graph)
+cd prompt_injection_attack
+python -m app.graphs.main_graph.nodes
+python -m app.graphs.main_graph.fakeLLM
+
 
 # Run all the services with a new terminal UI in vs code
 ```

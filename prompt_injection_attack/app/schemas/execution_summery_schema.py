@@ -1,12 +1,13 @@
-from pydantic import BaseModel, Field
-from typing import Optional, List
 from datetime import datetime
+from typing import List, Optional
+
+from pydantic import BaseModel, Field
+
 
 class Variation(BaseModel):
     """Represents a variation attempt with new prompt and thinking for security testing"""
     newPrompt: str = Field(description="The new test prompt text for this attack variation")
     thinkingForTheVariation: str = Field(description="Reasoning/thinking behind this attack variation")
-
 
 class TestAttackAttempt(BaseModel):
     """Represents a single test attack attempt with its details and variations for vulnerability testing"""
