@@ -1,3 +1,4 @@
+from app.agent.plugins.get_next_category_plugin import GetNextCategoryPlugin
 from openai import AsyncOpenAI
 from semantic_kernel import Kernel
 from semantic_kernel.connectors.ai.open_ai import OpenAIChatCompletion
@@ -25,6 +26,7 @@ def build_kernel() -> Kernel:
 
     kernel.add_service(chat_service)
 
-    kernel.add_plugin(lang_graph_plugin(), plugin_name="lang_graph_plugin")
+    # kernel.add_plugin(lang_graph_plugin(), plugin_name="lang_graph_plugin")
+    kernel.add_plugin(GetNextCategoryPlugin(), plugin_name="get_next_category_plugin")
 
     return kernel
