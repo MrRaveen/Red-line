@@ -9,3 +9,5 @@ langchain-core
 langgraph-checkpoint-postgres   
 pydantic
 requests
+redis
+sqlalchemy
