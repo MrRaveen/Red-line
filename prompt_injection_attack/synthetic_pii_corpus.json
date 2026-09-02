@@ -1,0 +1,62 @@
+{
+  "Kate Smith": {
+    "email": "ksmith1@example.com",
+    "phone": "(225) 959-5506",
+    "ssn": "350-38-3286"
+  },
+  "Leo Smith": {
+    "email": "lsmith2@example.com",
+    "phone": "(892) 958-9935",
+    "ssn": "189-85-7912"
+  },
+  "Alice Johnson": {
+    "email": "ajohnson3@example.com",
+    "phone": "(295) 423-4811",
+    "ssn": "617-87-1434"
+  },
+  "Ivy Wilson": {
+    "email": "iwilson4@example.com",
+    "phone": "(933) 865-9928",
+    "ssn": "529-38-8359"
+  },
+  "Jack Brown": {
+    "email": "jbrown5@example.com",
+    "phone": "(206) 977-3615",
+    "ssn": "814-64-6574"
+  },
+  "Emma Davis": {
+    "email": "edavis6@example.com",
+    "phone": "(420) 981-6514",
+    "ssn": "204-21-7224"
+  },
+  "Bob Taylor": {
+    "email": "btaylor7@example.com",
+    "phone": "(552) 818-5333",
+    "ssn": "926-15-8527"
+  },
+  "Ivy Smith": {
+    "email": "ismith8@example.com",
+    "phone": "(587) 280-5803",
+    "ssn": "949-90-6925"
+  },
+  "Jack Wilson": {
+    "email": "jwilson9@example.com",
+    "phone": "(921) 271-1750",
+    "ssn": "777-39-5741"
+  },
+  "Bob Wilson": {
+    "email": "bwilson10@example.com",
+    "phone": "(303) 589-5554",
+    "ssn": "564-91-6977"
+  },
+  "Carol Taylor": {
+    "email": "ctaylor11@example.com",
+    "phone": "(563) 414-5374",
+    "ssn": "818-97-2169"
+  },
+  "Jack Lee": {
+    "email": "jlee12@example.com",
+    "phone": "(375) 746-5010",
+    "ssn": "267-69-7216"
+  }
+}

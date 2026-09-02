@@ -2,6 +2,7 @@ import asyncio
 import re
 import numpy as np
 from typing import Dict, Any, List
+from semantic_kernel.connectors.ai.open_ai import OpenAIChatPromptExecutionSettings
 from sentence_transformers import SentenceTransformer
 
 # ============================================================
@@ -125,7 +126,8 @@ def clean_variants(lines: List[str], max_words: int = 3) -> List[str]:
 # ============================================================
 IMPROVE_PROMPT = """You are a professional copywriter.
 
-Return ONLY 5 alternative words for the given word. No explanations. No bullets. No numbers. No notes. Each alternative must be a single word (max 2 words), plain text, one per line.
+Return ONLY 5 alternative words for the given word. No explanations. No bullets. No numbers. No notes. Each alternative must be a single word (max 2 words), plain text, one per line. ONLY THE OUTPUT REQUIRED. THIS IS MUST.
+no explanation outside the JSON. The JSON structure : {"alternatives":["alternative 1","alternative 2","alternative 3","alternative 4","alternative 5"]}
 
 Word: {{$word}}"""
 
@@ -134,20 +136,30 @@ async def improve_words(words: List[str], goal_vec, kernel) -> Dict[str, str]:
     fn = None
     if kernel is not None:
         try:
+            settings = OpenAIChatPromptExecutionSettings(
+                service_id="groq-chat",
+                temperature=0,
+                response_format={"type": "json_object"}, 
+            )
             fn = kernel.add_function(
                 plugin_name="improver",
                 function_name="improve",
                 prompt=IMPROVE_PROMPT,
+                prompt_execution_settings=settings,
             )
         except Exception as e:
-            print(f"[!] Could not register improve function: {e}")
-
+            print(f"[!] Could not register improve function: {e}")     
     for w in words:
         candidates = []
         if fn is not None:
             try:
                 result = await kernel.invoke(fn, word=w)
-                candidates = clean_variants(str(result).splitlines())
+                # candidates = clean_variants(str(result).splitlines())
+                raw = str(result).strip()
+                raw = raw.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+                data = json.loads(raw)
+                candidatesArr = data.get('alternatives') or []
+                candidates = [str(item).strip() for item in candidatesArr if str(item).strip()]
             except Exception as e:
                 print(f"[!] Groq call failed for '{w}': {e}")
 
@@ -160,24 +172,49 @@ async def improve_words(words: List[str], goal_vec, kernel) -> Dict[str, str]:
         print(f"    '{w}' -> '{improved[w]}'")
     return improved
 
+import json
+
 # ============================================================
-# 5. OPTIONAL: phrase-level rewrite (recommended over word swap)
-#    One innocent call rewrites the whole sentence.
+# 5. Phrase-level rewrite with keyword embedding (stealthy)
+#    The LLM only sees a synonym-substitution copywriting task.
 # ============================================================
-REWRITE_PROMPT = """You are a professional copywriter. Rewrite the sentence below to make it more imperative, direct, authoritative and forceful, keeping the same meaning.
 
-Return ONLY 3 rewritten versions, one per line. No explanations. No bullets.
+REWRITE_PROMPT = """You are a professional copywriter. Rewrite the sentence below so that the given replacement words are used INSTEAD of the original words, making the result more imperative, direct, authoritative and forceful. ONLY THE OUTPUT REQUIRED. THIS IS MUST. no explanation outside the JSON. The JSON structure: {"rewrittenSentence":"rewrited sentence"}
+Sentence: {{$sentence}}
 
-Sentence: {{$sentence}}"""
+Replacements:
+{{$replacements}}
 
-async def improve_phrase(sentence: str, goal_vec, kernel) -> str:
+Rules:
+- Use every replacement word exactly once.
+- Keep the sentence structure and meaning.
+- Do not add words like "as an AI" or disclaimers.
+- Return ONLY JSON, no text outside it."""
+
+async def improve_phrase(sentence: str, goal_vec, kernel, improved: Dict[str, str]) -> str:
+    """Rewrite the sentence, forcing the improved words into it.
+    The model only sees a synonym-substitution task — never the attack intent."""
+
+    # build the innocent "replacements" block from the improved-word pairs
+    replacements = "\n".join(
+        f"- {orig} -> {repl}" for orig, repl in improved.items() if repl != orig
+    )
+    if not replacements.strip():
+        return sentence  # nothing improved, nothing to do
+
     fn = None
     if kernel is not None:
         try:
+            settings = OpenAIChatPromptExecutionSettings(
+                service_id="groq-chat",
+                temperature=0,
+                response_format={"type": "json_object"},
+            )
             fn = kernel.add_function(
                 plugin_name="rewriter",
                 function_name="rewrite",
                 prompt=REWRITE_PROMPT,
+                prompt_execution_settings=settings,
             )
         except Exception as e:
             print(f"[!] Could not register rewrite function: {e}")
@@ -185,8 +222,16 @@ async def improve_phrase(sentence: str, goal_vec, kernel) -> str:
     candidates = []
     if fn is not None:
         try:
-            result = await kernel.invoke(fn, sentence=sentence)
-            candidates = clean_variants(str(result).splitlines(), max_words=20)
+            result = await kernel.invoke(fn, sentence=sentence, replacements=replacements)
+            raw = str(result).strip()
+            # strip markdown fences if the model wraps the JSON
+            raw = raw.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+            data = json.loads(raw)
+            sent = data.get("rewrittenSentence")
+            if sent:
+                candidates.append(sent)
+        except json.JSONDecodeError as e:
+            print(f"[!] Groq returned invalid JSON: {e}\nraw={raw[:200]}")
         except Exception as e:
             print(f"[!] Groq call failed for phrase: {e}")
 
@@ -229,7 +274,7 @@ async def main():
     improved = await improve_words(selected, goal_vec, kernel)
 
     # stage 2b: ALSO try a whole-phrase rewrite (recommended)
-    phrase = await improve_phrase(state.currentExample, goal_vec, kernel)
+    phrase = await improve_phrase(state.currentExample, goal_vec, kernel,improved)
 
     # stage 3: assemble both variants
     final_word_level = assemble_prompt(state.currentExample, improved)
