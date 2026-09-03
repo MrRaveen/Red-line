@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="oogS6Y-6cnSIiA1ehjgs" name="Page-1">
-        <mxGraphModel dx="1394" dy="1882" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="788" dy="1542" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -301,7 +301,7 @@
                 <mxCell id="105" value="get the response and valudate it" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
                     <mxGeometry x="3160" y="-140" width="290" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="112" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="106" target="103">
+                <mxCell id="112" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="106" target="103" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="3050" y="-70"/>
@@ -309,7 +309,7 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="135" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="106" target="114">
+                <mxCell id="135" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="106" target="114" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="3000" y="-30"/>
@@ -320,88 +320,94 @@
                 <mxCell id="106" value="save to the DB as a new pair and replace the last pair of the 3 set with the new pair (name:mail)" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
                     <mxGeometry x="3160" y="-45" width="290" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="118" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="113" target="116">
+                <mxCell id="118" value="" style="edgeStyle=none;html=1;" parent="1" source="113" target="116" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="113" value="Get the category" style="whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+                <mxCell id="113" value="Get the category" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
                     <mxGeometry x="3490" y="-420" width="290" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="137" style="edgeStyle=none;html=1;" edge="1" parent="1" source="114" target="101">
+                <mxCell id="137" style="edgeStyle=none;html=1;" parent="1" source="114" target="101" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="138" style="edgeStyle=none;html=1;entryX=0.331;entryY=0.028;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="114" target="115">
+                <mxCell id="138" style="edgeStyle=none;html=1;entryX=0.331;entryY=0.028;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="114" target="115" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="114" value="mode selector" style="whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+                <mxCell id="114" value="mode selector" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
                     <mxGeometry x="3320" y="-630" width="290" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="117" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="115" target="113">
+                <mxCell id="117" value="" style="edgeStyle=none;html=1;" parent="1" source="115" target="113" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="115" value="get the model context (ask what is the purpose of yours?)" style="whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+                <mxCell id="115" value="get the model context (ask what is the purpose of yours?)" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
                     <mxGeometry x="3490" y="-510" width="290" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="131" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="116" target="119">
+                <mxCell id="131" value="" style="edgeStyle=none;html=1;" parent="1" source="116" target="119" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="116" value="&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span style=&quot;display: contents;&quot; class=&quot;is_Theme&quot;&gt;DB with public data (name:email)&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;" style="whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+                <mxCell id="116" value="&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span style=&quot;display: contents;&quot; class=&quot;is_Theme&quot;&gt;DB with public data (name:email)&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
                     <mxGeometry x="3485" y="-340" width="290" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="130" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="119" target="124">
+                <mxCell id="130" value="" style="edgeStyle=none;html=1;" parent="1" source="119" target="124" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="119" value="&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span style=&quot;display: contents;&quot; class=&quot;is_Theme&quot;&gt;Ask a basic question&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;" style="whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+                <mxCell id="119" value="&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span style=&quot;display: contents;&quot; class=&quot;is_Theme&quot;&gt;Ask a basic question&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
                     <mxGeometry x="3485" y="-250" width="290" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="128" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="120" target="121">
+                <mxCell id="128" value="" style="edgeStyle=none;html=1;" parent="1" source="120" target="121" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="120" value="&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span style=&quot;display: contents;&quot; class=&quot;is_Theme&quot;&gt;Ask attack prompt with partial data&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;" style="whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+                <mxCell id="120" value="&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span style=&quot;display: contents;&quot; class=&quot;is_Theme&quot;&gt;Ask attack prompt with partial data&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
                     <mxGeometry x="3485" y="-70" width="290" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="127" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="121" target="122">
+                <mxCell id="127" value="" style="edgeStyle=none;html=1;" parent="1" source="121" target="122" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="121" value="&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span style=&quot;display: contents;&quot; class=&quot;is_Theme&quot;&gt;Get the response&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;" style="whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+                <mxCell id="121" value="&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span style=&quot;display: contents;&quot; class=&quot;is_Theme&quot;&gt;Get the response&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
                     <mxGeometry x="3485" y="20" width="290" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="125" style="edgeStyle=none;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="122" target="123">
+                <mxCell id="125" style="edgeStyle=none;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" parent="1" source="122" target="123" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="132" value="TRUE" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="125">
+                <mxCell id="132" value="TRUE" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="125" vertex="1" connectable="0">
                     <mxGeometry x="-0.2706" relative="1" as="geometry">
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="134" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="122" target="133">
+                <mxCell id="134" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="122" target="133" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="136" value="false" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="134">
+                <mxCell id="136" value="false" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="134" vertex="1" connectable="0">
                     <mxGeometry x="0.2514" y="1" relative="1" as="geometry">
                         <mxPoint y="1" as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="122" value="if there is a data output" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;" vertex="1" parent="1">
+                <mxCell id="122" value="if there is a data output" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;" parent="1" vertex="1">
                     <mxGeometry x="3545" y="90" width="170" height="95" as="geometry"/>
                 </mxCell>
-                <mxCell id="126" style="edgeStyle=none;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="123" target="120">
+                <mxCell id="126" style="edgeStyle=none;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="123" target="120" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="3970" y="-50"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="123" value="&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span style=&quot;display: contents;&quot; class=&quot;is_Theme&quot;&gt;remake the prompt with the output data&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;" style="whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+                <mxCell id="123" value="&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span style=&quot;display: contents;&quot; class=&quot;is_Theme&quot;&gt;remake the prompt with the output data&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
                     <mxGeometry x="3810" y="110" width="290" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="129" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="124" target="120">
+                <mxCell id="129" value="" style="edgeStyle=none;html=1;" parent="1" source="124" target="120" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="124" value="&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span style=&quot;display: contents;&quot; class=&quot;is_Theme&quot;&gt;create the first attack promot with public data (partial)&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;" style="whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+                <mxCell id="124" value="&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span style=&quot;display: contents;&quot; class=&quot;is_Theme&quot;&gt;create the first attack promot with public data (partial)&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
                     <mxGeometry x="3485" y="-155" width="290" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="133" value="&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span style=&quot;display: contents;&quot; class=&quot;is_Theme&quot;&gt;end&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;" style="whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+                <mxCell id="133" value="&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span class=&quot;&quot; style=&quot;display: contents;&quot;&gt;&lt;span style=&quot;display: contents;&quot; class=&quot;is_Theme&quot;&gt;end&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
                     <mxGeometry x="3200" y="117.5" width="290" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="140" value="Entity" style="whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="3170" y="-1040" width="100" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="142" value="Jailbreak attack&lt;br&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="3035" y="-1035" width="110" height="30" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
