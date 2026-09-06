@@ -11,3 +11,4 @@ pydantic
 requests
 redis
 sqlalchemy
+sentence_transformers
