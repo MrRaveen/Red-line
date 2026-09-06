@@ -12,3 +12,5 @@ requests
 redis
 sqlalchemy
 sentence_transformers
+kafka-python
+pydantic

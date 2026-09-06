@@ -6,7 +6,7 @@ from semantic_kernel.connectors.ai.open_ai import OpenAIChatPromptExecutionSetti
 from semantic_kernel.contents import ChatHistory
 
 from app.agent.kernel_factory import build_kernel
-from prompt_injection_attack.app.schemas.execution_summery_schema import (
+from app.schemas.execution_summery_schema import (
     ExecutionSummary,
 )
 
