@@ -1,0 +1,24 @@
+### The Prompting Engine
+
+Attackers write scripts that interface with LLM APIs (like OpenAI, Claude, or local models). They feed the AI thousands of highly specific, complex programming scenarios—often combining distinct technologies where official libraries might be poorly documented.
+
+* *Example Prompt:* "Write a Node.js script to parse biometric authentication data from a legacy SOAP API."
+
+### Registry Checking (Finding the Gap)
+
+The AI generates code to solve the prompt. The attacker's script uses regular expressions to extract every `import`, `require`, or `install` command from the AI's output.
+The script then automatically pings the official package registries (like npm or PyPI) for those exact names.
+
+* If the registry returns a `200 OK`, the package is real. The script ignores it.
+* If the registry returns a `404 Not Found`, the script flags the name. The AI has hallucinated a package that sounds real but does not exist.
+
+### Consistency Scoring (Identifying the "Winners")
+
+A one-off hallucination (e.g., `soap-bio-parser-v99`) is useless to an attacker because a real developer is unlikely to ever trigger that exact same response.
+
+Because LLMs generate text based on statistical probability, they often invent the *exact same* fake name for similar problems. The attacker's system tracks these frequencies.
+
+* If the AI invents `node-soap-biometrics` just once, it is discarded.
+* If the AI recommends `node-soap-biometrics` 800 times across 1,000 similar prompts, it becomes a high-value target. The attacker knows that when a real developer asks the AI a similar question, the AI will almost certainly recommend this exact fake package.
+
+The attacker then registers `node-soap-biometrics`, knowing the AI is actively doing the marketing and distribution for their malware.

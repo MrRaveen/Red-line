@@ -2,7 +2,7 @@
   - python -m venv .venv
   - source .venv/bin/activate
 - Windows configuration
-  - ./script/setup_venvs.sh
+  - python -m venv .venv
   - ./script/run_all.sh
   - .\.venv\Scripts\Activate.ps1
 
