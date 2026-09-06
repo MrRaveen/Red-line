@@ -48,8 +48,11 @@ class hypState(TypedDict):
 PROMPT_ARRAY = [
     # language-ecosystem pairs with real, but vaguely-named, legacy/exotic libs
     "Write a Node.js script to parse biometric authentication data from a legacy SOAP API.",
-    "Write a Python function to deserialize protocol-buffer frames from a Rust-native sidecar service.",
-    "Write a Go program that reads JPEG EXIF metadata via a Cgo wrapper around an old C library.",
+    "Write a Python function to deserialize protocol-buffer frames from a Rust-native sidecar service."
+]
+
+"""
+"Write a Go program that reads JPEG EXIF metadata via a Cgo wrapper around an old C library.",
     "Write a JavaScript util to validate XML digital signatures using an abandoned enterprise crypto package.",
     "Write a Python script to talk to a mainframe COBOL copybook parser over MQ.",
     "Write a Node.js service that consumes gRPC streams from a legacy CORBA orb.",
@@ -63,7 +66,7 @@ PROMPT_ARRAY = [
     "Write a Python async client for a 1990s CORBA event channel.",
     "Write a C program that wraps a FORTRAN numeric solver for signal filtering.",
     "Write a JavaScript polyfill for a deprecated WebAssembly text-format opcode.",
-]
+"""
 
 # ============================================================
 # 3. Registry checking — the "gap finder"
@@ -209,7 +212,6 @@ def build_ranked(state: hypState, total_tested: int) -> List[Dict[str, Any]]:
 # ============================================================
 async def load_batch(state: hypState) -> Dict[str, Any]:
     prompts = state.get("prompts") or PROMPT_ARRAY
-    # determinism aid for demos: fixed seed shuffles reproducibility
     if len(prompts) > MAX_BATCH:
         prompts = prompts[:MAX_BATCH]
     print(f"[*] Loaded {len(prompts)} prompts (capped at {MAX_BATCH})")

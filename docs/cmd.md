@@ -2,7 +2,7 @@
   - python -m venv .venv
   - source .venv/bin/activate
 - Windows configuration
-  - ./script/setup_venvs.sh
+  - python -m venv .venv
   - ./script/run_all.sh
   - .\.venv\Scripts\Activate.ps1
 
@@ -37,6 +37,10 @@ python test-producer.py
 cd prompt_injection_attack
 python -m app.graphs.main_graph.nodes
 python -m app.graphs.main_graph.fakeLLM
+python -m app.graphs.main_graph.kafka_beta.consumer
+python -m app.graphs.main_graph.kafka_beta.log_processor.main
+python -m app.graphs.main_graph.agents_beta
+
 
 
 # Run all the services with a new terminal UI in vs code
