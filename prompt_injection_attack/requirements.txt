@@ -7,10 +7,9 @@ python-dotenv
 langgraph
 langchain-core     
 langgraph-checkpoint-postgres   
-pydantic
 requests
-redis
 sqlalchemy
 sentence_transformers
 kafka-python
 pydantic
+redis

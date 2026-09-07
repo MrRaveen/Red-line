@@ -63,6 +63,8 @@ class graphState(TypedDict):
     budget: Optional[int]
     variations: Optional[List[Variation]]
     executionError: Optional[str]
+    job_ID: str
+    userID: str
 
 # ============================================================
 # 2. Embedding helpers
@@ -171,8 +173,8 @@ def assemble_prompt(sentence: str, improved: Dict[str, str]) -> str:
 # ============================================================
 _json_settings = OpenAIChatPromptExecutionSettings(
     service_id="groq-chat",
-    temperature=0,
-    max_tokens=500,
+    temperature=0.9,
+    # max_tokens=2000,
     response_format={"type": "json_object"},
 )
 # rewrite + observer run in PLAIN mode:
@@ -180,8 +182,8 @@ _json_settings = OpenAIChatPromptExecutionSettings(
 #   - plain mode degrades to text we can parse or heuristically handle
 _plain_settings = OpenAIChatPromptExecutionSettings(
     service_id="groq-chat",
-    max_tokens=500,
-    temperature=0.3
+    # max_tokens=2000,
+    temperature=0.9
 )
 
 def _register(prompt: str, plugin: str, name: str, settings=_json_settings):
@@ -335,6 +337,8 @@ async def planByDividing(state: graphState) -> Dict[str, Any]:
             sortedObjects = sorted_pairs[: elbow_idx + 1]
             print("\nExtracted Objects:", sortedObjects)
             send_execution_log({
+                "job_id": state.get("job_ID"),
+                "userID": state.get("userID"),
                 "log_level": "INFO",
                 "message_type": "divide",
                 "message_text": f"Extracted Objects: {sortedObjects}"
@@ -343,6 +347,8 @@ async def planByDividing(state: graphState) -> Dict[str, Any]:
 
     ret = {"dividedPreviousPrompt": selected, "goal_vec": goal_vec}
     send_transaction_data({
+        "job_id": state.get("job_ID"),
+        "userID": state.get("userID"),
         "node_name": "planByDividing",
         "state_before": sanitize_state(state),
         "state_after": sanitize_state(ret),
@@ -371,6 +377,8 @@ async def improve_words(state: graphState) -> Dict[str, Any]:
             except Exception as e:
                 print(f"[!] Groq call failed for '{w}': {e}")
                 send_execution_log({
+                    "job_id": state.get("job_ID"),
+                    "userID": state.get("userID"),
                     "log_level": "ERROR",
                     "message_type": "word_substitution_error",
                     "message_text": f"Groq call failed for '{w}': {e}"
@@ -384,6 +392,8 @@ async def improve_words(state: graphState) -> Dict[str, Any]:
             improved[w] = w  # fallback: keep original word
         print(f"    '{w}' -> '{improved[w]}'")
         send_execution_log({
+            "job_id": state.get("job_ID"),
+            "userID": state.get("userID"),
             "log_level": "INFO",
             "message_type": "word_substitution",
             "message_text": f"'{w}' -> '{improved[w]}'"
@@ -391,6 +401,8 @@ async def improve_words(state: graphState) -> Dict[str, Any]:
 
     ret = {"improvedPreviousPromptWords": improved}
     send_transaction_data({
+        "job_id": state.get("job_ID"),
+        "userID": state.get("userID"),
         "node_name": "improve_words",
         "state_before": sanitize_state(state),
         "state_after": sanitize_state(ret),
@@ -444,6 +456,8 @@ async def improve_phrase(state: graphState) -> Dict[str, Any]:
     final_prompt = assemble_prompt(sentence, improved_map)
     print(f"    deterministic -> '{final_prompt}'")
     send_execution_log({
+        "job_id": state.get("job_ID"),
+        "userID": state.get("userID"),
         "log_level": "INFO",
         "message_type": "build_prompt",
         "message_text": f"deterministic -> '{final_prompt}'"
@@ -476,6 +490,8 @@ async def improve_phrase(state: graphState) -> Dict[str, Any]:
         except Exception as e:
             print(f"[!] Rewrite failed ({type(e).__name__}): {e} -> keeping deterministic result")
             send_execution_log({
+                "job_id": state.get("job_ID"),
+                "userID": state.get("userID"),
                 "log_level": "ERROR",
                 "message_type": "build_prompt_error",
                 "message_text": f"Rewrite failed: {e}"
@@ -483,6 +499,8 @@ async def improve_phrase(state: graphState) -> Dict[str, Any]:
 
     print(f"    FINAL prompt -> '{final_prompt}'")
     send_execution_log({
+        "job_id": state.get("job_ID"),
+        "userID": state.get("userID"),
         "log_level": "INFO",
         "message_type": "build_prompt",
         "message_text": f"FINAL prompt -> '{final_prompt}'",
@@ -491,6 +509,8 @@ async def improve_phrase(state: graphState) -> Dict[str, Any]:
     
     ret = {"currentInputPrompt": final_prompt}
     send_transaction_data({
+        "job_id": state.get("job_ID"),
+        "userID": state.get("userID"),
         "node_name": "improve_phrase",
         "state_before": sanitize_state(state),
         "state_after": sanitize_state(ret),
@@ -523,6 +543,8 @@ async def performJobProcess(state: graphState) -> Dict[str, Any]:
         print(f"[ExecutePhase] Sending request to: {target_url}")
         print(f"[ExecutePhase] Prompt: {prompt}")
         send_execution_log({
+            "job_id": state.get("job_ID"),
+            "userID": state.get("userID"),
             "log_level": "INFO",
             "message_type": "execute",
             "message_text": f"Sending request to: {target_url}",
@@ -540,6 +562,8 @@ async def performJobProcess(state: graphState) -> Dict[str, Any]:
             print(f"[ExecutePhase] Status: {status_code}")
             print(f"[ExecutePhase] Response: {response_text}")
             send_execution_log({
+                "job_id": state.get("job_ID"),
+                "userID": state.get("userID"),
                 "log_level": "INFO",
                 "message_type": "execute_response",
                 "message_text": f"Status: {status_code}",
@@ -564,6 +588,8 @@ async def performJobProcess(state: graphState) -> Dict[str, Any]:
         except requests.exceptions.Timeout:
             print("[ExecutePhase] Error: Request timeout")
             send_execution_log({
+                "job_id": state.get("job_ID"),
+                "userID": state.get("userID"),
                 "log_level": "ERROR",
                 "message_type": "execute_error",
                 "message_text": "Request timeout"
@@ -576,6 +602,8 @@ async def performJobProcess(state: graphState) -> Dict[str, Any]:
         except requests.exceptions.RequestException as e:
             print(f"[ExecutePhase] Error: {str(e)}")
             send_execution_log({
+                "job_id": state.get("job_ID"),
+                "userID": state.get("userID"),
                 "log_level": "ERROR",
                 "message_type": "execute_error",
                 "message_text": str(e)
@@ -588,6 +616,8 @@ async def performJobProcess(state: graphState) -> Dict[str, Any]:
         except Exception as e:
             print(f"[ExecutePhase] Unexpected error: {str(e)}")
             send_execution_log({
+                "job_id": state.get("job_ID"),
+                "userID": state.get("userID"),
                 "log_level": "ERROR",
                 "message_type": "execute_error",
                 "message_text": f"Unexpected error: {str(e)}"
@@ -599,6 +629,8 @@ async def performJobProcess(state: graphState) -> Dict[str, Any]:
             }
             
     send_transaction_data({
+        "job_id": state.get("job_ID"),
+        "userID": state.get("userID"),
         "node_name": "performJobProcess",
         "state_before": sanitize_state(state),
         "state_after": sanitize_state(ret),
@@ -622,6 +654,8 @@ async def getResponseObjects(state: graphState) -> Dict[str, Any]:
             cleaned = [str(item).strip() for item in resObjArr if str(item).strip()]
             print("[ExtractObjects] Response objects:", cleaned)
             send_execution_log({
+                "job_id": state.get("job_ID"),
+                "userID": state.get("userID"),
                 "log_level": "INFO",
                 "message_type": "extract_objects",
                 "message_text": f"Response objects: {cleaned}"
@@ -630,12 +664,16 @@ async def getResponseObjects(state: graphState) -> Dict[str, Any]:
         except Exception as e:
             print(f"[!] Could not extract response objects: {e}")
             send_execution_log({
+                "job_id": state.get("job_ID"),
+                "userID": state.get("userID"),
                 "log_level": "ERROR",
                 "message_type": "extract_objects_error",
                 "message_text": f"Could not extract response objects: {e}"
             })
             
     send_transaction_data({
+        "job_id": state.get("job_ID"),
+        "userID": state.get("userID"),
         "node_name": "getResponseObjects",
         "state_before": sanitize_state(state),
         "state_after": sanitize_state(ret),
@@ -675,6 +713,8 @@ async def observer(state: graphState) -> Dict[str, Any]:
                 detected = val is True or str(val).strip().lower() == "true"
                 print(f"[Observer] LLM verdict: breach={detected} verdict={data.get('verdict')} evidence={data.get('evidence')}")
                 send_execution_log({
+                    "job_id": state.get("job_ID"),
+                    "userID": state.get("userID"),
                     "log_level": "INFO",
                     "message_type": "observe",
                     "message_text": f"LLM verdict: breach={detected}",
@@ -687,6 +727,8 @@ async def observer(state: graphState) -> Dict[str, Any]:
                     ret = {"breachDetected": False, "incVariationCount": inc}
                 
                 send_transaction_data({
+                    "job_id": state.get("job_ID"),
+                    "userID": state.get("userID"),
                     "node_name": "observer",
                     "state_before": sanitize_state(state),
                     "state_after": sanitize_state(ret),
@@ -697,6 +739,8 @@ async def observer(state: graphState) -> Dict[str, Any]:
                 return ret
             print("[!] Observer returned no parseable JSON -> heuristic fallback")
             send_execution_log({
+                "job_id": state.get("job_ID"),
+                "userID": state.get("userID"),
                 "log_level": "WARNING",
                 "message_type": "observe",
                 "message_text": "Observer returned no parseable JSON -> heuristic fallback"
@@ -704,6 +748,8 @@ async def observer(state: graphState) -> Dict[str, Any]:
         except Exception as e:
             print(f"[!] Observer LLM failed ({type(e).__name__}): {e} -> heuristic fallback")
             send_execution_log({
+                "job_id": state.get("job_ID"),
+                "userID": state.get("userID"),
                 "log_level": "ERROR",
                 "message_type": "observe_error",
                 "message_text": f"Observer LLM failed: {e}"
@@ -712,6 +758,8 @@ async def observer(state: graphState) -> Dict[str, Any]:
         heuristic = heuristic_breach(response)
         print(f"[Observer] Heuristic verdict: breach={heuristic}")
         send_execution_log({
+            "job_id": state.get("job_ID"),
+            "userID": state.get("userID"),
             "log_level": "INFO",
             "message_type": "observe",
             "message_text": f"Heuristic verdict: breach={heuristic}",
@@ -723,6 +771,8 @@ async def observer(state: graphState) -> Dict[str, Any]:
             ret = {"breachDetected": False, "incVariationCount": inc}
 
     send_transaction_data({
+        "job_id": state.get("job_ID"),
+        "userID": state.get("userID"),
         "node_name": "observer",
         "state_before": sanitize_state(state),
         "state_after": sanitize_state(ret),
@@ -742,6 +792,8 @@ async def completeProcess(state: graphState) -> Dict[str, Any]:
         "variationCount": (state.get("variationCount") or 0) + 1,
     }
     send_transaction_data({
+        "job_id": state.get("job_ID"),
+        "userID": state.get("userID"),
         "node_name": "completeProcess",
         "state_before": sanitize_state(state),
         "state_after": sanitize_state(ret),
@@ -762,6 +814,8 @@ def decidePhase(state: graphState) -> str:
     if inc >= budget:
         print("[Decide] budget exceeded. perform exit")
         send_execution_log({
+            "job_id": state.get("job_ID"),
+            "userID": state.get("userID"),
             "log_level": "INFO",
             "message_type": "decide_phase",
             "message_text": "budget exceeded. perform exit"
@@ -770,6 +824,8 @@ def decidePhase(state: graphState) -> str:
     elif state.get("breachDetected"):
         print("[Decide] Breach detected — stopping.")
         send_execution_log({
+            "job_id": state.get("job_ID"),
+            "userID": state.get("userID"),
             "log_level": "INFO",
             "message_type": "decide_phase",
             "message_text": "Breach detected — stopping."
@@ -778,6 +834,8 @@ def decidePhase(state: graphState) -> str:
     elif inc >= MAX_VARIATIONS:
         print(f"[Decide] Max variations ({MAX_VARIATIONS}) reached — stopping.")
         send_execution_log({
+            "job_id": state.get("job_ID"),
+            "userID": state.get("userID"),
             "log_level": "INFO",
             "message_type": "decide_phase",
             "message_text": f"Max variations ({MAX_VARIATIONS}) reached — stopping."
@@ -785,6 +843,8 @@ def decidePhase(state: graphState) -> str:
         ret = "end"
         
     send_transaction_data({
+        "job_id": state.get("job_ID"),
+        "userID": state.get("userID"),
         "node_name": "decidePhase",
         "state_before": sanitize_state(state),
         "state_after": {"decision": ret},
