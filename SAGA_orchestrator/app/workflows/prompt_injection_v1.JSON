@@ -16,6 +16,20 @@
                     "functionFormat":""
                 }
             ]
+        },
+        {
+            "id":"2",
+            "name":"judge_evaluation",
+            "format":"judge_format_v1",
+            "topicIn":"judge_in_topic",
+            "topicOut":"results_out",
+            "service":"judge_agent",
+            "fallbacks":[
+                {
+                    "functionName":"",
+                    "functionFormat":""
+                }
+            ]
         }
     ]
 }

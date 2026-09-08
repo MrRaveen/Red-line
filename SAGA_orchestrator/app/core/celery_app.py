@@ -1,24 +1,12 @@
 import os
 from celery import Celery
-from dotenv import load_dotenv
-
-load_dotenv()
-
-REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
-REDIS_PORT = os.getenv("REDIS_PORT", "6379")
-REDIS_DB = os.getenv("REDIS_DB", "0")
-REDIS_PASSWORD = os.getenv("REDIS_PASSWORD", "")
-
-if REDIS_PASSWORD:
-    broker_url = f"redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
-else:
-    broker_url = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
+from app.config import Config
 
 # Initialize Celery app
 celery_app = Celery(
     "saga_orchestrator",
-    broker=broker_url,
-    backend=broker_url,
+    broker=Config.get_redis_url(),
+    backend=Config.get_redis_url(),
     include=["app.core.entryPoint"]
 )
 
@@ -28,4 +16,15 @@ celery_app.conf.update(
     result_serializer="json",
     timezone="UTC",
     enable_utc=True,
+    task_default_queue="saga_orchestrator_queue",
+    broker_transport_options={
+        'max_connections': Config.REDIS_MAX_CONNECTIONS,
+        'socket_timeout': Config.REDIS_SOCKET_TIMEOUT,
+        'socket_connect_timeout': Config.REDIS_SOCKET_CONNECT_TIMEOUT,
+    },
+    redis_backend_transport_options={
+        'max_connections': Config.REDIS_MAX_CONNECTIONS,
+        'socket_timeout': Config.REDIS_SOCKET_TIMEOUT,
+        'socket_connect_timeout': Config.REDIS_SOCKET_CONNECT_TIMEOUT,
+    }
 )

@@ -6,14 +6,19 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+_producer = None
+
 def get_producer():
-    """Create a Kafka producer. Reused across requests."""
-    return KafkaProducer(
-        bootstrap_servers="kafka:9092",
-        value_serializer=lambda v: json.dumps(v).encode("utf-8"),
-        retries=5,
-        acks="all", 
-    )
+    """Create a Kafka producer lazily and reuse it across requests."""
+    global _producer
+    if _producer is None:
+        _producer = KafkaProducer(
+            bootstrap_servers="kafka:9092",
+            value_serializer=lambda v: json.dumps(v, default=str).encode("utf-8"),
+            retries=5,
+            acks="all", 
+        )
+    return _producer
 
 
 def send_message(topic, message: dict):

@@ -74,13 +74,18 @@ def start_workflow(job_payload: Dict[str, Any]):
         including_job_id = create_including_job(job_id, step_name, job_payload)
         logger.info(f"Created including_job with ID: {including_job_id} for step: {step_name}")
 
+        # Try to get budget from job_payload, fallback to workflow_data
+        budget = job_payload.get('budget')
+        if budget is None:
+            budget = workflow_data.get('budget', 3)
+
         # Map input parameters to the pydantic model
         payload_data = {
             "userID": job_payload.get("userID"),
             "job_id": job_id,
             "including_job_id": including_job_id,
             "targetURL": job_payload.get("targetURL"),
-            "budget":first_step.get('budget')
+            "budget": budget
         }
 
         # Validate and serialize payload

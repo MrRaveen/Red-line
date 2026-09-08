@@ -5,6 +5,7 @@ import os
 import sys
 from kafka import KafkaConsumer
 from bson.objectid import ObjectId
+from app.config import Config
 
 # Ensure common is accessible for Kafka producer
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../")))
@@ -37,19 +38,14 @@ signal.signal(signal.SIGINT, graceful_shutdown)
 signal.signal(signal.SIGTERM, graceful_shutdown)
 
 def start_consumer():
-    KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
-    RESULTS_OUT = os.getenv("RESULTS_OUT","results_out")
-
     consumer = KafkaConsumer(
-        RESULTS_OUT,
-        bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
+        Config.RESULTS_OUT,
+        bootstrap_servers=Config.KAFKA_BOOTSTRAP_SERVERS,
         group_id="saga_orchestrator_consumer",
         value_deserializer=lambda v: json.loads(v.decode("utf-8")),
         auto_offset_reset="earliest",
         enable_auto_commit=False  # Disabled to prevent data loss on crash
     )
-    
-    logger.info(f"Consumer started on topic '{RESULTS_OUT}'")
     
     try:
         while running:
@@ -107,6 +103,15 @@ def start_consumer():
                             # 6. Format the payload if a format is specified
                             payload_data = data.copy()
                             payload_data["including_job_id"] = new_including_job_id
+                            payload_data["job_id"] = job_id
+                            payload_data["userID"] = user_id
+                            
+                            if next_step["name"] == "judge_evaluation":
+                                state_after = data.get("state_after", {})
+                                payload_data["target_url"] = state_after.get("target_url")
+                                payload_data["budget"] = state_after.get("budget")
+                                payload_data["total_breaches"] = state_after.get("incVariationCount", 0)
+                                payload_data["attempts"] = state_after.get("variations", [])
                             
                             format_name = next_step.get("format")
                             topic_in = next_step.get("topicIn")

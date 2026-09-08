@@ -1,7 +1,18 @@
 from flask import Blueprint, jsonify, request
 from app.core.entryPoint import start_workflow, WORKFLOW_MAP
+from pydantic import BaseModel, ValidationError
+from typing import Optional
+from app.core.models.job import JobType
 
 v1_bp = Blueprint('v1', __name__)
+
+class StartWorkflowRequest(BaseModel):
+    userID: str
+    targetURL: str
+    job_name: str
+    job_type: JobType
+    description: Optional[str] = ""
+    workflowID: Optional[str] = None
 
 @v1_bp.route('/health')
 def health_check():
@@ -21,8 +32,13 @@ def trigger_workflow():
     if not payload:
         return jsonify({"error": "No JSON payload provided"}), 400
         
+    try:
+        validated_data = StartWorkflowRequest(**payload)
+    except ValidationError as e:
+        return jsonify({"error": "Validation failed", "details": e.errors()}), 422
+        
     # Dispatch the celery task
-    task = start_workflow.delay(payload)
+    task = start_workflow.delay(validated_data.model_dump(mode='json'))
     
     return jsonify({
         "message": "Workflow task queued successfully",

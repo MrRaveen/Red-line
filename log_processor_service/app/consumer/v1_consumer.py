@@ -55,7 +55,9 @@ def process_message(msg_value):
             save_document(transactions_col, doc)
             nodeName = validated.node_name
             if nodeName == Config.NODE_COMPLETE:
-                send_message(Config.RESULTS_OUT,doc)
+                if "_id" in doc:
+                    doc["_id"] = str(doc["_id"])
+                send_message(Config.RESULTS_OUT, doc)
             return "transaction"
         except ValidationError as e:
             logger.error(f"Invalid transaction data: {e}")

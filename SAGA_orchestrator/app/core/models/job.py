@@ -5,8 +5,10 @@ from typing import Optional, List, Union
 from pydantic import BaseModel, Field
 from pymongo import MongoClient
 from typing import Any
+from app.config import Config
+
 # MongoDB setup
-MONGO_URI = "mongodb+srv://raveenjayasanka41_db_user:hhQcIjaqggKfH9fX@cluster0.4jssgun.mongodb.net/?appName=Cluster0"
+MONGO_URI = Config.MONGO_URI
 MONGO_DB = "redline_logs"
 MONGO_COLLECTION_JOBS = "jobs"
 

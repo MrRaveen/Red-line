@@ -38,10 +38,8 @@ services:
       dockerfile: SAGA_orchestrator/Dockerfile
     ports:
       - "8001:8001"                         # <-- host:container
-    environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - MONGO_URI=mongodb://db:27017
-      - REDIS_HOST=redis
+    env_file:
+      - .env
     volumes:
       - ./SAGA_orchestrator/app:/app/app
       - ./SAGA_orchestrator/wsgi.py:/app/wsgi.py
@@ -54,10 +52,8 @@ services:
     build:
       context: .
       dockerfile: SAGA_orchestrator/Dockerfile
-    environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - MONGO_URI=mongodb://db:27017
-      - SERVICE_RESULTS_OUT=results_out
+    env_file:
+      - .env
     volumes:
       - ./SAGA_orchestrator/app:/app/app
       - ./SAGA_orchestrator/wsgi.py:/app/wsgi.py
@@ -70,10 +66,8 @@ services:
     build:
       context: .
       dockerfile: SAGA_orchestrator/Dockerfile
-    environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - MONGO_URI=mongodb://db:27017
-      - REDIS_HOST=redis
+    env_file:
+      - .env
     volumes:
       - ./SAGA_orchestrator/app:/app/app
       - ./SAGA_orchestrator/wsgi.py:/app/wsgi.py
@@ -294,10 +288,8 @@ services:
     build:
       context: .
       dockerfile: preprocessor_service/Dockerfile
-    environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - PREPROCESSOR_IN_TOPIC=raw_req_topic
-      - KAFKA_TOPIC_SEND_PREPROCESSED=preprocessed_req_topic
+    env_file:
+      - .env
     volumes:
       - ./preprocessor_service/app:/app/app
       - ./common:/app/common
@@ -309,11 +301,8 @@ services:
     build:
       context: .
       dockerfile: log_processor_service/Dockerfile
-    environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - KAFKA_TOPIC_SEND_PREPROCESSED=preprocess_in
-      - MONGO_URI=mongodb://db:27017
-      - MONGO_DB=redline_logs
+    env_file:
+      - .env
     volumes:
       - ./log_processor_service/app:/app/app
       - ./common:/app/common
