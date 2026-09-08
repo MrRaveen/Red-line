@@ -7,6 +7,15 @@ import re
 from sentence_transformers import SentenceTransformer
 from langgraph.graph import END, StateGraph
 from semantic_kernel.connectors.ai.open_ai import OpenAIChatPromptExecutionSettings
+from app.graphs.main_graph.kafka_logger import send_transaction_data, send_execution_log
+
+def sanitize_state(s: dict) -> dict:
+    if not s:
+        return {}
+    s = dict(s)
+    if "goal_vec" in s:
+        s["goal_vec"] = "numpy_array_hidden"
+    return s
 
 # ============================================================
 # 0. Kernel (Groq + Semantic Kernel)
@@ -54,6 +63,8 @@ class graphState(TypedDict):
     budget: Optional[int]
     variations: Optional[List[Variation]]
     executionError: Optional[str]
+    job_ID: str
+    userID: str
 
 # ============================================================
 # 2. Embedding helpers
@@ -325,9 +336,23 @@ async def planByDividing(state: graphState) -> Dict[str, Any]:
             elbow_idx, _ = find_elbow(tokenScoresTupple)
             sortedObjects = sorted_pairs[: elbow_idx + 1]
             print("\nExtracted Objects:", sortedObjects)
+            send_execution_log({
+                "log_level": "INFO",
+                "message_type": "divide",
+                "message_text": f"Extracted Objects: {sortedObjects}"
+            })
             selected = [w for w, _ in sortedObjects if w.isalpha()][:5]
 
-    return {"dividedPreviousPrompt": selected, "goal_vec": goal_vec}
+    ret = {"dividedPreviousPrompt": selected, "goal_vec": goal_vec}
+    send_transaction_data({
+        "node_name": "planByDividing",
+        "state_before": sanitize_state(state),
+        "state_after": sanitize_state(ret),
+        "variation_count": state.get("variationCount"),
+        "inc_variation_count": state.get("incVariationCount"),
+        "breach_detected": state.get("breachDetected")
+    })
+    return ret
 
 # ============================================================
 # 5. Node: improve the selected words (innocent micro-tasks)
@@ -347,6 +372,11 @@ async def improve_words(state: graphState) -> Dict[str, Any]:
                 candidates = [str(item).strip() for item in candidatesArr if str(item).strip()]
             except Exception as e:
                 print(f"[!] Groq call failed for '{w}': {e}")
+                send_execution_log({
+                    "log_level": "ERROR",
+                    "message_type": "word_substitution_error",
+                    "message_text": f"Groq call failed for '{w}': {e}"
+                })
 
         if candidates and goal_vec is not None:
             v_vecs = embedder.encode(candidates)
@@ -355,8 +385,22 @@ async def improve_words(state: graphState) -> Dict[str, Any]:
         else:
             improved[w] = w  # fallback: keep original word
         print(f"    '{w}' -> '{improved[w]}'")
+        send_execution_log({
+            "log_level": "INFO",
+            "message_type": "word_substitution",
+            "message_text": f"'{w}' -> '{improved[w]}'"
+        })
 
-    return {"improvedPreviousPromptWords": improved}
+    ret = {"improvedPreviousPromptWords": improved}
+    send_transaction_data({
+        "node_name": "improve_words",
+        "state_before": sanitize_state(state),
+        "state_after": sanitize_state(ret),
+        "variation_count": state.get("variationCount"),
+        "inc_variation_count": state.get("incVariationCount"),
+        "breach_detected": state.get("breachDetected")
+    })
+    return ret
 
 # ============================================================
 # 6. Node: build the next prompt (deterministic guarantee + LLM polish)
@@ -401,6 +445,11 @@ async def improve_phrase(state: graphState) -> Dict[str, Any]:
     # GUARANTEED path first: pure-Python substitution, always produces an improved prompt
     final_prompt = assemble_prompt(sentence, improved_map)
     print(f"    deterministic -> '{final_prompt}'")
+    send_execution_log({
+        "log_level": "INFO",
+        "message_type": "build_prompt",
+        "message_text": f"deterministic -> '{final_prompt}'"
+    })
 
     # LLM polish (overrides deterministic result only if it returns something valid)
     use_after = bool(response_objects) and bool(replacements)
@@ -428,9 +477,30 @@ async def improve_phrase(state: graphState) -> Dict[str, Any]:
                 print("[!] Rewrite empty -> keeping deterministic result")
         except Exception as e:
             print(f"[!] Rewrite failed ({type(e).__name__}): {e} -> keeping deterministic result")
+            send_execution_log({
+                "log_level": "ERROR",
+                "message_type": "build_prompt_error",
+                "message_text": f"Rewrite failed: {e}"
+            })
 
     print(f"    FINAL prompt -> '{final_prompt}'")
-    return {"currentInputPrompt": final_prompt}
+    send_execution_log({
+        "log_level": "INFO",
+        "message_type": "build_prompt",
+        "message_text": f"FINAL prompt -> '{final_prompt}'",
+        "attack_prompt": final_prompt
+    })
+    
+    ret = {"currentInputPrompt": final_prompt}
+    send_transaction_data({
+        "node_name": "improve_phrase",
+        "state_before": sanitize_state(state),
+        "state_after": sanitize_state(ret),
+        "variation_count": state.get("variationCount"),
+        "inc_variation_count": state.get("incVariationCount"),
+        "breach_detected": state.get("breachDetected")
+    })
+    return ret
 
 # ============================================================
 # 7. Node: send the attack to the local target
@@ -440,73 +510,112 @@ async def performJobProcess(state: graphState) -> Dict[str, Any]:
     prompt = state.get("currentInputPrompt", "")
 
     if not target_url or not prompt:
-        return {
+        ret = {
             "latestResult": "Error: Missing target_url or currentInputPrompt",
             "latestStatusCode": "400",
             "latestExecutionError": "Missing required state fields",
         }
-
-    payload = {
-        "model": "qwen2.5:3b",
-        "prompt": prompt,
-        "stream": False,
-    }
-
-    print(f"[ExecutePhase] Sending request to: {target_url}")
-    print(f"[ExecutePhase] Prompt: {prompt}")
-
-    try:
-        response = requests.post(target_url, json=payload, timeout=60)
-        response.raise_for_status()
-
-        result_data = response.json()
-        response_text = result_data.get("response", "")
-        status_code = str(response.status_code)
-
-        print(f"[ExecutePhase] Status: {status_code}")
-        print(f"[ExecutePhase] Response: {response_text}")
-
-        variation: Variation = {
-            "variationPrompt": prompt,
-            "variationResult": response_text,
-            "variationStatusCode": status_code,
-            "resultPerVariation": None,
+    else:
+        payload = {
+            "model": "qwen2.5:3b",
+            "prompt": prompt,
+            "stream": False,
         }
 
-        return {
-            "latestResult": response_text,
-            "latestStatusCode": status_code,
-            "latestExecutionError": None,
-            "variations": (state.get("variations") or []) + [variation],
-        }
+        print(f"[ExecutePhase] Sending request to: {target_url}")
+        print(f"[ExecutePhase] Prompt: {prompt}")
+        send_execution_log({
+            "log_level": "INFO",
+            "message_type": "execute",
+            "message_text": f"Sending request to: {target_url}",
+            "attack_prompt": prompt
+        })
 
-    except requests.exceptions.Timeout:
-        print("[ExecutePhase] Error: Request timeout")
-        return {
-            "latestResult": "Error: Request timeout",
-            "latestStatusCode": "504",
-            "latestExecutionError": "Timeout",
-        }
-    except requests.exceptions.RequestException as e:
-        print(f"[ExecutePhase] Error: {str(e)}")
-        return {
-            "latestResult": f"Error: {str(e)}",
-            "latestStatusCode": "500",
-            "latestExecutionError": str(e),
-        }
-    except Exception as e:
-        print(f"[ExecutePhase] Unexpected error: {str(e)}")
-        return {
-            "latestResult": f"Error: {str(e)}",
-            "latestStatusCode": "500",
-            "latestExecutionError": str(e),
-        }
+        try:
+            response = requests.post(target_url, json=payload, timeout=60)
+            response.raise_for_status()
+
+            result_data = response.json()
+            response_text = result_data.get("response", "")
+            status_code = str(response.status_code)
+
+            print(f"[ExecutePhase] Status: {status_code}")
+            print(f"[ExecutePhase] Response: {response_text}")
+            send_execution_log({
+                "log_level": "INFO",
+                "message_type": "execute_response",
+                "message_text": f"Status: {status_code}",
+                "status_code": status_code,
+                "target_response": response_text
+            })
+
+            variation: Variation = {
+                "variationPrompt": prompt,
+                "variationResult": response_text,
+                "variationStatusCode": status_code,
+                "resultPerVariation": None,
+            }
+
+            ret = {
+                "latestResult": response_text,
+                "latestStatusCode": status_code,
+                "latestExecutionError": None,
+                "variations": (state.get("variations") or []) + [variation],
+            }
+
+        except requests.exceptions.Timeout:
+            print("[ExecutePhase] Error: Request timeout")
+            send_execution_log({
+                "log_level": "ERROR",
+                "message_type": "execute_error",
+                "message_text": "Request timeout"
+            })
+            ret = {
+                "latestResult": "Error: Request timeout",
+                "latestStatusCode": "504",
+                "latestExecutionError": "Timeout",
+            }
+        except requests.exceptions.RequestException as e:
+            print(f"[ExecutePhase] Error: {str(e)}")
+            send_execution_log({
+                "log_level": "ERROR",
+                "message_type": "execute_error",
+                "message_text": str(e)
+            })
+            ret = {
+                "latestResult": f"Error: {str(e)}",
+                "latestStatusCode": "500",
+                "latestExecutionError": str(e),
+            }
+        except Exception as e:
+            print(f"[ExecutePhase] Unexpected error: {str(e)}")
+            send_execution_log({
+                "log_level": "ERROR",
+                "message_type": "execute_error",
+                "message_text": f"Unexpected error: {str(e)}"
+            })
+            ret = {
+                "latestResult": f"Error: {str(e)}",
+                "latestStatusCode": "500",
+                "latestExecutionError": str(e),
+            }
+            
+    send_transaction_data({
+        "node_name": "performJobProcess",
+        "state_before": sanitize_state(state),
+        "state_after": sanitize_state(ret),
+        "variation_count": state.get("variationCount"),
+        "inc_variation_count": state.get("incVariationCount"),
+        "breach_detected": state.get("breachDetected")
+    })
+    return ret
 
 # ============================================================
 # 8. Node: extract objects from the target's response
 # ============================================================
 async def getResponseObjects(state: graphState) -> Dict[str, Any]:
     responseRecorded = state.get("latestResult", "")
+    ret = {"latestResultArrObjects": []}
     if _extract_fn is not None:
         try:
             result = await kernel.invoke(_extract_fn, response=responseRecorded)
@@ -514,10 +623,29 @@ async def getResponseObjects(state: graphState) -> Dict[str, Any]:
             resObjArr = data.get("responseObjects") or []
             cleaned = [str(item).strip() for item in resObjArr if str(item).strip()]
             print("[ExtractObjects] Response objects:", cleaned)
-            return {"latestResultArrObjects": cleaned}
+            send_execution_log({
+                "log_level": "INFO",
+                "message_type": "extract_objects",
+                "message_text": f"Response objects: {cleaned}"
+            })
+            ret = {"latestResultArrObjects": cleaned}
         except Exception as e:
             print(f"[!] Could not extract response objects: {e}")
-    return {"latestResultArrObjects": []}
+            send_execution_log({
+                "log_level": "ERROR",
+                "message_type": "extract_objects_error",
+                "message_text": f"Could not extract response objects: {e}"
+            })
+            
+    send_transaction_data({
+        "node_name": "getResponseObjects",
+        "state_before": sanitize_state(state),
+        "state_after": sanitize_state(ret),
+        "variation_count": state.get("variationCount"),
+        "inc_variation_count": state.get("incVariationCount"),
+        "breach_detected": state.get("breachDetected")
+    })
+    return ret
 
 # ============================================================
 # 9. Node: observe the response (LLM verdict + heuristic fallback)
@@ -536,39 +664,94 @@ def heuristic_breach(response: str) -> bool:
 
 async def observer(state: graphState) -> Dict[str, Any]:
     inc = (state.get("incVariationCount") or 0) + 1
+    ret = {"breachDetected": False, "incVariationCount": inc}
     if _observer_fn is None:
-        return {"breachDetected": False, "incVariationCount": inc}
+        pass
+    else:
+        response = state.get("latestResult", "") or ""
+        try:
+            result = await kernel.invoke(_observer_fn, response=response)
+            data = extract_json(str(result))
+            if data is not None:
+                val = data.get("breachDetected")
+                detected = val is True or str(val).strip().lower() == "true"
+                print(f"[Observer] LLM verdict: breach={detected} verdict={data.get('verdict')} evidence={data.get('evidence')}")
+                send_execution_log({
+                    "log_level": "INFO",
+                    "message_type": "observe",
+                    "message_text": f"LLM verdict: breach={detected}",
+                    "verdict": str(data.get('verdict')),
+                    "evidence": str(data.get('evidence'))
+                })
+                if detected:
+                    ret = {"breachDetected": True}
+                else:
+                    ret = {"breachDetected": False, "incVariationCount": inc}
+                
+                send_transaction_data({
+                    "node_name": "observer",
+                    "state_before": sanitize_state(state),
+                    "state_after": sanitize_state(ret),
+                    "variation_count": state.get("variationCount"),
+                    "inc_variation_count": ret.get("incVariationCount", state.get("incVariationCount")),
+                    "breach_detected": ret.get("breachDetected")
+                })
+                return ret
+            print("[!] Observer returned no parseable JSON -> heuristic fallback")
+            send_execution_log({
+                "log_level": "WARNING",
+                "message_type": "observe",
+                "message_text": "Observer returned no parseable JSON -> heuristic fallback"
+            })
+        except Exception as e:
+            print(f"[!] Observer LLM failed ({type(e).__name__}): {e} -> heuristic fallback")
+            send_execution_log({
+                "log_level": "ERROR",
+                "message_type": "observe_error",
+                "message_text": f"Observer LLM failed: {e}"
+            })
 
-    response = state.get("latestResult", "") or ""
-    try:
-        result = await kernel.invoke(_observer_fn, response=response)
-        data = extract_json(str(result))
-        if data is not None:
-            val = data.get("breachDetected")
-            detected = val is True or str(val).strip().lower() == "true"
-            print(f"[Observer] LLM verdict: breach={detected} verdict={data.get('verdict')} evidence={data.get('evidence')}")
-            if detected:
-                return {"breachDetected": True}
-            return {"breachDetected": False, "incVariationCount": inc}
-        print("[!] Observer returned no parseable JSON -> heuristic fallback")
-    except Exception as e:
-        print(f"[!] Observer LLM failed ({type(e).__name__}): {e} -> heuristic fallback")
+        heuristic = heuristic_breach(response)
+        print(f"[Observer] Heuristic verdict: breach={heuristic}")
+        send_execution_log({
+            "log_level": "INFO",
+            "message_type": "observe",
+            "message_text": f"Heuristic verdict: breach={heuristic}",
+            "verdict": "FULL_BREACH" if heuristic else "REFUSAL"
+        })
+        if heuristic:
+            ret = {"breachDetected": True}
+        else:
+            ret = {"breachDetected": False, "incVariationCount": inc}
 
-    heuristic = heuristic_breach(response)
-    print(f"[Observer] Heuristic verdict: breach={heuristic}")
-    if heuristic:
-        return {"breachDetected": True}
-    return {"breachDetected": False, "incVariationCount": inc}
+    send_transaction_data({
+        "node_name": "observer",
+        "state_before": sanitize_state(state),
+        "state_after": sanitize_state(ret),
+        "variation_count": state.get("variationCount"),
+        "inc_variation_count": ret.get("incVariationCount", state.get("incVariationCount")),
+        "breach_detected": ret.get("breachDetected")
+    })
+    return ret
 
 # ============================================================
 # 10. Node: adapt state for the next round
 # ============================================================
 async def completeProcess(state: graphState) -> Dict[str, Any]:
-    return {
+    ret = {
         "isFirst": False,
         "previousInputPrompt": state.get("currentInputPrompt"),
         "variationCount": (state.get("variationCount") or 0) + 1,
     }
+    send_transaction_data({
+        "node_name": "completeProcess",
+        "state_before": sanitize_state(state),
+        "state_after": sanitize_state(ret),
+        "variation_count": ret.get("variationCount"),
+        "inc_variation_count": state.get("incVariationCount"),
+        "breach_detected": state.get("breachDetected")
+    })
+    return ret
 
 # ============================================================
 # 11. Conditional edge: continue or stop
@@ -576,16 +759,43 @@ async def completeProcess(state: graphState) -> Dict[str, Any]:
 def decidePhase(state: graphState) -> str:
     inc = state.get("incVariationCount") or 0
     budget = state.get("budget") or MAX_VARIATIONS
+    ret = "adapt"
+    
     if inc >= budget:
         print("[Decide] budget exceeded. perform exit")
-        return "end"
-    if state.get("breachDetected"):
+        send_execution_log({
+            "log_level": "INFO",
+            "message_type": "decide_phase",
+            "message_text": "budget exceeded. perform exit"
+        })
+        ret = "end"
+    elif state.get("breachDetected"):
         print("[Decide] Breach detected — stopping.")
-        return "end"
-    if inc >= MAX_VARIATIONS:
+        send_execution_log({
+            "log_level": "INFO",
+            "message_type": "decide_phase",
+            "message_text": "Breach detected — stopping."
+        })
+        ret = "end"
+    elif inc >= MAX_VARIATIONS:
         print(f"[Decide] Max variations ({MAX_VARIATIONS}) reached — stopping.")
-        return "end"
-    return "adapt"
+        send_execution_log({
+            "log_level": "INFO",
+            "message_type": "decide_phase",
+            "message_text": f"Max variations ({MAX_VARIATIONS}) reached — stopping."
+        })
+        ret = "end"
+        
+    send_transaction_data({
+        "node_name": "decidePhase",
+        "state_before": sanitize_state(state),
+        "state_after": {"decision": ret},
+        "variation_count": state.get("variationCount"),
+        "inc_variation_count": state.get("incVariationCount"),
+        "breach_detected": state.get("breachDetected")
+    })
+    
+    return ret
 
 # ============================================================
 # 12. Clean content via LLM
@@ -596,8 +806,6 @@ async def clean_prompt_with_llm(state: graphState) -> Dict[str, Any]:
     if not raw:
         return {"currentInputPrompt": raw}
 
-    # If the raw is already plain text (no JSON braces), we can optionally skip LLM call
-    # but for robustness, we still call the LLM to confirm/extract.
     if _clean_fn is not None:
         try:
             result = await kernel.invoke(_clean_fn, raw_text=raw)

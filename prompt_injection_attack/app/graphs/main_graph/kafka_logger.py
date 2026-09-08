@@ -23,6 +23,8 @@ class TransactionData(BaseModel):
     variation_count: Optional[int] = None
     inc_variation_count: Optional[int] = None
     breach_detected: Optional[bool] = None
+    userID: str
+    job_id: str
 
 class ExecutionLogData(BaseModel):
     """Execution log entry"""
@@ -35,6 +37,8 @@ class ExecutionLogData(BaseModel):
     status_code: Optional[str] = None
     verdict: Optional[str] = None
     evidence: Optional[str] = None
+    userID: str
+    job_id: str
 
 # ============================================================
 # Sending functions

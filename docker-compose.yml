@@ -1,0 +1,333 @@
+services:
+  # ========== JUDGE AGENT SERVICES ==========
+  judge-api:
+    build:
+      context: .
+      dockerfile: judge_agent/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - KAFKA_BROKERS=kafka:9092
+      - DATABASE_URI=mongodb://db:27017
+    volumes:
+      - ./judge_agent/app:/app/app
+      - ./judge_agent/wsgi.py:/app/wsgi.py
+      - ./judge_agent/run.py:/app/run.py
+      - ./common:/app/common
+    command: ["gunicorn", "--bind", "0.0.0.0:8000", "wsgi:app"]
+    restart: always
+
+  judge-consumer:
+    build:
+      context: .
+      dockerfile: judge_agent/Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./judge_agent/app:/app/app
+      - ./judge_agent/wsgi.py:/app/wsgi.py
+      - ./judge_agent/run.py:/app/run.py
+      - ./common:/app/common
+    command: ["python", "-m", "app.consumer.v1_consumer"]
+    restart: always
+
+  # ========== SAGA ORCHESTRATOR SERVICES ==========
+  saga-api:
+    build:
+      context: .
+      dockerfile: SAGA_orchestrator/Dockerfile
+    ports:
+      - "8001:8001"                         # <-- host:container
+    env_file:
+      - .env
+    volumes:
+      - ./SAGA_orchestrator/app:/app/app
+      - ./SAGA_orchestrator/wsgi.py:/app/wsgi.py
+      - ./SAGA_orchestrator/run.py:/app/run.py
+      - ./common:/app/common
+    command: ["gunicorn", "--bind", "0.0.0.0:8001", "wsgi:app"]   # <-- bind to 8001
+    restart: always
+
+  saga-consumer:
+    build:
+      context: .
+      dockerfile: SAGA_orchestrator/Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./SAGA_orchestrator/app:/app/app
+      - ./SAGA_orchestrator/wsgi.py:/app/wsgi.py
+      - ./SAGA_orchestrator/run.py:/app/run.py
+      - ./common:/app/common
+    command: ["python", "-m", "app.core.consumer"]
+    restart: always
+
+  saga-celery:                                 # <-- separate worker service
+    build:
+      context: .
+      dockerfile: SAGA_orchestrator/Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./SAGA_orchestrator/app:/app/app
+      - ./SAGA_orchestrator/wsgi.py:/app/wsgi.py
+      - ./SAGA_orchestrator/run.py:/app/run.py
+      - ./SAGA_orchestrator/run_worker.py:/app/run_worker.py
+      - ./common:/app/common
+    command: ["python", "run_worker.py"]     # starts Celery worker
+    restart: always
+
+  # ========== PII EXTRACTION ATTACK SERVICES ==========
+  pii-api:
+    build:
+      context: .
+      dockerfile: PII_extraction_attack/Dockerfile
+    ports:
+      - "8002:8002"
+    env_file:
+       - .env
+    volumes:
+      - ./PII_extraction_attack/app:/app/app
+      - ./PII_extraction_attack/wsgi.py:/app/wsgi.py
+      - ./PII_extraction_attack/run.py:/app/run.py
+      - ./common:/app/common
+    command: ["gunicorn", "--bind", "0.0.0.0:8002", "wsgi:app"]
+    restart: always
+
+  pii-consumer:
+    build:
+      context: .
+      dockerfile: PII_extraction_attack/Dockerfile
+    env_file:
+       - .env
+    volumes:
+      - ./PII_extraction_attack/app:/app/app
+      - ./PII_extraction_attack/wsgi.py:/app/wsgi.py
+      - ./PII_extraction_attack/run.py:/app/run.py
+      - ./common:/app/common
+    command: ["python", "-m", "app.consumer.v1_consumer"]
+    restart: always
+
+  pii-celery:
+    build:
+      context: .
+      dockerfile: PII_extraction_attack/Dockerfile
+    env_file:
+       - .env
+    volumes:
+      - ./PII_extraction_attack/app:/app/app
+      - ./PII_extraction_attack/wsgi.py:/app/wsgi.py
+      - ./PII_extraction_attack/run.py:/app/run.py
+      - ./PII_extraction_attack/run_worker.py:/app/run_worker.py
+      - ./common:/app/common
+    command: ["python", "run_worker.py"]
+    restart: always
+
+  # ========== JAILBREAK ATTACK SERVICES ==========
+  # jailbreak-api:
+  #   build:
+  #     context: .
+  #     dockerfile: jailbreak_attack/Dockerfile
+  #   ports:
+  #     - "8003:8003"
+  #   env_file:
+  #      - .env
+  #   volumes:
+  #     - ./jailbreak_attack/app:/app/app
+  #     - ./jailbreak_attack/wsgi.py:/app/wsgi.py
+  #     - ./jailbreak_attack/run.py:/app/run.py
+  #     - ./common:/app/common
+  #   command: ["gunicorn", "--bind", "0.0.0.0:8003", "wsgi:app"]
+  #   restart: always
+
+  # jailbreak-consumer:
+  #   build:
+  #     context: .
+  #     dockerfile: jailbreak_attack/Dockerfile
+  #   env_file:
+  #      - .env
+  #   volumes:
+  #     - ./jailbreak_attack/app:/app/app
+  #     - ./jailbreak_attack/wsgi.py:/app/wsgi.py
+  #     - ./jailbreak_attack/run.py:/app/run.py
+  #     - ./common:/app/common
+  #   command: ["python", "-m", "app.consumer.v1_consumer"]
+  #   restart: always
+
+  # jailbreak-celery:
+  #   build:
+  #     context: .
+  #     dockerfile: jailbreak_attack/Dockerfile
+  #   env_file:
+  #      - .env
+  #   volumes:
+  #     - ./jailbreak_attack/app:/app/app
+  #     - ./jailbreak_attack/wsgi.py:/app/wsgi.py
+  #     - ./jailbreak_attack/run.py:/app/run.py
+  #     - ./jailbreak_attack/run_worker.py:/app/run_worker.py
+  #     - ./common:/app/common
+  #   command: ["python", "run_worker.py"]
+  #   restart: always
+
+  # ========== HALLUCINATION ATTACK SERVICES ==========
+  # hallucination-api:
+  #   build:
+  #     context: .
+  #     dockerfile: hallucination_attack/Dockerfile
+  #   ports:
+  #     - "8004:8004"
+  #   env_file:
+  #      - .env
+  #   volumes:
+  #     - ./hallucination_attack/app:/app/app
+  #     - ./hallucination_attack/wsgi.py:/app/wsgi.py
+  #     - ./hallucination_attack/run.py:/app/run.py
+  #     - ./common:/app/common
+  #   command: ["gunicorn", "--bind", "0.0.0.0:8004", "wsgi:app"]
+  #   restart: always
+
+  # hallucination-consumer:
+  #   build:
+  #     context: .
+  #     dockerfile: hallucination_attack/Dockerfile
+  #   env_file:
+  #      - .env
+  #   volumes:
+  #     - ./hallucination_attack/app:/app/app
+  #     - ./hallucination_attack/wsgi.py:/app/wsgi.py
+  #     - ./hallucination_attack/run.py:/app/run.py
+  #     - ./common:/app/common
+  #   command: ["python", "-m", "app.consumer.v1_consumer"]
+  #   restart: always
+
+  # hallucination-celery:
+  #   build:
+  #     context: .
+  #     dockerfile: hallucination_attack/Dockerfile
+  #   env_file:
+  #      - .env
+  #   volumes:
+  #     - ./hallucination_attack/app:/app/app
+  #     - ./hallucination_attack/wsgi.py:/app/wsgi.py
+  #     - ./hallucination_attack/run.py:/app/run.py
+  #     - ./hallucination_attack/run_worker.py:/app/run_worker.py
+  #     - ./common:/app/common
+  #   command: ["python", "run_worker.py"]
+  #   restart: always
+
+  # ========== PROMPT INJECTION ATTACK NEW SERVICES ==========
+  # prompt-new-api:
+  #   build:
+  #     context: .
+  #     dockerfile: prompt_injection_attack_new/Dockerfile
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - "8005:8005"
+  #   environment:
+  #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+  #     - DATABASE_URI=mongodb://db:27017
+  #   volumes:
+  #     - ./prompt_injection_attack_new/app:/app/app
+  #     - ./prompt_injection_attack_new/wsgi.py:/app/wsgi.py
+  #     - ./prompt_injection_attack_new/run.py:/app/run.py
+  #     - ./common:/app/common
+  #   command: ["gunicorn", "--bind", "0.0.0.0:8005", "wsgi:app"]
+  #   restart: always
+
+  # prompt-new-consumer:
+  #   build:
+  #     context: .
+  #     dockerfile: prompt_injection_attack_new/Dockerfile
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+  #     - PROMPT_REQ_TOPIC=prompt_req_topic
+  #   volumes:
+  #     - ./prompt_injection_attack_new/app:/app/app
+  #     - ./prompt_injection_attack_new/wsgi.py:/app/wsgi.py
+  #     - ./prompt_injection_attack_new/run.py:/app/run.py
+  #     - ./common:/app/common
+  #   command: ["python", "-m", "app.consumer.v1_consumer"]
+  #   restart: always
+
+  # prompt-new-celery:
+  #   build:
+  #     context: .
+  #     dockerfile: prompt_injection_attack_new/Dockerfile
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+  #     - DATABASE_URI=mongodb://db:27017
+  #     - REDIS_HOST=redis
+  #   volumes:
+  #     - ./prompt_injection_attack_new/app:/app/app
+  #     - ./prompt_injection_attack_new/wsgi.py:/app/wsgi.py
+  #     - ./prompt_injection_attack_new/run.py:/app/run.py
+  #     - ./prompt_injection_attack_new/run_worker.py:/app/run_worker.py
+  #     - ./common:/app/common
+  #   command: ["python", "run_worker.py"]
+  #   restart: always
+
+  # ========== PREPROCESSOR SERVICE ==========
+  preprocessor-consumer:
+    build:
+      context: .
+      dockerfile: preprocessor_service/Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./preprocessor_service/app:/app/app
+      - ./common:/app/common
+    command: ["python", "-m", "app.consumer.v1_consumer"]
+    restart: always
+
+  # ========== LOG PROCESSOR SERVICE ==========
+  log-processor-consumer:
+    build:
+      context: .
+      dockerfile: log_processor_service/Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./log_processor_service/app:/app/app
+      - ./common:/app/common
+    command: ["python", "-m", "app.consumer.v1_consumer"]
+    restart: always
+
+  # ========== INFRASTRUCTURE ==========
+  kafka:
+    image: apache/kafka:latest
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093,PLAINTEXT_HOST://0.0.0.0:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+volumes:
+  kafka-data:
+  redis-data:

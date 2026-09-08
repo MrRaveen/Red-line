@@ -147,5 +147,5 @@ if __name__ == '__main__':
     print("  POST /reset")
     print("\nBehavior: Refuses most direct prohibited requests;")
     print("          becomes compliant when jailbreak techniques are used after 2 refusals.")
-    print("\nStarting server on http://localhost:5000")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    print("\nStarting server on http://localhost:4003")
+    app.run(host='0.0.0.0', port=4003, debug=True)

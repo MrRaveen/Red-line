@@ -1,0 +1,4 @@
+kafka-python
+pymongo
+pydantic
+python-dotenv
