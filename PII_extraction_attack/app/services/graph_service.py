@@ -8,7 +8,10 @@ from app.core.celery_app import celery_app
 logger = logging.getLogger(__name__)
 
 async def execute_pii_graph(job_data: dict):
-    job_id = job_data.get('job_ID', 'unknown_job')
+    job_id = job_data.get('job_id', 'unknown_job')
+    including_job_id = job_data.get('including_job_id')
+    user_id = job_data.get('userID', 'dummy_user')
+    
     logger.info(f"Starting graph execution for job: {job_id}")
 
     try:

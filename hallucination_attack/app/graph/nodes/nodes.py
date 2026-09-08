@@ -1,8 +1,10 @@
 import asyncio
 import re
 import requests
+import os
 from typing import Any, Dict, List, Optional
 from app.graph.state import hypState, PackageHit
+from common.kafka_logger import send_transaction_data, send_execution_log
 
 TARGET_URL = "http://localhost:5000/api/generate"
 REGISTRIES = ["pypi", "npm", "crates", "rubygems"]
@@ -148,8 +150,17 @@ async def load_batch(state: hypState) -> Dict[str, Any]:
     if len(prompts) > MAX_BATCH:
         prompts = prompts[:MAX_BATCH]
     print(f"[*] Loaded {len(prompts)} prompts (capped at {MAX_BATCH})")
-    return {"prompts": prompts, "prompt_index": 0, "tested_so_far": 0,
+    ret = {"prompts": prompts, "prompt_index": 0, "tested_so_far": 0,
             "missing_counter": {}, "missing_examples": {}, "registry_of": {}}
+    send_execution_log({
+        "log_level": "INFO", "message_type": "load_batch", "message_text": f"Loaded {len(prompts)} prompts.",
+        "userID": state.get("userID", ""), "job_id": state.get("job_ID", "")
+    })
+    send_transaction_data({
+        "node_name": "load_batch", "state_before": dict(state), "state_after": ret,
+        "userID": state.get("userID", ""), "job_id": state.get("job_ID", "")
+    })
+    return ret
 
 def next_prompt(state: hypState) -> str:
     idx = state.get("prompt_index") or 0
@@ -172,12 +183,31 @@ async def send_prompt(state: hypState) -> Dict[str, Any]:
     r.raise_for_status()
     code = r.json().get("response", "")
     print(f"[Send] Prompt: {prompt[:90]}...")
-    return {"currentPrompt": prompt, "lastCode": code, "prompt_index": idx + 1}
+    ret = {"currentPrompt": prompt, "lastCode": code, "prompt_index": idx + 1}
+    send_execution_log({
+        "log_level": "INFO", "message_type": "send_prompt", "message_text": "Sent prompt to target.",
+        "attack_prompt": prompt, "target_response": code[:300],
+        "userID": state.get("userID", ""), "job_id": state.get("job_ID", "")
+    })
+    send_transaction_data({
+        "node_name": "send_prompt", "state_before": dict(state), "state_after": ret,
+        "userID": state.get("userID", ""), "job_id": state.get("job_ID", "")
+    })
+    return ret
 
 async def extract_imports_node(state: hypState) -> Dict[str, Any]:
     imports = extract_imports(state.get("lastCode") or "", state.get("currentPrompt") or "")
     print(f"[Extract] imports/requires mentioned: {imports if imports else 'NONE'}")
-    return {"lastImports": imports}
+    ret = {"lastImports": imports}
+    send_execution_log({
+        "log_level": "INFO", "message_type": "extract_imports", "message_text": f"Extracted {len(imports)} imports.",
+        "userID": state.get("userID", ""), "job_id": state.get("job_ID", "")
+    })
+    send_transaction_data({
+        "node_name": "extract_imports", "state_before": dict(state), "state_after": ret,
+        "userID": state.get("userID", ""), "job_id": state.get("job_ID", "")
+    })
+    return ret
 
 async def check_registry(state: hypState) -> Dict[str, Any]:
     imports = state.get("lastImports") or []
@@ -192,11 +222,29 @@ async def check_registry(state: hypState) -> Dict[str, Any]:
             await asyncio.sleep(RATE_LIMIT_DELAY)
     print(f"[Registry] verified(real): {verified}")
     print(f"[Registry] MISSING (hallucinated): {missing}")
-    return {"lastMissing": missing, "lastVerified": verified}
+    ret = {"lastMissing": missing, "lastVerified": verified}
+    send_execution_log({
+        "log_level": "INFO", "message_type": "check_registry", "message_text": f"Verified: {len(verified)}, Missing: {len(missing)}",
+        "userID": state.get("userID", ""), "job_id": state.get("job_ID", "")
+    })
+    send_transaction_data({
+        "node_name": "check_registry", "state_before": dict(state), "state_after": ret,
+        "userID": state.get("userID", ""), "job_id": state.get("job_ID", "")
+    })
+    return ret
 
 async def score(state: hypState) -> Dict[str, Any]:
     missing = state.get("lastMissing") or []
-    return score_update(state, missing, state.get("currentPrompt") or "")
+    ret = score_update(state, missing, state.get("currentPrompt") or "")
+    send_execution_log({
+        "log_level": "INFO", "message_type": "score", "message_text": "Updated scores.",
+        "userID": state.get("userID", ""), "job_id": state.get("job_ID", "")
+    })
+    send_transaction_data({
+        "node_name": "score", "state_before": dict(state), "state_after": ret,
+        "userID": state.get("userID", ""), "job_id": state.get("job_ID", "")
+    })
+    return ret
 
 def check_more(state: hypState) -> str:
     if state.get("ranked"):
@@ -225,4 +273,40 @@ async def rank(state: hypState) -> Dict[str, Any]:
     if len(ranked) > TOP_N:
         print(f"\n... and {len(ranked) - TOP_N} more lower-frequency names (see ranked state).")
     print("=" * 70)
+    total_breaches = len(ranked)
+    extra_obs = {
+        "lower_frequency_names_omitted": len(ranked) - TOP_N if len(ranked) > TOP_N else 0,
+        "full_ranked_state": ranked
+    }
+    final_payload = {
+        "userID": state.get("userID", ""),
+        "job_id": state.get("job_ID", ""),
+        "including_job_id": state.get("including_job_id", ""),
+        "target_url": state.get("target_url", ""),
+        "total_categories_processed": state.get("tested_so_far", 0),
+        "number_of_breaches": total_breaches,
+        "attempts": ranked[:TOP_N],
+        "extra_observations": extra_obs
+    }
+
+    send_transaction_data({
+        "node_name": "rank",
+        "state_before": dict(state),
+        "state_after": final_payload,
+        "variation_count": state.get("tested_so_far", 0),
+        "inc_variation_count": total_breaches,
+        "breach_detected": bool(total_breaches > 0),
+       "job_id": state.get("job_ID", "")
+    }) "extra_observations": extra_obs,
+        "userID": state.get("userID", ""),
+        
+    
+    send_execution_log({
+        "log_level": "INFO",
+        "message_type": "rank",
+        "message_text": f"Graph completed with {total_breaches} hallucinated packages.",
+        "userID": state.get("userID", ""),
+        "job_id": state.get("job_ID", "")
+    })
+    
     return {"ranked": ranked[:TOP_N]}

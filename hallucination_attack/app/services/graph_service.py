@@ -15,7 +15,11 @@ async def execute_hallucination_graph(job_data: dict):
         # If no prompts provided in the request, it will fallback to PROMPT_ARRAY in the node
         initial: hypState = {
             "prompts": prompts, 
-            "prompt_index": 0
+            "prompt_index": 0,
+            "job_ID": job_data.get("job_id") or job_data.get("job_ID", ""),
+            "including_job_id": job_data.get("including_job_id", ""),
+            "userID": job_data.get("userID", ""),
+            "target_url": job_data.get("target_url", "")
         }
         
         app = build_hallucination_graph().compile()

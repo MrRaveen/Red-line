@@ -11,6 +11,9 @@ class PromptInjectionV1Format(BaseModel):
 # Format registry to dynamically map format string names to Pydantic models
 FORMAT_REGISTRY = {
     "prompt_injection_v1_format": PromptInjectionV1Format,
+    "hallucination_attack_v1_format": PromptInjectionV1Format,
+    "pii_extraction_v1_format": PromptInjectionV1Format,
+    "jailbreak_attack_v1_format": PromptInjectionV1Format,
     "judge_format_v1": JudgeFormatV1
 }
 

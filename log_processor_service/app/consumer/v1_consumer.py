@@ -58,6 +58,18 @@ def process_message(msg_value):
                 if "_id" in doc:
                     doc["_id"] = str(doc["_id"])
                 send_message(Config.RESULTS_OUT, doc)
+            if nodeName == Config.NODE_COMPLETE_PII:
+                if "_id" in doc:
+                    doc["_id"] = str(doc["_id"])
+                send_message(Config.RESULTS_OUT, doc)
+            if nodeName == Config.NODE_COMPLETE_JAILBREAK:
+                if "_id" in doc:
+                    doc["_id"] = str(doc["_id"])
+                send_message(Config.RESULTS_OUT, doc)
+            if nodeName == Config.NODE_COMPLETE_HALLUSINATION:
+                if "_id" in doc:
+                    doc["_id"] = str(doc["_id"])
+                send_message(Config.RESULTS_OUT, doc)
             return "transaction"
         except ValidationError as e:
             logger.error(f"Invalid transaction data: {e}")

@@ -108,10 +108,27 @@ def start_consumer():
                             
                             if next_step["name"] == "judge_evaluation":
                                 state_after = data.get("state_after", {})
-                                payload_data["target_url"] = state_after.get("target_url")
-                                payload_data["budget"] = state_after.get("budget")
-                                payload_data["total_breaches"] = state_after.get("incVariationCount", 0)
-                                payload_data["attempts"] = state_after.get("variations", [])
+                                state_before = data.get("state_before", {})
+                                
+                                target_url = state_after.get("target_url")
+                                if not target_url:
+                                    target_url = state_before.get("target_url")
+                                payload_data["target_url"] = target_url
+                                
+                                budget = state_after.get("budget")
+                                if budget is None:
+                                    budget = state_before.get("budget", 3)
+                                payload_data["budget"] = budget
+                                
+                                inc_var = state_after.get("incVariationCount")
+                                if inc_var is None:
+                                    inc_var = state_after.get("number_of_breaches", 0)
+                                payload_data["total_breaches"] = inc_var
+                                
+                                attempts = state_after.get("variations")
+                                if attempts is None:
+                                    attempts = state_after.get("attempts", [])
+                                payload_data["attempts"] = attempts
                             
                             format_name = next_step.get("format")
                             topic_in = next_step.get("topicIn")

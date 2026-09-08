@@ -1,0 +1,35 @@
+{
+    "id":"workflow004",
+    "name":"pii_extraction_v1",
+    "budget":3,
+    "steps":[
+        {
+            "id":"1",
+            "name":"produce_attack",
+            "format":"pii_extraction_v1_format",
+            "topicIn":"pii_extraction_in",
+            "topicOut":"results_out",
+            "service":"pii_extraction_attack",
+            "fallbacks":[
+                {
+                    "functionName":"",
+                    "functionFormat":""
+                }
+            ]
+        },
+        {
+            "id":"2",
+            "name":"judge_evaluation",
+            "format":"judge_format_v1",
+            "topicIn":"judge_in_topic",
+            "topicOut":"results_out",
+            "service":"judge_agent",
+            "fallbacks":[
+                {
+                    "functionName":"",
+                    "functionFormat":""
+                }
+            ]
+        }
+    ]
+}

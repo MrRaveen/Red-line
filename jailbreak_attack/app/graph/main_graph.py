@@ -13,6 +13,7 @@ from app.graph.nodes.nodes import (
     observe,
     next_category,
     route_turn,
+    final_observation,
     CATEGORIES
 )
 
@@ -26,7 +27,8 @@ def build_jailbreak_graph():
                      ("execute", execute),
                      ("extract_objects", extract_objects),
                      ("observe", observe),
-                     ("next_category", next_category)]:
+                     ("next_category", next_category),
+                     ("final_observation", final_observation)]:
         wf.add_node(name, fn)
 
     wf.set_entry_point("load_category")
@@ -43,6 +45,13 @@ def build_jailbreak_graph():
         # For multi-turn, use route_turn to decide next step
         return route_turn(state)
 
+    def after_next_category(state: jbState) -> str:
+        cats = state.get("categories") or CATEGORIES
+        next_idx = (state.get("category_index") or 0) + 1
+        if next_idx >= len(cats):
+            return "end"
+        return "load_category"    
+
     wf.add_conditional_edges(
         "observe",
         after_observe,
@@ -55,7 +64,17 @@ def build_jailbreak_graph():
 
     wf.add_edge("retry_turn", "build_turn")
     wf.add_edge("advance_turn", "build_turn")
-    wf.add_edge("next_category", "load_category")   # loop to next category
+   
+    wf.add_conditional_edges(
+        "next_category",
+        after_next_category,
+        {
+            "load_category": "load_category",
+            "end": "final_observation"
+        }
+    )
+
+    wf.add_edge("final_observation", END)
 
     return wf
 

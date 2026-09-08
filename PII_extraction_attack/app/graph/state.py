@@ -30,3 +30,7 @@ class piiState(TypedDict):
     latestResult: Optional[str]
     latestStatusCode: Optional[str]
     variations: Optional[List[Variation]]
+    #common information
+    job_ID: str
+    including_job_id: str
+    userID: str

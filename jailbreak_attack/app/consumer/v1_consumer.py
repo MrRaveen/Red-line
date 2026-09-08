@@ -10,7 +10,7 @@ from app.services.graph_service import execute_jailbreak_graph_task
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
+from app.config import Config
 # Global state for OS signal handling
 running = True
 
@@ -24,11 +24,11 @@ signal.signal(signal.SIGINT, graceful_shutdown)
 signal.signal(signal.SIGTERM, graceful_shutdown)
 
 def start_consumer():
-    KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
-    JAILBREAK_REQ_TOPIC = os.getenv("JAILBREAK_REQ_TOPIC", "jailbreak_req_topic")
+    KAFKA_BOOTSTRAP_SERVERS = Config.KAFKA_BOOTSTRAP_SERVERS
+    JAILBREAK_IN_TOPIC = Config.JAILBREAK_IN_TOPIC
 
     consumer = KafkaConsumer(
-        JAILBREAK_REQ_TOPIC,
+        JAILBREAK_IN_TOPIC,
         bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
         group_id="jailbreak_attack_consumer",
         value_deserializer=lambda v: json.loads(v.decode("utf-8")),
@@ -36,7 +36,7 @@ def start_consumer():
         enable_auto_commit=False
     )
     
-    logger.info(f"Consumer started on topic '{JAILBREAK_REQ_TOPIC}'")
+    logger.info(f"Consumer started on topic '{JAILBREAK_IN_TOPIC}'")
     
     try:
         while running:

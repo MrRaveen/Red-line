@@ -39,3 +39,9 @@ class jbState(TypedDict):
     incVariationCount: Optional[int]
     budget: Optional[int]
     variations: Optional[List[Variation]]
+    #common
+    target_url: Optional[str]
+    job_ID: str
+    including_job_id: str
+    userID: str
+    observations: Optional[List[Dict[str, Any]]]

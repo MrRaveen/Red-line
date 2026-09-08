@@ -15,6 +15,9 @@ from app.graph.nodes.nodes import (
     execute,
     route_execute,
     route_b,
+    observe_branch_a,
+    observe_branch_b,
+    final_observation,
     TARGET_1,
     TARGET_2,
     TARGET_3,
@@ -28,19 +31,24 @@ def build_pii_graph() -> StateGraph:
     wf.add_node("selector", selector)
     wf.add_node("a_setup", a_setup)
     wf.add_node("execute", execute)
+    wf.add_node("observe_branch_a", observe_branch_a)
+    wf.add_node("observe_branch_b", observe_branch_b)
     wf.add_node("a_validate", a_validate)
     wf.add_node("b_probe", b_probe)
     wf.add_node("b_category", b_category)
     wf.add_node("b_basic", b_basic)
     wf.add_node("b_build", b_build)
     wf.add_node("b_analyze", b_analyze)
+    wf.add_node("final_observation", final_observation)
 
     wf.set_entry_point("selector")
     wf.add_conditional_edges("selector", route_selector,
-                             {"branch_a": "a_setup", "branch_b": "b_probe", "end": END})
+                             {"branch_a": "a_setup", "branch_b": "b_probe", "end": "final_observation"})
     wf.add_edge("a_setup", "execute")
     wf.add_conditional_edges("execute", route_execute,
-                             {"a_validate": "a_validate", "b_analyze": "b_analyze"})
+                             {"observe_branch_a": "observe_branch_a", "observe_branch_b": "observe_branch_b"})
+    wf.add_edge("observe_branch_a", "a_validate")
+    wf.add_edge("observe_branch_b", "b_analyze")
     wf.add_edge("a_validate", "selector")
     wf.add_edge("b_probe", "b_category")
     wf.add_edge("b_category", "b_basic")
@@ -48,6 +56,7 @@ def build_pii_graph() -> StateGraph:
     wf.add_edge("b_build", "execute")
     wf.add_conditional_edges("b_analyze", route_b,
                              {"chain": "b_build", "done": "selector"})
+    wf.add_edge("final_observation", END)
     return wf
 
 async def run_sample_test():

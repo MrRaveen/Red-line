@@ -10,7 +10,7 @@ from app.services.graph_service import execute_pii_graph_task
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
+from app.config import Config
 # Global state for OS signal handling
 running = True
 
@@ -24,11 +24,11 @@ signal.signal(signal.SIGINT, graceful_shutdown)
 signal.signal(signal.SIGTERM, graceful_shutdown)
 
 def start_consumer():
-    KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
-    PII_REQ_TOPIC = os.getenv("PII_REQ_TOPIC", "pii_req_topic")
+    KAFKA_BOOTSTRAP_SERVERS = Config.KAFKA_BOOTSTRAP_SERVERS
+    PII_INJECT_IN_TOPIC = Config.PII_INJECT_IN_TOPIC
 
     consumer = KafkaConsumer(
-        PII_REQ_TOPIC,
+        PII_INJECT_IN_TOPIC,
         bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
         group_id="pii_extraction_consumer",
         value_deserializer=lambda v: json.loads(v.decode("utf-8")),
@@ -36,7 +36,7 @@ def start_consumer():
         enable_auto_commit=False
     )
     
-    logger.info(f"Consumer started on topic '{PII_REQ_TOPIC}'")
+    logger.info(f"Consumer started on topic '{PII_INJECT_IN_TOPIC}'")
     
     try:
         while running:

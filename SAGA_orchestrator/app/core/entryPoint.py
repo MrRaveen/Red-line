@@ -16,9 +16,9 @@ logger = logging.getLogger(__name__)
 # Mapping job types to workflow IDs (JSON filenames)
 WORKFLOW_MAP = {
     JobType.PROMPT_INJECTION: "prompt_injection_v1",
-    JobType.HALLUCINATION_ATTACK: "hallucination_v1", # Placeholders for future
-    JobType.PII_EXFILTRATION_ATTACK: "pii_v1",
-    JobType.JAILBREAK_ATTACK: "jailbreak_v1",
+    JobType.HALLUCINATION_ATTACK: "hallucination_attack_v1",
+    JobType.PII_EXFILTRATION_ATTACK: "pii_extraction_v1",
+    JobType.JAILBREAK_ATTACK: "jailbreak_attack_v1",
 }
 
 @celery_app.task(name="start_workflow")

@@ -9,7 +9,7 @@ from kafka import KafkaConsumer
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../")))
 from app.services.graph_service import execute_hallucination_graph, execute_hallucination_graph_task
-
+from app.config import Config
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -26,11 +26,11 @@ signal.signal(signal.SIGINT, graceful_shutdown)
 signal.signal(signal.SIGTERM, graceful_shutdown)
 
 def start_consumer():
-    KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
-    HALLUCINATION_REQ_TOPIC = os.getenv("HALLUCINATION_REQ_TOPIC", "hallucination_req_topic")
+    KAFKA_BOOTSTRAP_SERVERS = Config.KAFKA_BOOTSTRAP_SERVERS
+    HALLUSINATION_IN_TOPIC = Config.HALLUSINATION_IN_TOPIC
 
     consumer = KafkaConsumer(
-        HALLUCINATION_REQ_TOPIC,
+        HALLUSINATION_IN_TOPIC,
         bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
         group_id="hallucination_attack_consumer",
         value_deserializer=lambda v: json.loads(v.decode("utf-8")),
@@ -38,7 +38,7 @@ def start_consumer():
         enable_auto_commit=False
     )
     
-    logger.info(f"Consumer started on topic '{HALLUCINATION_REQ_TOPIC}'")
+    logger.info(f"Consumer started on topic '{HALLUSINATION_IN_TOPIC}'")
     
     try:
         while running:

@@ -21,3 +21,8 @@ class hypState(TypedDict):
     # final report
     ranked: Optional[List[Dict[str, Any]]]
     tested_so_far: Optional[int]
+    #common
+    target_url: Optional[str]
+    job_ID: str
+    including_job_id: str
+    userID: str
