@@ -73,7 +73,8 @@ async def run_sample_test():
 
     initial_state: piiState = {
         "target_url": TARGET_URL, "targets": targets,
-        "a_index": 0, "b_index": 0, "variations": [],
+        "a_index": 0, "b_index": 0, "variations": [], "observations": [],
+        "job_ID": "test", "including_job_id": "test", "userID": "test"
     }
 
     app = build_pii_graph().compile()

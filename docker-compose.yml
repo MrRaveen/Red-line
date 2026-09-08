@@ -78,54 +78,50 @@ services:
     restart: always
 
   # ========== PII EXTRACTION ATTACK SERVICES ==========
-  # pii-api:
-  #   build:
-  #     context: .
-  #     dockerfile: PII_extraction_attack/Dockerfile
-  #   ports:
-  #     - "8002:8002"
-  #   environment:
-  #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-  #     - DATABASE_URI=mongodb://db:27017
-  #   volumes:
-  #     - ./PII_extraction_attack/app:/app/app
-  #     - ./PII_extraction_attack/wsgi.py:/app/wsgi.py
-  #     - ./PII_extraction_attack/run.py:/app/run.py
-  #     - ./common:/app/common
-  #   command: ["gunicorn", "--bind", "0.0.0.0:8002", "wsgi:app"]
-  #   restart: always
+  pii-api:
+    build:
+      context: .
+      dockerfile: PII_extraction_attack/Dockerfile
+    ports:
+      - "8002:8002"
+    env_file:
+       - .env
+    volumes:
+      - ./PII_extraction_attack/app:/app/app
+      - ./PII_extraction_attack/wsgi.py:/app/wsgi.py
+      - ./PII_extraction_attack/run.py:/app/run.py
+      - ./common:/app/common
+    command: ["gunicorn", "--bind", "0.0.0.0:8002", "wsgi:app"]
+    restart: always
 
-  # pii-consumer:
-  #   build:
-  #     context: .
-  #     dockerfile: PII_extraction_attack/Dockerfile
-  #   environment:
-  #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-  #     - PII_REQ_TOPIC=pii_req_topic
-  #   volumes:
-  #     - ./PII_extraction_attack/app:/app/app
-  #     - ./PII_extraction_attack/wsgi.py:/app/wsgi.py
-  #     - ./PII_extraction_attack/run.py:/app/run.py
-  #     - ./common:/app/common
-  #   command: ["python", "-m", "app.consumer.v1_consumer"]
-  #   restart: always
+  pii-consumer:
+    build:
+      context: .
+      dockerfile: PII_extraction_attack/Dockerfile
+    env_file:
+       - .env
+    volumes:
+      - ./PII_extraction_attack/app:/app/app
+      - ./PII_extraction_attack/wsgi.py:/app/wsgi.py
+      - ./PII_extraction_attack/run.py:/app/run.py
+      - ./common:/app/common
+    command: ["python", "-m", "app.consumer.v1_consumer"]
+    restart: always
 
-  # pii-celery:
-  #   build:
-  #     context: .
-  #     dockerfile: PII_extraction_attack/Dockerfile
-  #   environment:
-  #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-  #     - DATABASE_URI=mongodb://db:27017
-  #     - REDIS_HOST=redis
-  #   volumes:
-  #     - ./PII_extraction_attack/app:/app/app
-  #     - ./PII_extraction_attack/wsgi.py:/app/wsgi.py
-  #     - ./PII_extraction_attack/run.py:/app/run.py
-  #     - ./PII_extraction_attack/run_worker.py:/app/run_worker.py
-  #     - ./common:/app/common
-  #   command: ["python", "run_worker.py"]
-  #   restart: always
+  pii-celery:
+    build:
+      context: .
+      dockerfile: PII_extraction_attack/Dockerfile
+    env_file:
+       - .env
+    volumes:
+      - ./PII_extraction_attack/app:/app/app
+      - ./PII_extraction_attack/wsgi.py:/app/wsgi.py
+      - ./PII_extraction_attack/run.py:/app/run.py
+      - ./PII_extraction_attack/run_worker.py:/app/run_worker.py
+      - ./common:/app/common
+    command: ["python", "run_worker.py"]
+    restart: always
 
   # ========== JAILBREAK ATTACK SERVICES ==========
   # jailbreak-api:
@@ -134,9 +130,8 @@ services:
   #     dockerfile: jailbreak_attack/Dockerfile
   #   ports:
   #     - "8003:8003"
-  #   environment:
-  #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-  #     - DATABASE_URI=mongodb://db:27017
+  #   env_file:
+  #      - .env
   #   volumes:
   #     - ./jailbreak_attack/app:/app/app
   #     - ./jailbreak_attack/wsgi.py:/app/wsgi.py
@@ -149,9 +144,8 @@ services:
   #   build:
   #     context: .
   #     dockerfile: jailbreak_attack/Dockerfile
-  #   environment:
-  #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-  #     - JAILBREAK_REQ_TOPIC=jailbreak_req_topic
+  #   env_file:
+  #      - .env
   #   volumes:
   #     - ./jailbreak_attack/app:/app/app
   #     - ./jailbreak_attack/wsgi.py:/app/wsgi.py
@@ -164,10 +158,8 @@ services:
   #   build:
   #     context: .
   #     dockerfile: jailbreak_attack/Dockerfile
-  #   environment:
-  #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-  #     - DATABASE_URI=mongodb://db:27017
-  #     - REDIS_HOST=redis
+  #   env_file:
+  #      - .env
   #   volumes:
   #     - ./jailbreak_attack/app:/app/app
   #     - ./jailbreak_attack/wsgi.py:/app/wsgi.py
@@ -178,50 +170,50 @@ services:
   #   restart: always
 
   # ========== HALLUCINATION ATTACK SERVICES ==========
-  hallucination-api:
-    build:
-      context: .
-      dockerfile: hallucination_attack/Dockerfile
-    ports:
-      - "8004:8004"
-    env_file:
-       - .env
-    volumes:
-      - ./hallucination_attack/app:/app/app
-      - ./hallucination_attack/wsgi.py:/app/wsgi.py
-      - ./hallucination_attack/run.py:/app/run.py
-      - ./common:/app/common
-    command: ["gunicorn", "--bind", "0.0.0.0:8004", "wsgi:app"]
-    restart: always
+  # hallucination-api:
+  #   build:
+  #     context: .
+  #     dockerfile: hallucination_attack/Dockerfile
+  #   ports:
+  #     - "8004:8004"
+  #   env_file:
+  #      - .env
+  #   volumes:
+  #     - ./hallucination_attack/app:/app/app
+  #     - ./hallucination_attack/wsgi.py:/app/wsgi.py
+  #     - ./hallucination_attack/run.py:/app/run.py
+  #     - ./common:/app/common
+  #   command: ["gunicorn", "--bind", "0.0.0.0:8004", "wsgi:app"]
+  #   restart: always
 
-  hallucination-consumer:
-    build:
-      context: .
-      dockerfile: hallucination_attack/Dockerfile
-    env_file:
-       - .env
-    volumes:
-      - ./hallucination_attack/app:/app/app
-      - ./hallucination_attack/wsgi.py:/app/wsgi.py
-      - ./hallucination_attack/run.py:/app/run.py
-      - ./common:/app/common
-    command: ["python", "-m", "app.consumer.v1_consumer"]
-    restart: always
+  # hallucination-consumer:
+  #   build:
+  #     context: .
+  #     dockerfile: hallucination_attack/Dockerfile
+  #   env_file:
+  #      - .env
+  #   volumes:
+  #     - ./hallucination_attack/app:/app/app
+  #     - ./hallucination_attack/wsgi.py:/app/wsgi.py
+  #     - ./hallucination_attack/run.py:/app/run.py
+  #     - ./common:/app/common
+  #   command: ["python", "-m", "app.consumer.v1_consumer"]
+  #   restart: always
 
-  hallucination-celery:
-    build:
-      context: .
-      dockerfile: hallucination_attack/Dockerfile
-    env_file:
-       - .env
-    volumes:
-      - ./hallucination_attack/app:/app/app
-      - ./hallucination_attack/wsgi.py:/app/wsgi.py
-      - ./hallucination_attack/run.py:/app/run.py
-      - ./hallucination_attack/run_worker.py:/app/run_worker.py
-      - ./common:/app/common
-    command: ["python", "run_worker.py"]
-    restart: always
+  # hallucination-celery:
+  #   build:
+  #     context: .
+  #     dockerfile: hallucination_attack/Dockerfile
+  #   env_file:
+  #      - .env
+  #   volumes:
+  #     - ./hallucination_attack/app:/app/app
+  #     - ./hallucination_attack/wsgi.py:/app/wsgi.py
+  #     - ./hallucination_attack/run.py:/app/run.py
+  #     - ./hallucination_attack/run_worker.py:/app/run_worker.py
+  #     - ./common:/app/common
+  #   command: ["python", "run_worker.py"]
+  #   restart: always
 
   # ========== PROMPT INJECTION ATTACK NEW SERVICES ==========
   # prompt-new-api:

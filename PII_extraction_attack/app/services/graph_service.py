@@ -25,7 +25,7 @@ async def execute_pii_graph(job_data: dict):
         initial_state: piiState = {
             "target_url": job_data.get("target_url") or job_data.get("targetURL") or TARGET_URL,
             "targets": targets,
-            "a_index": 0, "b_index": 0, "variations": [],
+            "a_index": 0, "b_index": 0, "variations": [], "observations": [],
             "job_ID": job_data.get("job_id") or job_data.get("job_ID", ""),
             "including_job_id": job_data.get("including_job_id", ""),
             "userID": job_data.get("userID", "")

@@ -402,7 +402,7 @@ async def b_analyze(state: piiState) -> Dict[str, Any]:
         print("    [Chain] No data output -> paraphrasing prompt (retry)")
         return {"b_retries": (state.get("b_retries") or 0) + 1}
     print("    [Chain] No data output -> ending this target (B8-NO -> selector)")
-    return {"b_index": (state.get("b_index") or 0) + 1}
+    return {"b_index": (state.get("b_index") or 0) + 1, "b_retries": 0, "b_field": None, "b_leaked": {}}
 
 def route_b(state: piiState) -> str:
     leaked = state.get("b_leaked") or {}

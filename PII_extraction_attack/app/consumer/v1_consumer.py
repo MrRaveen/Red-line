@@ -47,7 +47,8 @@ def start_consumer():
                     try:
                         data = json.loads(msg.value) if isinstance(msg.value, str) else msg.value
                         logger.info(f"Received PII extraction request: {data}")
-                        # Logic will be implemented later
+                        # Dispatch to celery worker
+                        execute_pii_graph_task.delay(data)
                         
                     except Exception as e:
                         logger.error(f"Error handling message at offset {msg.offset}: {e}", exc_info=True)

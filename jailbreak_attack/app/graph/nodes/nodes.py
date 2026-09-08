@@ -254,15 +254,8 @@ async def load_category(state: jbState) -> Dict[str, Any]:
 def route_category(state: jbState) -> str:
     return "plan_turns" if state.get("isMultiTurn") else "divide"
 
-# def next_category(state: jbState) -> Dict[str, Any]:
-#     return {"category_index": (state.get("category_index") or 0) + 1}
-
-def next_category(state: jbState) -> str:
-    cats = state.get("categories") or CATEGORIES
-    next_idx = (state.get("category_index") or 0) + 1
-    if next_idx >= len(cats):
-        return "end"  
-    return "load_category"
+def next_category(state: jbState) -> Dict[str, Any]:
+    return {"category_index": (state.get("category_index") or 0) + 1}
 
 def has_more(state: jbState) -> str:
     cats = state.get("categories") or CATEGORIES

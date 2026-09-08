@@ -30,6 +30,9 @@ class piiState(TypedDict):
     latestResult: Optional[str]
     latestStatusCode: Optional[str]
     variations: Optional[List[Variation]]
+    observations: Optional[List[Dict[str, Any]]]
+    a_last_observation: Optional[Dict[str, Any]]
+    b_last_observation: Optional[Dict[str, Any]]
     #common information
     job_ID: str
     including_job_id: str
