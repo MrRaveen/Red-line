@@ -76,6 +76,18 @@ def start_consumer_for_judge_agent():
                             # Use a shallow copy to prevent _id injection from causing issues down the line if used elsewhere
                             insert_result = summaries_col.insert_one(result.copy())
                             logger.info(f"Saved judgment report to {Config.MONGO_COLLECTION_SUMMARIES} with _id: {insert_result.inserted_id}")
+                            
+                            # Send message back to SAGA orchestrator to finish the workflow
+                            out_payload = {
+                                "status": "FINISHED",
+                                "job_id": job_id,
+                                "including_job_id": data.get("including_job_id"),
+                                "userID": userID,
+                                "state_after": result
+                            }
+                            from common.kafka_producer import send_message
+                            send_message(Config.JUDGE_OUT_TOPIC, out_payload)
+                            logger.info(f"Sent completion message to {Config.JUDGE_OUT_TOPIC}")
 
                         logger.info("Judge execution completed successfully.")
                         

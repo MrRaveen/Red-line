@@ -6,3 +6,4 @@ kafka-python
 pydantic
 pymongo
 python-dotenv
+flask-cors

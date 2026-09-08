@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Attack — Red-Line</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="app-layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">RL</div>
+      <div>
+        <div class="logo-text">Red-Line</div>
+        <div class="logo-sub">SECURITY PLATFORM</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Overview</div>
+      <a class="nav-link" data-page="jobs.html" href="dashboard.html">
+        All Jobs
+      </a>
+      <div class="nav-section-label">Testing</div>
+      <a class="nav-link active" data-page="new-job.html" href="new-job.html">
+        New Attack
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-badge">
+        <div class="user-avatar" id="sidebar-avatar">?</div>
+        <span id="sidebar-username" class="text-small"></span>
+      </div>
+      <button onclick="logout()" class="btn btn-sm btn-outline" style="padding:4px 8px; font-size:11px;">
+        Sign out
+      </button>
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-title">Launch New Attack</div>
+      <div class="topbar-actions">
+        <a href="dashboard.html" class="btn btn-outline btn-sm">← Back</a>
+      </div>
+    </header>
+
+    <main class="page-body" style="max-width:720px;">
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Attack Configuration</span>
+        </div>
+
+        <form id="attack-form" onsubmit="startAttack(event)">
+
+          <div class="form-group">
+            <label class="form-label">Job Name <span style="color:var(--accent-red)">*</span></label>
+            <input id="f-name" type="text" class="form-control"
+              placeholder="e.g. PII Extraction Test — Customer Service LLM" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea id="f-desc" class="form-control" rows="2"
+              placeholder="Brief description of this test session…"></textarea>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <div class="form-group">
+                <label class="form-label">Attack Type <span style="color:var(--accent-red)">*</span></label>
+                <select id="f-type" class="form-control" onchange="onTypeChange()" required>
+                  <option value="">Loading…</option>
+                </select>
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label class="form-label">Target LLM URL <span style="color:var(--accent-red)">*</span></label>
+                <input id="f-url" type="url" class="form-control"
+                  placeholder="http://host:port/api/generate" required />
+              </div>
+            </div>
+          </div>
+
+          <!-- Attack type info card -->
+          <div id="type-info" class="alert alert-info mb-3" style="display:none;"></div>
+
+          <div id="form-err" class="alert alert-error" style="display:none;"></div>
+          <div id="form-ok"  class="alert alert-success" style="display:none;"></div>
+
+          <div class="flex gap-10">
+            <button type="submit" id="submit-btn" class="btn btn-primary btn-lg">
+              ⚡ Launch Attack
+            </button>
+            <a href="dashboard.html" class="btn btn-outline btn-lg">Cancel</a>
+          </div>
+        </form>
+      </div>
+
+      <!-- Attack type reference -->
+      <div class="card mt-4">
+        <div class="card-header">
+          <span class="card-title">Attack Type Reference</span>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px;">
+            <div class="flex gap-10 mb-3">
+              <span class="badge badge-blue">Prompt Injection</span>
+            </div>
+            <p class="text-small text-muted">Tests if the LLM can be manipulated to ignore system instructions via carefully crafted user inputs using word-level substitution and semantic steering.</p>
+          </div>
+          <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px;">
+            <div class="flex gap-10 mb-3">
+              <span class="badge badge-yellow">PII Exfiltration</span>
+            </div>
+            <p class="text-small text-muted">Attempts to extract personally identifiable information (email, phone, SSN) via few-shot learning and prompt chaining techniques.</p>
+          </div>
+          <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px;">
+            <div class="flex gap-10 mb-3">
+              <span class="badge badge-red">Jailbreak Attack</span>
+            </div>
+            <p class="text-small text-muted">Multi-turn attack attempting to bypass LLM safety guardrails by iteratively escalating adversarial prompts across multiple conversation turns.</p>
+          </div>
+          <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px;">
+            <div class="flex gap-10 mb-3">
+              <span class="badge badge-purple">Hallucination</span>
+            </div>
+            <p class="text-small text-muted">Detects hallucination vulnerabilities by probing for fabricated package names, fake citations, or non-existent information generation.</p>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  Auth.require();
+  renderSidebarUser();
+  markActiveSidebarLink();
+
+  const TYPE_DESCRIPTIONS = {
+    'prompt injection':         'Semantic steering to override system instructions via word-level substitution.',
+    'PII exfilteration attack': 'Few-shot + chaining technique to extract emails, phones, and SSNs.',
+    'jailbreak attack':         'Multi-turn adversarial conversation to bypass safety guardrails.',
+    'halusination attack':      'Probes for hallucinated package names and fabricated information.',
+  };
+
+  async function loadAttackTypes() {
+    try {
+      const data = await api('/attack-types');
+      const sel = document.getElementById('f-type');
+      sel.innerHTML = '<option value="">Select attack type…</option>' +
+        data.attack_types.map(t => `<option value="${t}">${t}</option>`).join('');
+    } catch (e) {
+      Toast.error('Could not load attack types: ' + e.message);
+    }
+  }
+
+  function onTypeChange() {
+    const val  = document.getElementById('f-type').value;
+    const info = document.getElementById('type-info');
+    if (val && TYPE_DESCRIPTIONS[val]) {
+      info.textContent  = '🔍 ' + TYPE_DESCRIPTIONS[val];
+      info.style.display = 'flex';
+    } else {
+      info.style.display = 'none';
+    }
+  }
+
+  async function startAttack(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submit-btn');
+    const err = document.getElementById('form-err');
+    const ok  = document.getElementById('form-ok');
+    err.style.display = 'none'; ok.style.display = 'none';
+    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Launching…';
+
+    const payload = {
+      userID:      Auth.userID,
+      job_name:    document.getElementById('f-name').value.trim(),
+      description: document.getElementById('f-desc').value.trim(),
+      job_type:    document.getElementById('f-type').value,
+      targetURL:   document.getElementById('f-url').value.trim(),
+    };
+
+    try {
+      const data = await api('/jobs/start', { method: 'POST', body: payload });
+      ok.textContent = '✓ Attack launched! Redirecting to job view…';
+      ok.style.display = 'flex';
+      // Poll for job_id (task may create it async)
+      setTimeout(async () => {
+        // Try to find the newest job by this user
+        try {
+          const jobs = await api('/jobs');
+          if (jobs.length) window.location = `job.html?id=${jobs[0]._id}`;
+          else window.location = 'dashboard.html';
+        } catch { window.location = 'dashboard.html'; }
+      }, 2000);
+    } catch (ex) {
+      err.textContent = ex.message;
+      err.style.display = 'flex';
+      btn.disabled = false; btn.textContent = '⚡ Launch Attack';
+    }
+  }
+
+  loadAttackTypes();
+</script>
+</body>
+</html>

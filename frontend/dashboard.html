@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Red-Line</title>
+  <meta name="description" content="Red-Line Security Testing Dashboard" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">RL</div>
+      <div>
+        <div class="logo-text">Red-Line</div>
+        <div class="logo-sub">SECURITY PLATFORM</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Overview</div>
+      <a class="nav-link active" data-page="dashboard.html" href="dashboard.html">
+        Dashboard
+      </a>
+      <div class="nav-section-label">Testing</div>
+      <a class="nav-link" data-page="new-job.html" href="new-job.html">
+        New Attack
+      </a>
+      <a class="nav-link" data-page="jobs.html" href="dashboard.html">
+        All Jobs
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-badge">
+        <div class="user-avatar" id="sidebar-avatar">?</div>
+        <span id="sidebar-username" class="text-small"></span>
+      </div>
+      <button onclick="logout()" class="btn btn-sm btn-outline" style="padding:4px 8px; font-size:11px;">
+        Sign out
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-title">Dashboard</div>
+      <div class="topbar-actions">
+        <span id="last-refresh" class="text-small text-muted"></span>
+        <a href="new-job.html" class="btn btn-primary btn-sm">New Attack</a>
+      </div>
+    </header>
+
+    <main class="page-body">
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card info">
+          <div class="stat-value" id="stat-total">—</div>
+          <div class="stat-label">Total Jobs</div>
+          <div class="stat-icon">📋</div>
+        </div>
+        <div class="stat-card warn">
+          <div class="stat-value" id="stat-running">—</div>
+          <div class="stat-label">Running</div>
+          <div class="stat-icon">⚡</div>
+        </div>
+        <div class="stat-card success">
+          <div class="stat-value" id="stat-finished">—</div>
+          <div class="stat-label">Finished</div>
+          <div class="stat-icon">✓</div>
+        </div>
+        <div class="stat-card danger">
+          <div class="stat-value" id="stat-breaches">—</div>
+          <div class="stat-label">Breaches Found</div>
+          <div class="stat-icon">⚠</div>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="charts-grid">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Attack Type Distribution</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="chart-types"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Jobs Over Time</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="chart-timeline"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Jobs Table -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Recent Jobs</span>
+          <input id="search-jobs" type="text" class="form-control"
+            style="width:220px; padding:6px 10px; font-size:13px;"
+            placeholder="Search jobs…" oninput="filterJobs(this.value)" />
+        </div>
+
+        <div id="jobs-loader" class="loader-full">
+          <div class="spinner"></div>
+          <span>Loading jobs…</span>
+        </div>
+
+        <div id="jobs-empty" class="empty-state" style="display:none;">
+          <div class="icon">📋</div>
+          <h3>No jobs yet</h3>
+          <p>Start your first attack test to see results here.</p>
+          <a href="new-job.html" class="btn btn-primary mt-3">＋ New Attack</a>
+        </div>
+
+        <div class="table-wrap" id="jobs-table-wrap" style="display:none;">
+          <table>
+            <thead>
+              <tr>
+                <th>Job Name</th>
+                <th>Attack Type</th>
+                <th>Target URL</th>
+                <th>Status</th>
+                <th>Breaches</th>
+                <th>Created</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="jobs-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  Auth.require();
+  renderSidebarUser();
+  markActiveSidebarLink();
+
+  let allJobs = [];
+  let chartTypes = null;
+  let chartTimeline = null;
+
+  async function loadDashboard() {
+    applyChartDefaults();
+    try {
+      const [stats, jobs] = await Promise.all([
+        api('/stats'),
+        api('/jobs')
+      ]);
+
+      // Stats
+      document.getElementById('stat-total').textContent    = stats.total_jobs;
+      document.getElementById('stat-running').textContent  = stats.running_jobs;
+      document.getElementById('stat-finished').textContent = stats.finished_jobs;
+      document.getElementById('stat-breaches').textContent = stats.total_breaches;
+      document.getElementById('last-refresh').textContent  = 'Updated ' + new Date().toLocaleTimeString();
+
+      // Chart: Type distribution
+      const typeLabels = stats.attack_type_distribution.map(t => t.type);
+      const typeCounts = stats.attack_type_distribution.map(t => t.count);
+      const typeColors = typeLabels.map(typeColor);
+
+      if (chartTypes) chartTypes.destroy();
+      chartTypes = new Chart(document.getElementById('chart-types'), {
+        type: 'doughnut',
+        data: {
+          labels: typeLabels,
+          datasets: [{ data: typeCounts, backgroundColor: typeColors, borderWidth: 2, borderColor: '#111928' }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { position: 'right', labels: { padding: 14, font: { size: 12 } } } },
+          cutout: '62%'
+        }
+      });
+
+      // Chart: Timeline
+      const tDates  = stats.jobs_over_time.map(d => d.date);
+      const tCounts = stats.jobs_over_time.map(d => d.count);
+      if (chartTimeline) chartTimeline.destroy();
+      chartTimeline = new Chart(document.getElementById('chart-timeline'), {
+        type: 'bar',
+        data: {
+          labels: tDates,
+          datasets: [{
+            label: 'Jobs',
+            data: tCounts,
+            backgroundColor: 'rgba(0,255,136,0.3)',
+            borderColor: '#00ff88',
+            borderWidth: 1, borderRadius: 4,
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          scales: {
+            x: { grid: { display: false } },
+            y: { beginAtZero: true, ticks: { stepSize: 1 } }
+          },
+          plugins: { legend: { display: false } }
+        }
+      });
+
+      // Jobs table
+      allJobs = jobs;
+      renderJobsTable(jobs);
+
+    } catch (err) {
+      Toast.error('Failed to load dashboard: ' + err.message);
+    }
+  }
+
+  function renderJobsTable(jobs) {
+    const loader = document.getElementById('jobs-loader');
+    const empty  = document.getElementById('jobs-empty');
+    const wrap   = document.getElementById('jobs-table-wrap');
+    const tbody  = document.getElementById('jobs-tbody');
+
+    loader.style.display = 'none';
+
+    if (!jobs.length) {
+      empty.style.display = '';
+      wrap.style.display  = 'none';
+      return;
+    }
+    empty.style.display = 'none';
+    wrap.style.display  = '';
+
+    tbody.innerHTML = jobs.map(j => `
+      <tr>
+        <td><a href="job.html?id=${j._id}" class="mono">${j.job_name || '—'}</a></td>
+        <td>${jobTypeBadge(j.job_type)}</td>
+        <td class="truncate text-muted mono text-small">${j.targetURL || '—'}</td>
+        <td>${statusBadge(j.job_status)}</td>
+        <td class="${j.breachedCount > 0 ? 'severity-HIGH' : 'text-muted'} mono">
+          ${j.breachedCount || 0}
+        </td>
+        <td class="text-muted text-small">${fmtRelative(j.created_date)}</td>
+        <td>
+          <a href="job.html?id=${j._id}" class="btn btn-sm btn-outline">View →</a>
+          <button onclick="deleteJob('${j._id}')" class="btn btn-sm btn-outline" style="border-color:var(--accent-red); color:var(--accent-red); margin-left:5px;">Delete</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function filterJobs(q) {
+    if (!q.trim()) { renderJobsTable(allJobs); return; }
+    const lq = q.toLowerCase();
+    renderJobsTable(allJobs.filter(j =>
+      (j.job_name || '').toLowerCase().includes(lq) ||
+      (j.job_type || '').toLowerCase().includes(lq) ||
+      (j.targetURL || '').toLowerCase().includes(lq)
+    ));
+  }
+
+  loadDashboard();
+  // Auto-refresh every 30 s
+  setInterval(loadDashboard, 30000);
+</script>
+</body>
+</html>
