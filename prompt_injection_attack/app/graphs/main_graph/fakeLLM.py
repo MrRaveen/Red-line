@@ -127,7 +127,7 @@ if __name__ == '__main__':
     print("  POST /reset         - Reset request counters")
     print(f"\nBehavior: cycles through {len(RESPONSE_SEQUENCE)} canned responses")
     print("  per model, refusal -> partial -> breached, then stays breached.")
-    print("\nStarting server on http://localhost:5000")
+    print("\nStarting server on http://localhost:4000")
     print("=" * 60)
 
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(host='0.0.0.0', port=4000, debug=False)

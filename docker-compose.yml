@@ -178,110 +178,106 @@ services:
   #   restart: always
 
   # ========== HALLUCINATION ATTACK SERVICES ==========
-  # hallucination-api:
+  hallucination-api:
+    build:
+      context: .
+      dockerfile: hallucination_attack/Dockerfile
+    ports:
+      - "8004:8004"
+    env_file:
+       - .env
+    volumes:
+      - ./hallucination_attack/app:/app/app
+      - ./hallucination_attack/wsgi.py:/app/wsgi.py
+      - ./hallucination_attack/run.py:/app/run.py
+      - ./common:/app/common
+    command: ["gunicorn", "--bind", "0.0.0.0:8004", "wsgi:app"]
+    restart: always
+
+  hallucination-consumer:
+    build:
+      context: .
+      dockerfile: hallucination_attack/Dockerfile
+    env_file:
+       - .env
+    volumes:
+      - ./hallucination_attack/app:/app/app
+      - ./hallucination_attack/wsgi.py:/app/wsgi.py
+      - ./hallucination_attack/run.py:/app/run.py
+      - ./common:/app/common
+    command: ["python", "-m", "app.consumer.v1_consumer"]
+    restart: always
+
+  hallucination-celery:
+    build:
+      context: .
+      dockerfile: hallucination_attack/Dockerfile
+    env_file:
+       - .env
+    volumes:
+      - ./hallucination_attack/app:/app/app
+      - ./hallucination_attack/wsgi.py:/app/wsgi.py
+      - ./hallucination_attack/run.py:/app/run.py
+      - ./hallucination_attack/run_worker.py:/app/run_worker.py
+      - ./common:/app/common
+    command: ["python", "run_worker.py"]
+    restart: always
+
+  # ========== PROMPT INJECTION ATTACK NEW SERVICES ==========
+  # prompt-new-api:
   #   build:
   #     context: .
-  #     dockerfile: hallucination_attack/Dockerfile
+  #     dockerfile: prompt_injection_attack_new/Dockerfile
+  #   env_file:
+  #     - .env
   #   ports:
-  #     - "8004:8004"
+  #     - "8005:8005"
   #   environment:
   #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
   #     - DATABASE_URI=mongodb://db:27017
   #   volumes:
-  #     - ./hallucination_attack/app:/app/app
-  #     - ./hallucination_attack/wsgi.py:/app/wsgi.py
-  #     - ./hallucination_attack/run.py:/app/run.py
+  #     - ./prompt_injection_attack_new/app:/app/app
+  #     - ./prompt_injection_attack_new/wsgi.py:/app/wsgi.py
+  #     - ./prompt_injection_attack_new/run.py:/app/run.py
   #     - ./common:/app/common
-  #   command: ["gunicorn", "--bind", "0.0.0.0:8004", "wsgi:app"]
+  #   command: ["gunicorn", "--bind", "0.0.0.0:8005", "wsgi:app"]
   #   restart: always
 
-  # hallucination-consumer:
+  # prompt-new-consumer:
   #   build:
   #     context: .
-  #     dockerfile: hallucination_attack/Dockerfile
+  #     dockerfile: prompt_injection_attack_new/Dockerfile
+  #   env_file:
+  #     - .env
   #   environment:
   #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-  #     - HALLUCINATION_REQ_TOPIC=hallucination_req_topic
+  #     - PROMPT_REQ_TOPIC=prompt_req_topic
   #   volumes:
-  #     - ./hallucination_attack/app:/app/app
-  #     - ./hallucination_attack/wsgi.py:/app/wsgi.py
-  #     - ./hallucination_attack/run.py:/app/run.py
+  #     - ./prompt_injection_attack_new/app:/app/app
+  #     - ./prompt_injection_attack_new/wsgi.py:/app/wsgi.py
+  #     - ./prompt_injection_attack_new/run.py:/app/run.py
   #     - ./common:/app/common
   #   command: ["python", "-m", "app.consumer.v1_consumer"]
   #   restart: always
 
-  # hallucination-celery:
+  # prompt-new-celery:
   #   build:
   #     context: .
-  #     dockerfile: hallucination_attack/Dockerfile
+  #     dockerfile: prompt_injection_attack_new/Dockerfile
+  #   env_file:
+  #     - .env
   #   environment:
   #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
   #     - DATABASE_URI=mongodb://db:27017
   #     - REDIS_HOST=redis
   #   volumes:
-  #     - ./hallucination_attack/app:/app/app
-  #     - ./hallucination_attack/wsgi.py:/app/wsgi.py
-  #     - ./hallucination_attack/run.py:/app/run.py
-  #     - ./hallucination_attack/run_worker.py:/app/run_worker.py
+  #     - ./prompt_injection_attack_new/app:/app/app
+  #     - ./prompt_injection_attack_new/wsgi.py:/app/wsgi.py
+  #     - ./prompt_injection_attack_new/run.py:/app/run.py
+  #     - ./prompt_injection_attack_new/run_worker.py:/app/run_worker.py
   #     - ./common:/app/common
   #   command: ["python", "run_worker.py"]
   #   restart: always
-
-  # ========== PROMPT INJECTION ATTACK NEW SERVICES ==========
-  prompt-new-api:
-    build:
-      context: .
-      dockerfile: prompt_injection_attack_new/Dockerfile
-    env_file:
-      - .env
-    ports:
-      - "8005:8005"
-    environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - DATABASE_URI=mongodb://db:27017
-    volumes:
-      - ./prompt_injection_attack_new/app:/app/app
-      - ./prompt_injection_attack_new/wsgi.py:/app/wsgi.py
-      - ./prompt_injection_attack_new/run.py:/app/run.py
-      - ./common:/app/common
-    command: ["gunicorn", "--bind", "0.0.0.0:8005", "wsgi:app"]
-    restart: always
-
-  prompt-new-consumer:
-    build:
-      context: .
-      dockerfile: prompt_injection_attack_new/Dockerfile
-    env_file:
-      - .env
-    environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - PROMPT_REQ_TOPIC=prompt_req_topic
-    volumes:
-      - ./prompt_injection_attack_new/app:/app/app
-      - ./prompt_injection_attack_new/wsgi.py:/app/wsgi.py
-      - ./prompt_injection_attack_new/run.py:/app/run.py
-      - ./common:/app/common
-    command: ["python", "-m", "app.consumer.v1_consumer"]
-    restart: always
-
-  prompt-new-celery:
-    build:
-      context: .
-      dockerfile: prompt_injection_attack_new/Dockerfile
-    env_file:
-      - .env
-    environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - DATABASE_URI=mongodb://db:27017
-      - REDIS_HOST=redis
-    volumes:
-      - ./prompt_injection_attack_new/app:/app/app
-      - ./prompt_injection_attack_new/wsgi.py:/app/wsgi.py
-      - ./prompt_injection_attack_new/run.py:/app/run.py
-      - ./prompt_injection_attack_new/run_worker.py:/app/run_worker.py
-      - ./common:/app/common
-    command: ["python", "run_worker.py"]
-    restart: always
 
   # ========== PREPROCESSOR SERVICE ==========
   preprocessor-consumer:

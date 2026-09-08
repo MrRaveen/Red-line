@@ -25,7 +25,7 @@ async def execute_jailbreak_graph(job_data: dict):
             "job_ID": job_data.get("job_id") or job_data.get("job_ID", ""),
             "including_job_id": job_data.get("including_job_id", ""),
             "userID": job_data.get("userID", ""),
-            "target_url": job_data.get("target_url", "")
+            "target_url": job_data.get("target_url") or job_data.get("targetURL", "")
         }
         
         app = build_jailbreak_graph().compile()

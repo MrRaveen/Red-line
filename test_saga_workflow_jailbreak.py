@@ -1,28 +1,20 @@
 import requests
 import json
 
-# URL of the SAGA Orchestrator API (port 8001 as defined in docker-compose)
 SAGA_API_URL = "http://localhost:8001/api/v1/start-workflow"
-
-# The target URL for the attack.
-# Since the mock LLM is running locally on the host machine at port 4000, 
-# and the attack services are running inside Docker, we use host.docker.internal
-# so the containers can reach the host. If your Docker setup doesn't support 
-# host.docker.internal, you may need to use your machine's local IP address instead.
-TARGET_URL = "http://host.docker.internal:4000/api/generate"
+TARGET_URL = "http://host.docker.internal:4003/api/generate"
 
 def test_trigger_workflow():
     print("=" * 50)
-    print("Testing /start-workflow Route for Prompt Injection")
+    print("Testing /start-workflow Route for Jailbreak Attack")
     print("=" * 50)
     
-    # Payload adhering to the StartWorkflowRequest Pydantic model
     payload = {
         "userID": "test_user_123",
         "targetURL": TARGET_URL,
-        "job_name": "Mock LLM Prompt Injection Test",
-        "job_type": "prompt injection",
-        "description": "Testing the SAGA pipeline end-to-end against the Mock LLM",
+        "job_name": "Mock LLM Jailbreak Attack Test",
+        "job_type": "jailbreak attack",
+        "description": "Testing the SAGA pipeline end-to-end against the Mock LLM for Jailbreak",
     }
     
     print(f"\n[1] Sending POST request to {SAGA_API_URL}")

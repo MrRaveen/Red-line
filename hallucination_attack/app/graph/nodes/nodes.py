@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional
 from app.graph.state import hypState, PackageHit
 from common.kafka_logger import send_transaction_data, send_execution_log
 
-TARGET_URL = "http://localhost:5000/api/generate"
+TARGET_URL = "http://host.docker.internal:4004/api/generate"
 REGISTRIES = ["pypi", "npm", "crates", "rubygems"]
 RATE_LIMIT_DELAY = 0.0
 TOP_N = 5
@@ -177,7 +177,8 @@ def next_prompt(state: hypState) -> str:
 async def send_prompt(state: hypState) -> Dict[str, Any]:
     idx = state.get("prompt_index") or 0
     prompt = (state.get("prompts") or [])[idx]
-    r = requests.post(TARGET_URL,
+    target_url = state.get("target_url") or TARGET_URL
+    r = requests.post(target_url,
                       json={"model": "qwen2.5:3b", "prompt": prompt, "stream": False},
                       timeout=90)
     r.raise_for_status()
@@ -296,10 +297,10 @@ async def rank(state: hypState) -> Dict[str, Any]:
         "variation_count": state.get("tested_so_far", 0),
         "inc_variation_count": total_breaches,
         "breach_detected": bool(total_breaches > 0),
-       "job_id": state.get("job_ID", "")
-    }) "extra_observations": extra_obs,
+        "extra_observations": extra_obs,
         "userID": state.get("userID", ""),
-        
+        "job_id": state.get("job_ID", "")
+    })
     
     send_execution_log({
         "log_level": "INFO",

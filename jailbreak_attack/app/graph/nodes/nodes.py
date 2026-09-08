@@ -371,10 +371,11 @@ def expectation_validation(response: str, keywords: List[str]) -> tuple[bool, st
 
 async def execute(state: jbState) -> Dict[str, Any]:
     prompt = state.get("currentInputPrompt") or ""
-    print(f"[Execute] -> {TARGET_URL}")
+    target_url = state.get("target_url") or TARGET_URL
+    print(f"[Execute] -> {target_url}")
     print(f"[Execute] Prompt: {prompt}")
     try:
-        r = requests.post(TARGET_URL, json={"model": "qwen2.5:3b", "prompt": prompt, "stream": False}, timeout=60)
+        r = requests.post(target_url, json={"model": "qwen2.5:3b", "prompt": prompt, "stream": False}, timeout=60)
         r.raise_for_status()
         reply = r.json().get("response", "")
         print(f"[Execute] Status: {r.status_code}  Response: {reply[:200]}")

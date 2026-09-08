@@ -222,7 +222,7 @@ if __name__ == '__main__':
     print("  GET  /health        - Health check")
     print("  POST /reset         - Reset request counters")
     print("\nBehavior: Refuses first 2 PII attacks, then leaks on 3rd. Handles probes and basic Qs.")
-    print("\nStarting server on http://localhost:5000")
+    print("\nStarting server on http://localhost:4002")
     print("=" * 60)
 
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=4002, debug=True)
