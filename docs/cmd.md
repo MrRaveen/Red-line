@@ -50,6 +50,11 @@ docker build -t redline-base:v1 -f Dockerfile.base .
 #remove laftovers
 docker exec red-line-kafka-1 /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list | Select-String -Pattern '^__' -NotMatch | ForEach-Object { $topic = $_.ToString().Trim(); if ($topic) { docker exec red-line-kafka-1 /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic $topic } }
 
+python test_saga_workflow_pi.py
+python test_saga_workflow_pii.py
+python test_saga_workflow_jailbreak.py
+python test_saga_workflow_hallucination.py
+
 # Run all the services with a new terminal UI in vs code
 ```
 Press Ctrl + Shift + P to open the VS Code Command Palette.

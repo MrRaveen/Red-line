@@ -45,7 +45,7 @@ services:
       - ./SAGA_orchestrator/wsgi.py:/app/wsgi.py
       - ./SAGA_orchestrator/run.py:/app/run.py
       - ./common:/app/common
-    command: ["gunicorn", "--bind", "0.0.0.0:8001", "wsgi:app"]   # <-- bind to 8001
+    command: ["gunicorn", "--worker-class", "gthread", "--threads", "10", "--bind", "0.0.0.0:8001", "wsgi:app"]   # <-- bind to 8001
     restart: always
 
   saga-consumer:
