@@ -1,3 +1,4 @@
+from common.kafka_producer import send_message
 import json
 import signal
 import logging
@@ -52,6 +53,9 @@ def process_message(msg_value):
             validated = TransactionData(**msg_value)
             doc = validated.model_dump(mode="json")
             save_document(transactions_col, doc)
+            nodeName = validated.node_name
+            if nodeName == Config.NODE_COMPLETE:
+                send_message(Config.RESULTS_OUT,doc)
             return "transaction"
         except ValidationError as e:
             logger.error(f"Invalid transaction data: {e}")

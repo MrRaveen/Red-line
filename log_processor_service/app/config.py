@@ -14,3 +14,5 @@ class Config:
     MONGO_DB = os.getenv("MONGO_DB")
     MONGO_COLLECTION_TRANSACTIONS = "transaction_data"
     MONGO_COLLECTION_EXECUTION = "execution_logs"
+    NODE_COMPLETE=os.getenv('NODE_COMPLETE')
+    RESULTS_OUT=os.getenv('RESULTS_OUT')

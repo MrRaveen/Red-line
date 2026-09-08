@@ -1,10 +1,10 @@
+from ..config import Config
 import asyncio
 from app.services.execute import JudgeAgentExecution
 import json
 import signal
 import logging
 from kafka import KafkaConsumer
-from ..config import Config
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

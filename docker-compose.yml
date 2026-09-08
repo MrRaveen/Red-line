@@ -238,6 +238,8 @@ services:
     build:
       context: .
       dockerfile: prompt_injection_attack_new/Dockerfile
+    env_file:
+      - .env
     ports:
       - "8005:8005"
     environment:
@@ -255,6 +257,8 @@ services:
     build:
       context: .
       dockerfile: prompt_injection_attack_new/Dockerfile
+    env_file:
+      - .env
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - PROMPT_REQ_TOPIC=prompt_req_topic
@@ -270,6 +274,8 @@ services:
     build:
       context: .
       dockerfile: prompt_injection_attack_new/Dockerfile
+    env_file:
+      - .env
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - DATABASE_URI=mongodb://db:27017
@@ -291,7 +297,7 @@ services:
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - PREPROCESSOR_IN_TOPIC=raw_req_topic
-      - PREPROCESSOR_OUT_TOPIC=preprocessed_req_topic
+      - KAFKA_TOPIC_SEND_PREPROCESSED=preprocessed_req_topic
     volumes:
       - ./preprocessor_service/app:/app/app
       - ./common:/app/common

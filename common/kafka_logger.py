@@ -1,4 +1,4 @@
-from kafka.utils.producer import send_message
+from .kafka_producer import send_message
 import json
 import logging
 from datetime import datetime
@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field, validator
 logger = logging.getLogger(__name__)
 
 # Target topic for all logging (configurable if needed)
-KAFKA_TOPIC = "preprocess_in"
+KAFKA_TOPIC = "raw_req_topic"
 
 # ============================================================
 # Pydantic Models

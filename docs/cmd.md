@@ -47,6 +47,8 @@ python -m judge_agent.tests.test_judge_out_topic
 # base docker
 docker build -t redline-base:v1 -f Dockerfile.base .
 
+#remove laftovers
+docker exec red-line-kafka-1 /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list | Select-String -Pattern '^__' -NotMatch | ForEach-Object { $topic = $_.ToString().Trim(); if ($topic) { docker exec red-line-kafka-1 /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic $topic } }
 
 # Run all the services with a new terminal UI in vs code
 ```

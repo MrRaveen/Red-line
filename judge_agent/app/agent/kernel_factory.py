@@ -8,12 +8,13 @@ def build_kernel() -> Kernel:
     """
     kernel = Kernel()
 
+    from app.config import Config
     # Ollama Cloud OpenAI-compatible endpoint
-    ollama_base_url = "https://ollama.com/v1"
+    ollama_base_url = Config.OLLAMA_BASE_URL
     # Your Ollama Cloud model ID
-    ollama_model_id = "nemotron-3-nano:30b-cloud"
+    ollama_model_id = Config.OLLAMA_MODEL_ID
     # Your Ollama Cloud API key
-    ollama_api_key = "00b0dc6dbf514760bbf224e05561015c.zzv2okw4EEji3G2f4dggcTNF"
+    ollama_api_key = Config.OLLAMA_API_KEY
 
     # Create an AsyncOpenAI client pointing to Ollama Cloud
     ollama_client = AsyncOpenAI(

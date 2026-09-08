@@ -28,7 +28,7 @@ signal.signal(signal.SIGTERM, graceful_shutdown)
 def start_consumer():
     KAFKA_BOOTSTRAP_SERVERS = Config.KAFKA_BOOTSTRAP_SERVERS
     PREPROCESSOR_IN_TOPIC = Config.PREPROCESSOR_IN_TOPIC
-    PREPROCESSOR_OUT_TOPIC = Config.PREPROCESSOR_OUT_TOPIC
+    KAFKA_TOPIC_SEND_PREPROCESSED = Config.KAFKA_TOPIC_SEND_PREPROCESSED
 
     consumer = KafkaConsumer(
         PREPROCESSOR_IN_TOPIC,
@@ -39,7 +39,7 @@ def start_consumer():
         enable_auto_commit=False
     )
     
-    logger.info(f"Consumer started on topic '{PREPROCESSOR_IN_TOPIC}' -> '{PREPROCESSOR_OUT_TOPIC}'")
+    logger.info(f"Consumer started on topic '{PREPROCESSOR_IN_TOPIC}' -> '{KAFKA_TOPIC_SEND_PREPROCESSED}'")
     
     try:
         while running:
@@ -55,7 +55,7 @@ def start_consumer():
                         logger.info(f"Preprocessing payload: {data}")
                         
                         # Send to the preprocessed topic using common producer
-                        ok = send_message(PREPROCESSOR_OUT_TOPIC, data)
+                        ok = send_message(KAFKA_TOPIC_SEND_PREPROCESSED, data)
                         if not ok:
                             logger.error(f"Failed to send preprocessed message for offset {msg.offset}")
                         

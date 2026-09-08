@@ -61,8 +61,10 @@ def start_consumer():
                     try:
                         data = json.loads(msg.value) if isinstance(msg.value, str) else msg.value
                         
-                        job_id = data.get("job_id")
-                        including_job_id = data.get("including_job_id")
+                        state_after = data.get("state_after", {})
+                        job_id = state_after.get("job_ID") or data.get("job_id")
+                        including_job_id = state_after.get("including_job_id") or data.get("including_job_id")
+                        user_id = state_after.get("userID") or data.get("userID")
                         
                         if not job_id or not including_job_id:
                             logger.error(f"Event missing job_id or including_job_id: {data}")
