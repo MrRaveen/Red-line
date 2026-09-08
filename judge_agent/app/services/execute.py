@@ -59,5 +59,5 @@ class JudgeAgentExecution:
         }
         #procude to the topic
         return_status = send_message(Config.JUDGE_OUT_TOPIC,report_payload)
-        return return_status
+        return report_payload
        

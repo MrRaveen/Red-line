@@ -21,6 +21,13 @@ def graceful_shutdown(sig, frame):
 signal.signal(signal.SIGINT, graceful_shutdown)
 signal.signal(signal.SIGTERM, graceful_shutdown)
 
+from pymongo import MongoClient
+
+# Set up MongoDB
+mongo_client = MongoClient(Config.MONGO_URI)
+db = mongo_client[Config.MONGO_DB]
+summaries_col = db[Config.MONGO_COLLECTION_SUMMARIES]
+
 def start_consumer_for_judge_agent():
     consumer = KafkaConsumer(
         Config.JUDGE_IN_TOPIC,
@@ -63,7 +70,12 @@ def start_consumer_for_judge_agent():
                         ))
                         
                         # Handle result (e.g., log success, store to DB)
-                        logger.info(f"Judge execution completed with result: {result}")
+                        if result:
+                            # Use a shallow copy to prevent _id injection from causing issues down the line if used elsewhere
+                            insert_result = summaries_col.insert_one(result.copy())
+                            logger.info(f"Saved judgment report to {Config.MONGO_COLLECTION_SUMMARIES} with _id: {insert_result.inserted_id}")
+
+                        logger.info("Judge execution completed successfully.")
                         
                     except Exception as e:
                         logger.error(f"Error handling message at offset {msg.offset}: {e}")

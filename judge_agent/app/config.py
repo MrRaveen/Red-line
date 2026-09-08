@@ -18,6 +18,7 @@ class Config:
     MONGO_DB = os.getenv("MONGO_DB", "redline_logs")
     MONGO_COLLECTION_TRANSACTIONS = "transaction_data"
     MONGO_COLLECTION_EXECUTION = "execution_logs"
+    MONGO_COLLECTION_SUMMARIES = "summerriesAttacks"
     
     # Ollama and HuggingFace
     OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL")
