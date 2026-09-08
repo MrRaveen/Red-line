@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional, Any
+from typing import List, Optional, Any, Dict
 
 class JudgeFormatV1(BaseModel):
     userID: str
@@ -9,3 +9,4 @@ class JudgeFormatV1(BaseModel):
     budget: Optional[int] = None
     total_breaches: Optional[int] = 0
     attempts: Optional[List[Any]] = []
+    extra_observations: Optional[Dict[str, Any]] = {}

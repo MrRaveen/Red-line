@@ -57,6 +57,7 @@ def start_consumer_for_judge_agent():
                         budget = data.get("budget")
                         total_breaches = data.get("total_breaches")
                         attempts = data.get("attempts")  # could be list or None
+                        extra_observations = data.get("extra_observations", {})
 
                         # Create and run the agent asynchronously
                         jae = JudgeAgentExecution()
@@ -66,7 +67,8 @@ def start_consumer_for_judge_agent():
                             target_url=target_url,
                             budget=budget,
                             total_breaches=total_breaches,
-                            attempts=attempts
+                            attempts=attempts,
+                            extra_observations=extra_observations
                         ))
                         
                         # Handle result (e.g., log success, store to DB)

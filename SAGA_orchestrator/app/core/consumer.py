@@ -129,6 +129,8 @@ def start_consumer():
                                 if attempts is None:
                                     attempts = state_after.get("attempts", [])
                                 payload_data["attempts"] = attempts
+                                
+                                payload_data["extra_observations"] = state_after.get("extra_observations", {})
                             
                             format_name = next_step.get("format")
                             topic_in = next_step.get("topicIn")

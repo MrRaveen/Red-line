@@ -34,15 +34,18 @@ class JudgeAgentExecution:
         return {"raw_result": text}
 
     async def run(self, userID: str, job_id: str, target_url: str,
-                  budget: int = 3,total_breaches: int = 0, attempts: Optional[List[Any]] = None)->bool:
+                  budget: int = 3,total_breaches: int = 0, attempts: Optional[List[Any]] = None,
+                  extra_observations: Optional[Dict[str, Any]] = None)->bool:
         if attempts is None:
             attempts = []
+        if extra_observations is None:
+            extra_observations = {}
 
         mongo_records = fetch_job_records(userID, job_id)
         print(f"[Mongo] execution_logs={len(mongo_records['execution_logs'])} "
               f"transaction_data={len(mongo_records['transaction_data'])}")
 
-        judgment = await self.judge.evaluate(userID, job_id, attempts, mongo_records)
+        judgment = await self.judge.evaluate(userID, job_id, attempts, mongo_records, extra_observations)
         print("[JudgingAgent] report received.")
 
         report_payload = {
@@ -51,6 +54,7 @@ class JudgeAgentExecution:
             "total_categories_processed": len(attempts),
             "number_of_breaches": total_breaches,
             "attempts": attempts,
+            "extra_observations": extra_observations,
             "mongo_records": {
                 "execution_logs_count": len(mongo_records["execution_logs"]),
                 "transaction_data_count": len(mongo_records["transaction_data"]),

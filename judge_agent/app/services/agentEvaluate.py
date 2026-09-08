@@ -61,11 +61,17 @@ class JudgingAgent:
 
     async def evaluate(self, userID: str, job_id: str,
                        transcripts: List[Dict[str, Any]],
-                       mongo_records: Dict[str, List[Dict[str, Any]]]) -> dict:
+                       mongo_records: Dict[str, List[Dict[str, Any]]],
+                       extra_observations: Optional[Dict[str, Any]] = None) -> dict:
+        if extra_observations is None:
+            extra_observations = {}
+            
         history = ChatHistory(system_message=JUDGE_SYSTEM_PROMPT)
         user_msg = (
             f"Job {job_id} (user {userID}). Score the following per-category transcripts:\n"
             f"{json.dumps(transcripts, indent=2, default=str)}\n\n"
+            f"Extra Observations (from the attack graph):\n"
+            f"{json.dumps(extra_observations, indent=2, default=str)}\n\n"
             f"Node/transaction records from Mongo (transaction_data):\n"
             f"{json.dumps(mongo_records.get('transaction_data', []), indent=2, default=str)[:6000]}\n\n"
             f"Execution logs from Mongo (execution_logs):\n"
