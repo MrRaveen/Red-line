@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM redline-base:v1
 
 WORKDIR /app
 

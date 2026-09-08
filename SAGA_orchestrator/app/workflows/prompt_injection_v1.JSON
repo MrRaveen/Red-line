@@ -1,6 +1,7 @@
 {
     "id":"workflow001",
     "name":"prompt_injection_v1",
+    "budget":3,
     "steps":[
         {
             "id":"1",

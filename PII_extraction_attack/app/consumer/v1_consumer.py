@@ -6,6 +6,7 @@ import sys
 from kafka import KafkaConsumer
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../")))
+from app.services.graph_service import execute_pii_graph_task
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

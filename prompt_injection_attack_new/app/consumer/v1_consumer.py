@@ -1,3 +1,4 @@
+from app.config import Config
 import json
 import signal
 import logging
@@ -6,6 +7,7 @@ import sys
 from kafka import KafkaConsumer
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../")))
+from app.services.graph_service import execute_prompt_injection_graph_task
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -23,19 +25,19 @@ signal.signal(signal.SIGINT, graceful_shutdown)
 signal.signal(signal.SIGTERM, graceful_shutdown)
 
 def start_consumer():
-    KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
-    PII_REQ_TOPIC = os.getenv("PII_REQ_TOPIC", "pii_req_topic")
+    KAFKA_BOOTSTRAP_SERVERS = Config.KAFKA_BOOTSTRAP_SERVERS
+    PROMPT_INJECT_IN_TOPIC = Config.PROMPT_INJECT_IN_TOPIC
 
     consumer = KafkaConsumer(
-        PII_REQ_TOPIC,
+        PROMPT_INJECT_IN_TOPIC,
         bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
-        group_id="pii_extraction_consumer",
+        group_id="prompt_injection_consumer",
         value_deserializer=lambda v: json.loads(v.decode("utf-8")),
         auto_offset_reset="earliest",
         enable_auto_commit=False
     )
     
-    logger.info(f"Consumer started on topic '{PII_REQ_TOPIC}'")
+    logger.info(f"Consumer started on topic '{PROMPT_INJECT_IN_TOPIC}'")
     
     try:
         while running:
@@ -45,8 +47,9 @@ def start_consumer():
                 for msg in messages:
                     try:
                         data = json.loads(msg.value) if isinstance(msg.value, str) else msg.value
-                        logger.info(f"Received PII extraction request: {data}")
-                        # Logic will be implemented later
+                        logger.info(f"Received prompt injection request: {data}")
+            
+                        execute_prompt_injection_graph_task.delay(data)
                         
                     except Exception as e:
                         logger.error(f"Error handling message at offset {msg.offset}: {e}", exc_info=True)

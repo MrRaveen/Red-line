@@ -5,6 +5,7 @@ class PromptInjectionV1Format(BaseModel):
     job_id: str
     including_job_id: str
     targetURL: str
+    budget: int
 
 # Format registry to dynamically map format string names to Pydantic models
 FORMAT_REGISTRY = {

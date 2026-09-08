@@ -79,7 +79,8 @@ def start_workflow(job_payload: Dict[str, Any]):
             "userID": job_payload.get("userID"),
             "job_id": job_id,
             "including_job_id": including_job_id,
-            "targetURL": job_payload.get("targetURL")
+            "targetURL": job_payload.get("targetURL"),
+            "budget":first_step.get('budget')
         }
 
         # Validate and serialize payload

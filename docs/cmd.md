@@ -44,6 +44,8 @@ python -m app.graphs.main_graph.agents_beta
 # Make sure your virtual environment is activated, if any
 python -m judge_agent.tests.test_judge_out_topic
 
+# base docker
+docker build -t redline-base:v1 -f Dockerfile.base .
 
 
 # Run all the services with a new terminal UI in vs code

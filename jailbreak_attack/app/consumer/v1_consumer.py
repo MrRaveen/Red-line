@@ -6,6 +6,7 @@ import sys
 from kafka import KafkaConsumer
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../")))
+from app.services.graph_service import execute_jailbreak_graph_task
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -46,6 +47,9 @@ def start_consumer():
                     try:
                         data = json.loads(msg.value) if isinstance(msg.value, str) else msg.value
                         logger.info(f"Received request: {data}")
+                        
+                        # Dispatch to celery worker
+                        execute_jailbreak_graph_task.delay(data)
                         
                     except Exception as e:
                         logger.error(f"Error handling message at offset {msg.offset}: {e}", exc_info=True)

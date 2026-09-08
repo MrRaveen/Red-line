@@ -84,103 +84,154 @@ services:
     restart: always
 
   # ========== PII EXTRACTION ATTACK SERVICES ==========
-  pii-api:
-    build:
-      context: .
-      dockerfile: PII_extraction_attack/Dockerfile
-    ports:
-      - "8002:8002"
-    environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - DATABASE_URI=mongodb://db:27017
-    volumes:
-      - ./PII_extraction_attack/app:/app/app
-      - ./PII_extraction_attack/wsgi.py:/app/wsgi.py
-      - ./PII_extraction_attack/run.py:/app/run.py
-      - ./common:/app/common
-    command: ["gunicorn", "--bind", "0.0.0.0:8002", "wsgi:app"]
-    restart: always
+  # pii-api:
+  #   build:
+  #     context: .
+  #     dockerfile: PII_extraction_attack/Dockerfile
+  #   ports:
+  #     - "8002:8002"
+  #   environment:
+  #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+  #     - DATABASE_URI=mongodb://db:27017
+  #   volumes:
+  #     - ./PII_extraction_attack/app:/app/app
+  #     - ./PII_extraction_attack/wsgi.py:/app/wsgi.py
+  #     - ./PII_extraction_attack/run.py:/app/run.py
+  #     - ./common:/app/common
+  #   command: ["gunicorn", "--bind", "0.0.0.0:8002", "wsgi:app"]
+  #   restart: always
 
-  pii-consumer:
-    build:
-      context: .
-      dockerfile: PII_extraction_attack/Dockerfile
-    environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - PII_REQ_TOPIC=pii_req_topic
-    volumes:
-      - ./PII_extraction_attack/app:/app/app
-      - ./PII_extraction_attack/wsgi.py:/app/wsgi.py
-      - ./PII_extraction_attack/run.py:/app/run.py
-      - ./common:/app/common
-    command: ["python", "-m", "app.consumer.v1_consumer"]
-    restart: always
+  # pii-consumer:
+  #   build:
+  #     context: .
+  #     dockerfile: PII_extraction_attack/Dockerfile
+  #   environment:
+  #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+  #     - PII_REQ_TOPIC=pii_req_topic
+  #   volumes:
+  #     - ./PII_extraction_attack/app:/app/app
+  #     - ./PII_extraction_attack/wsgi.py:/app/wsgi.py
+  #     - ./PII_extraction_attack/run.py:/app/run.py
+  #     - ./common:/app/common
+  #   command: ["python", "-m", "app.consumer.v1_consumer"]
+  #   restart: always
+
+  # pii-celery:
+  #   build:
+  #     context: .
+  #     dockerfile: PII_extraction_attack/Dockerfile
+  #   environment:
+  #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+  #     - DATABASE_URI=mongodb://db:27017
+  #     - REDIS_HOST=redis
+  #   volumes:
+  #     - ./PII_extraction_attack/app:/app/app
+  #     - ./PII_extraction_attack/wsgi.py:/app/wsgi.py
+  #     - ./PII_extraction_attack/run.py:/app/run.py
+  #     - ./PII_extraction_attack/run_worker.py:/app/run_worker.py
+  #     - ./common:/app/common
+  #   command: ["python", "run_worker.py"]
+  #   restart: always
 
   # ========== JAILBREAK ATTACK SERVICES ==========
-  jailbreak-api:
-    build:
-      context: .
-      dockerfile: jailbreak_attack/Dockerfile
-    ports:
-      - "8003:8003"
-    environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - DATABASE_URI=mongodb://db:27017
-    volumes:
-      - ./jailbreak_attack/app:/app/app
-      - ./jailbreak_attack/wsgi.py:/app/wsgi.py
-      - ./jailbreak_attack/run.py:/app/run.py
-      - ./common:/app/common
-    command: ["gunicorn", "--bind", "0.0.0.0:8003", "wsgi:app"]
-    restart: always
+  # jailbreak-api:
+  #   build:
+  #     context: .
+  #     dockerfile: jailbreak_attack/Dockerfile
+  #   ports:
+  #     - "8003:8003"
+  #   environment:
+  #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+  #     - DATABASE_URI=mongodb://db:27017
+  #   volumes:
+  #     - ./jailbreak_attack/app:/app/app
+  #     - ./jailbreak_attack/wsgi.py:/app/wsgi.py
+  #     - ./jailbreak_attack/run.py:/app/run.py
+  #     - ./common:/app/common
+  #   command: ["gunicorn", "--bind", "0.0.0.0:8003", "wsgi:app"]
+  #   restart: always
 
-  jailbreak-consumer:
-    build:
-      context: .
-      dockerfile: jailbreak_attack/Dockerfile
-    environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - JAILBREAK_REQ_TOPIC=jailbreak_req_topic
-    volumes:
-      - ./jailbreak_attack/app:/app/app
-      - ./jailbreak_attack/wsgi.py:/app/wsgi.py
-      - ./jailbreak_attack/run.py:/app/run.py
-      - ./common:/app/common
-    command: ["python", "-m", "app.consumer.v1_consumer"]
-    restart: always
+  # jailbreak-consumer:
+  #   build:
+  #     context: .
+  #     dockerfile: jailbreak_attack/Dockerfile
+  #   environment:
+  #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+  #     - JAILBREAK_REQ_TOPIC=jailbreak_req_topic
+  #   volumes:
+  #     - ./jailbreak_attack/app:/app/app
+  #     - ./jailbreak_attack/wsgi.py:/app/wsgi.py
+  #     - ./jailbreak_attack/run.py:/app/run.py
+  #     - ./common:/app/common
+  #   command: ["python", "-m", "app.consumer.v1_consumer"]
+  #   restart: always
+
+  # jailbreak-celery:
+  #   build:
+  #     context: .
+  #     dockerfile: jailbreak_attack/Dockerfile
+  #   environment:
+  #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+  #     - DATABASE_URI=mongodb://db:27017
+  #     - REDIS_HOST=redis
+  #   volumes:
+  #     - ./jailbreak_attack/app:/app/app
+  #     - ./jailbreak_attack/wsgi.py:/app/wsgi.py
+  #     - ./jailbreak_attack/run.py:/app/run.py
+  #     - ./jailbreak_attack/run_worker.py:/app/run_worker.py
+  #     - ./common:/app/common
+  #   command: ["python", "run_worker.py"]
+  #   restart: always
 
   # ========== HALLUCINATION ATTACK SERVICES ==========
-  hallucination-api:
-    build:
-      context: .
-      dockerfile: hallucination_attack/Dockerfile
-    ports:
-      - "8004:8004"
-    environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - DATABASE_URI=mongodb://db:27017
-    volumes:
-      - ./hallucination_attack/app:/app/app
-      - ./hallucination_attack/wsgi.py:/app/wsgi.py
-      - ./hallucination_attack/run.py:/app/run.py
-      - ./common:/app/common
-    command: ["gunicorn", "--bind", "0.0.0.0:8004", "wsgi:app"]
-    restart: always
+  # hallucination-api:
+  #   build:
+  #     context: .
+  #     dockerfile: hallucination_attack/Dockerfile
+  #   ports:
+  #     - "8004:8004"
+  #   environment:
+  #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+  #     - DATABASE_URI=mongodb://db:27017
+  #   volumes:
+  #     - ./hallucination_attack/app:/app/app
+  #     - ./hallucination_attack/wsgi.py:/app/wsgi.py
+  #     - ./hallucination_attack/run.py:/app/run.py
+  #     - ./common:/app/common
+  #   command: ["gunicorn", "--bind", "0.0.0.0:8004", "wsgi:app"]
+  #   restart: always
 
-  hallucination-consumer:
-    build:
-      context: .
-      dockerfile: hallucination_attack/Dockerfile
-    environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - HALLUCINATION_REQ_TOPIC=hallucination_req_topic
-    volumes:
-      - ./hallucination_attack/app:/app/app
-      - ./hallucination_attack/wsgi.py:/app/wsgi.py
-      - ./hallucination_attack/run.py:/app/run.py
-      - ./common:/app/common
-    command: ["python", "-m", "app.consumer.v1_consumer"]
-    restart: always
+  # hallucination-consumer:
+  #   build:
+  #     context: .
+  #     dockerfile: hallucination_attack/Dockerfile
+  #   environment:
+  #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+  #     - HALLUCINATION_REQ_TOPIC=hallucination_req_topic
+  #   volumes:
+  #     - ./hallucination_attack/app:/app/app
+  #     - ./hallucination_attack/wsgi.py:/app/wsgi.py
+  #     - ./hallucination_attack/run.py:/app/run.py
+  #     - ./common:/app/common
+  #   command: ["python", "-m", "app.consumer.v1_consumer"]
+  #   restart: always
+
+  # hallucination-celery:
+  #   build:
+  #     context: .
+  #     dockerfile: hallucination_attack/Dockerfile
+  #   environment:
+  #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+  #     - DATABASE_URI=mongodb://db:27017
+  #     - REDIS_HOST=redis
+  #   volumes:
+  #     - ./hallucination_attack/app:/app/app
+  #     - ./hallucination_attack/wsgi.py:/app/wsgi.py
+  #     - ./hallucination_attack/run.py:/app/run.py
+  #     - ./hallucination_attack/run_worker.py:/app/run_worker.py
+  #     - ./common:/app/common
+  #   command: ["python", "run_worker.py"]
+  #   restart: always
 
   # ========== PROMPT INJECTION ATTACK NEW SERVICES ==========
   prompt-new-api:
@@ -211,6 +262,54 @@ services:
       - ./prompt_injection_attack_new/app:/app/app
       - ./prompt_injection_attack_new/wsgi.py:/app/wsgi.py
       - ./prompt_injection_attack_new/run.py:/app/run.py
+      - ./common:/app/common
+    command: ["python", "-m", "app.consumer.v1_consumer"]
+    restart: always
+
+  prompt-new-celery:
+    build:
+      context: .
+      dockerfile: prompt_injection_attack_new/Dockerfile
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - DATABASE_URI=mongodb://db:27017
+      - REDIS_HOST=redis
+    volumes:
+      - ./prompt_injection_attack_new/app:/app/app
+      - ./prompt_injection_attack_new/wsgi.py:/app/wsgi.py
+      - ./prompt_injection_attack_new/run.py:/app/run.py
+      - ./prompt_injection_attack_new/run_worker.py:/app/run_worker.py
+      - ./common:/app/common
+    command: ["python", "run_worker.py"]
+    restart: always
+
+  # ========== PREPROCESSOR SERVICE ==========
+  preprocessor-consumer:
+    build:
+      context: .
+      dockerfile: preprocessor_service/Dockerfile
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - PREPROCESSOR_IN_TOPIC=raw_req_topic
+      - PREPROCESSOR_OUT_TOPIC=preprocessed_req_topic
+    volumes:
+      - ./preprocessor_service/app:/app/app
+      - ./common:/app/common
+    command: ["python", "-m", "app.consumer.v1_consumer"]
+    restart: always
+
+  # ========== LOG PROCESSOR SERVICE ==========
+  log-processor-consumer:
+    build:
+      context: .
+      dockerfile: log_processor_service/Dockerfile
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - KAFKA_TOPIC_SEND_PREPROCESSED=preprocess_in
+      - MONGO_URI=mongodb://db:27017
+      - MONGO_DB=redline_logs
+    volumes:
+      - ./log_processor_service/app:/app/app
       - ./common:/app/common
     command: ["python", "-m", "app.consumer.v1_consumer"]
     restart: always
