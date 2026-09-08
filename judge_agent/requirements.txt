@@ -4,12 +4,9 @@ semantic-kernel
 openai
 pydantic-settings
 python-dotenv
-langgraph
-langchain-core     
-langgraph-checkpoint-postgres   
 requests
 sqlalchemy
-sentence_transformers
 kafka-python
 pydantic
 redis
+pymongo

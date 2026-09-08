@@ -1,7 +1,8 @@
-from flask import Blueprint, jsonify
 
-v1_bp = Blueprint('v1', __name__)
+from flask import Blueprint, render_template
 
-@v1_bp.route('/health')
+# Create the blueprint object
+v1_routes = Blueprint('v1_routes', __name__)
+@v1_routes.route('/health')
 def health_check():
-    return jsonify({"status": "ok", "service": "judge_agent"})
+    return {"status": "healthy"}

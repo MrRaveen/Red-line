@@ -40,6 +40,9 @@ python -m app.graphs.main_graph.fakeLLM
 python -m app.graphs.main_graph.kafka_beta.consumer
 python -m app.graphs.main_graph.kafka_beta.log_processor.main
 python -m app.graphs.main_graph.agents_beta
+# Navigate to the judge_agent directory (or root, if you set pythonpath)
+# Make sure your virtual environment is activated, if any
+python -m judge_agent.tests.test_judge_out_topic
 
 
 

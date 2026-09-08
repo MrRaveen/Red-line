@@ -1,0 +1,20 @@
+{
+    "id":"workflow001",
+    "name":"prompt_injection_v1",
+    "steps":[
+        {
+            "id":"1",
+            "name":"produce_attack",
+            "format":"prompt_injection_v1_format",
+            "topicIn":"prompt_inject_in",
+            "topicOut":"results_out",
+            "service":"prompt_injection_attack",
+            "fallbacks":[
+                {
+                    "functionName":"",
+                    "functionFormat":""
+                }
+            ]
+        }
+    ]
+}

@@ -13,10 +13,9 @@ from app.agent.kernel_factory import build_kernel
 from app.graphs.main_graph.plugin import NextCategoryPlugin, LangGraphAttackPlugin
 from config import settings
 
-# Recording (your Kafka -> Mongo pipeline). Adjust the import path to match your module.
 try:
     from app.graphs.main_graph.recording import send_execution_log, send_transaction_data
-except Exception as e:      # optional — don't break the agent if recording is unavailable
+except Exception as e:    
     print(f"[!] Recording module unavailable ({e})")
     send_execution_log = None
     send_transaction_data = None
