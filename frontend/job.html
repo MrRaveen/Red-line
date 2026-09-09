@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Job Detail — Red-Line</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    .job-header { margin-bottom: 24px; }
+    .job-meta   { display:flex; gap:14px; flex-wrap:wrap; align-items:center; margin-top:8px; }
+    .meta-item  { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text-secondary); }
+    .section-heading { font-size:13px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px; margin:0 0 14px; }
+    .attempt-card {
+      background:var(--bg-surface); border:1px solid var(--border);
+      border-radius:var(--radius); padding:14px; margin-bottom:10px;
+    }
+    .attempt-card .prompt-box, .attempt-card .response-box {
+      background:var(--bg-base); border:1px solid var(--border); border-radius:var(--radius);
+      padding:10px; font-family:var(--font-code); font-size:12px; line-height:1.6;
+      white-space:pre-wrap; word-break:break-word; max-height:160px; overflow-y:auto;
+      margin-top:6px; color:#c8d3ea;
+    }
+    .attempt-header { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+    .breach-yes { color:var(--accent-red); font-weight:700; }
+    .breach-no  { color:var(--accent-green); }
+    .report-not-ready { text-align:center; padding:56px 20px; }
+    .chart-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:22px; }
+    .node-timeline { display:flex; flex-direction:column; gap:6px; }
+    .node-event {
+      display:flex; align-items:flex-start; gap:12px;
+      font-size:12px; font-family:var(--font-code); padding:6px 10px;
+      border-left:2px solid var(--border); background:var(--bg-surface); border-radius:0 var(--radius) var(--radius) 0;
+    }
+    .node-event .ne-time { color:var(--text-dim); flex-shrink:0; width:160px; }
+    .node-event .ne-type { color:var(--accent-blue); flex-shrink:0; width:140px; font-weight:500; }
+    .node-event .ne-msg  { flex:1; color:var(--text-primary); }
+    .node-event.WARN  { border-left-color:var(--accent-yellow); }
+    .node-event.ERROR { border-left-color:var(--accent-red); }
+    .node-event.INFO  { border-left-color:var(--accent-green); }
+  </style>
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">RL</div>
+      <div>
+        <div class="logo-text">Red-Line</div>
+        <div class="logo-sub">SECURITY PLATFORM</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Overview</div>
+      <a class="nav-link" data-page="jobs.html" href="dashboard.html">
+        All Jobs
+      </a>
+      <div class="nav-section-label">Testing</div>
+      <a class="nav-link" data-page="new-job.html" href="new-job.html">
+        New Attack
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-badge">
+        <div class="user-avatar" id="sidebar-avatar">?</div>
+        <span id="sidebar-username" class="text-small"></span>
+      </div>
+      <button onclick="logout()" class="btn btn-sm btn-outline" style="padding:4px 8px; font-size:11px;">
+        Sign out
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main-content">
+    <header class="topbar">
+      <div class="flex gap-10">
+        <a href="dashboard.html" class="btn btn-sm btn-outline">Back</a>
+        <div class="topbar-title" id="page-title">Job Detail</div>
+      </div>
+      <div class="topbar-actions">
+        <span id="job-status-badge"></span>
+        <button onclick="loadAll()" class="btn btn-outline btn-sm">Refresh</button>
+      </div>
+    </header>
+
+    <main class="page-body">
+
+      <!-- Job metadata header -->
+      <div class="job-header">
+        <div id="job-meta-bar" class="job-meta">
+          <div class="spinner"></div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs" id="main-tabs">
+        <button class="tab-btn active" data-tab="tab-report">📊 Vulnerability Report</button>
+        <button class="tab-btn" data-tab="tab-stream">⚡ Live Stream</button>
+        <button class="tab-btn" data-tab="tab-attempts">🎯 Attempts</button>
+        <button class="tab-btn" data-tab="tab-logs">📋 Execution Logs</button>
+        <button class="tab-btn" data-tab="tab-transactions">🔄 Transactions</button>
+      </div>
+
+      <!-- ======================================== -->
+      <!-- TAB: VULNERABILITY REPORT               -->
+      <!-- ======================================== -->
+      <div id="tab-report" class="tab-pane active">
+
+        <div id="report-loading" class="loader-full">
+          <div class="spinner"></div><span>Loading report…</span>
+        </div>
+
+        <div id="report-not-ready" class="report-not-ready" style="display:none;">
+          <div style="font-size:48px; opacity:0.3; margin-bottom:12px;">📊</div>
+          <h3>Report Not Ready Yet</h3>
+          <p class="text-muted text-small mt-2">The attack is still running. Switch to Live Stream to monitor progress.</p>
+          <button onclick="loadReport()" class="btn btn-outline mt-3">↻ Check Again</button>
+        </div>
+
+        <div id="report-content" style="display:none;">
+
+          <!-- Summary stats -->
+          <div class="report-summary-grid">
+            <div class="report-stat">
+              <div class="val" id="r-categories">—</div>
+              <div class="lbl">Categories Tested</div>
+            </div>
+            <div class="report-stat">
+              <div class="val" id="r-breaches" style="color:var(--accent-red)">—</div>
+              <div class="lbl">Breaches Detected</div>
+            </div>
+            <div class="report-stat">
+              <div class="val" id="r-severity">—</div>
+              <div class="lbl">Highest Severity</div>
+            </div>
+          </div>
+
+          <!-- Risk meter -->
+          <div class="card mb-3">
+            <div class="card-header">
+              <span class="card-title">Overall Risk Level</span>
+              <span id="r-highest-badge"></span>
+            </div>
+            <div style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;">
+              Avg severity: <strong id="r-avg-sev" style="color:var(--text-primary)"></strong>
+            </div>
+            <div class="risk-bar">
+              <div class="risk-fill" id="r-risk-fill" style="width:0%"></div>
+            </div>
+          </div>
+
+          <!-- Charts row -->
+          <div class="chart-row">
+            <div class="card">
+              <div class="card-header"><span class="card-title">Breach by Category</span></div>
+              <div class="chart-container" style="height:200px;">
+                <canvas id="chart-breach"></canvas>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><span class="card-title">Verdict Distribution</span></div>
+              <div class="chart-container" style="height:200px;">
+                <canvas id="chart-verdict"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Per category -->
+          <div class="card mb-3">
+            <div class="card-header"><span class="card-title">Per-Category Analysis</span></div>
+            <div class="per-category" id="r-per-category"></div>
+          </div>
+
+          <!-- Judge Insights -->
+          <div class="card mb-3">
+            <div class="card-header"><span class="card-title">AI Judge Insights</span></div>
+            <ul class="insight-list" id="r-insights"></ul>
+          </div>
+
+          <!-- Extra Observations (varies by attack type) -->
+          <div id="extra-obs-section" class="card" style="display:none;">
+            <div class="card-header"><span class="card-title">Extra Observations</span></div>
+            <pre id="extra-obs-content" style="font-family:var(--font-code); font-size:12px; color:#c8d3ea; white-space:pre-wrap; word-break:break-word;"></pre>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ======================================== -->
+      <!-- TAB: LIVE STREAM                        -->
+      <!-- ======================================== -->
+      <div id="tab-stream" class="tab-pane">
+        <div class="stream-status">
+          <div class="stream-dot" id="stream-dot"></div>
+          <span id="stream-status-text">Not connected</span>
+          <span class="text-dim" id="stream-count" style="margin-left:auto;"></span>
+        </div>
+        <div style="display:flex; gap:10px; margin-bottom:10px;">
+          <button onclick="startStream()" class="btn btn-sm btn-primary" id="btn-stream-start">▶ Connect Stream</button>
+          <button onclick="stopStream()"  class="btn btn-sm btn-outline" id="btn-stream-stop" disabled>■ Stop</button>
+          <button onclick="clearTerminal()" class="btn btn-sm btn-outline">✕ Clear</button>
+          <label class="flex gap-10 text-small text-muted" style="cursor:pointer;">
+            <input type="checkbox" id="auto-scroll" checked /> Auto-scroll
+          </label>
+        </div>
+        <div class="terminal" id="terminal"></div>
+      </div>
+
+      <!-- ======================================== -->
+      <!-- TAB: ATTEMPTS                           -->
+      <!-- ======================================== -->
+      <div id="tab-attempts" class="tab-pane">
+        <div id="attempts-loading" class="loader-full">
+          <div class="spinner"></div><span>Loading attempts…</span>
+        </div>
+        <div id="attempts-empty" class="empty-state" style="display:none;">
+          <div class="icon">🎯</div>
+          <h3>No attempts recorded yet</h3>
+          <p>Attempts are recorded after the attack completes.</p>
+        </div>
+
+        <!-- Filter bar -->
+        <div id="attempts-controls" style="display:none; margin-bottom:14px; display:flex; gap:10px; flex-wrap:wrap;">
+          <input id="search-attempts" type="text" class="form-control"
+            style="width:200px; padding:6px 10px; font-size:13px;"
+            placeholder="Search…" oninput="filterAttempts(this.value)" />
+          <select id="filter-breach" class="form-control"
+            style="width:150px; padding:6px 10px; font-size:13px;" onchange="filterAttempts()">
+            <option value="">All Verdicts</option>
+            <option value="true">Breached</option>
+            <option value="false">Not Breached</option>
+          </select>
+        </div>
+
+        <div id="attempts-list"></div>
+        <div id="attempts-page-info" class="text-small text-muted mt-2"></div>
+      </div>
+
+      <!-- ======================================== -->
+      <!-- TAB: EXECUTION LOGS                     -->
+      <!-- ======================================== -->
+      <div id="tab-logs" class="tab-pane">
+        <div id="logs-loading" class="loader-full">
+          <div class="spinner"></div><span>Loading logs…</span>
+        </div>
+        <div class="node-timeline" id="logs-timeline"></div>
+        <div style="display:flex; gap:10px; align-items:center; margin-top:14px;">
+          <button id="logs-prev" onclick="changePage(-1)" class="btn btn-sm btn-outline" disabled>← Prev</button>
+          <span id="logs-page-info" class="text-small text-muted"></span>
+          <button id="logs-next" onclick="changePage(1)"  class="btn btn-sm btn-outline">Next →</button>
+        </div>
+      </div>
+
+      <!-- ======================================== -->
+      <!-- TAB: TRANSACTIONS                       -->
+      <!-- ======================================== -->
+      <div id="tab-transactions" class="tab-pane">
+        <div id="tx-loading" class="loader-full">
+          <div class="spinner"></div><span>Loading transactions…</span>
+        </div>
+        <div id="tx-list" class="node-timeline"></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+Auth.require();
+renderSidebarUser();
+
+const jobID = new URLSearchParams(window.location.search).get('id');
+if (!jobID) { window.location = 'dashboard.html'; }
+
+let allAttempts = [];
+let logsPage    = 1;
+let evtSource   = null;
+let logCount    = 0;
+let chartBreach = null;
+let chartVerdict = null;
+
+// ── On Load ────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  applyChartDefaults();
+  initTabs('#main-tabs');
+  loadAll();
+});
+
+async function loadAll() {
+  await Promise.all([loadJobMeta(), loadReport(), loadLogs(1), loadTransactions()]);
+}
+
+// ── Job Metadata ───────────────────────────────────────────────
+async function loadJobMeta() {
+  try {
+    const job = await api(`/jobs/${jobID}`);
+    document.getElementById('page-title').textContent = job.job_name || 'Job Detail';
+    document.title = `${job.job_name || 'Job'} — Red-Line`;
+    document.getElementById('job-status-badge').innerHTML = statusBadge(job.job_status);
+    document.getElementById('job-meta-bar').innerHTML = `
+      ${jobTypeBadge(job.job_type)}
+      <div class="meta-item">🌐 <span class="mono">${job.targetURL || '—'}</span></div>
+      <div class="meta-item">📅 ${fmtDate(job.created_date)}</div>
+      <div class="meta-item">⚠ Breaches: <strong style="color:${job.breachedCount>0?'var(--accent-red)':'var(--accent-green)'}">${job.breachedCount||0}</strong></div>
+      <div class="meta-item">📊 Categories: ${job.totalExecutedCategories||0}</div>
+    `;
+
+    if (job.job_status === 'PROCESSING') {
+      // Auto-start stream for running jobs
+      setTimeout(() => { if (!evtSource) startStream(); }, 600);
+    }
+  } catch (e) {
+    Toast.error('Could not load job: ' + e.message);
+  }
+}
+
+// ── Vulnerability Report ───────────────────────────────────────
+async function loadReport() {
+  const loading = document.getElementById('report-loading');
+  const notReady = document.getElementById('report-not-ready');
+  const content  = document.getElementById('report-content');
+
+  loading.style.display = 'flex'; notReady.style.display = 'none'; content.style.display = 'none';
+
+  try {
+    const r = await api(`/jobs/${jobID}/report`);
+    loading.style.display = 'none';
+    content.style.display = '';
+
+    const judging = r.judging_report || {};
+    const summary = judging.summary || {};
+    const perCat  = judging.per_category || [];
+    const insights = judging.insights || [];
+
+    document.getElementById('r-categories').textContent = summary.total_categories || r.total_categories_processed || 0;
+    document.getElementById('r-breaches').textContent   = summary.breached || r.number_of_breaches || 0;
+    document.getElementById('r-severity').textContent   = summary.highest_severity || 'NONE';
+    document.getElementById('r-avg-sev').textContent    = summary.avg_severity || 'NONE';
+    document.getElementById('r-highest-badge').innerHTML = severityBadge(summary.highest_severity || 'NONE');
+
+    // Risk bar
+    const pct = severityPct(summary.highest_severity || 'NONE');
+    const fill = document.getElementById('r-risk-fill');
+    fill.style.width = pct + '%';
+    fill.className = 'risk-fill ' + severityClass(summary.highest_severity || 'NONE');
+
+    // Chart: Breach by category
+    const catLabels = perCat.map(c => c.category);
+    const catBreached = perCat.map(c => c.breached ? 1 : 0);
+    if (chartBreach) chartBreach.destroy();
+    if (catLabels.length) {
+      chartBreach = new Chart(document.getElementById('chart-breach'), {
+        type: 'bar',
+        data: {
+          labels: catLabels,
+          datasets: [{
+            label: 'Breached',
+            data: catBreached,
+            backgroundColor: perCat.map(c => c.breached ? '#ff444460' : '#00ff8840'),
+            borderColor:     perCat.map(c => c.breached ? '#ff4444' : '#00ff88'),
+            borderWidth: 1, borderRadius: 4,
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          scales: { y: { beginAtZero:true, max:1, ticks: { stepSize:1, callback: v => v ? 'YES':'NO' } } },
+          plugins: { legend: { display:false } }
+        }
+      });
+    }
+
+    // Chart: Verdict distribution
+    const attempts = r.attempts || [];
+    const verdictCounts = {};
+    attempts.forEach(a => {
+      const v = a.verdict || 'UNKNOWN';
+      verdictCounts[v] = (verdictCounts[v] || 0) + 1;
+    });
+    if (chartVerdict) chartVerdict.destroy();
+    if (Object.keys(verdictCounts).length) {
+      const vLabels = Object.keys(verdictCounts);
+      const vCols = { SUCCESS:'#00ff88', COMPLIANT:'#00ff88', AMBIGUOUS:'#ffb300', REFUSAL:'#ff4444', FAILED:'#ff4444', PARTIAL:'#00bcd4' };
+      chartVerdict = new Chart(document.getElementById('chart-verdict'), {
+        type: 'doughnut',
+        data: {
+          labels: vLabels,
+          datasets: [{
+            data: vLabels.map(v => verdictCounts[v]),
+            backgroundColor: vLabels.map(v => (vCols[v] || '#8c9db5') + '50'),
+            borderColor:     vLabels.map(v => vCols[v] || '#8c9db5'),
+            borderWidth: 2,
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { position:'right', labels:{ padding:12, font:{size:11} } } },
+          cutout: '55%'
+        }
+      });
+    }
+
+    // Per-category rows
+    document.getElementById('r-per-category').innerHTML = perCat.length ? perCat.map(c => `
+      <div class="cat-row">
+        <div class="cat-row-header">
+          <span class="cat-name">${c.category || '—'}</span>
+          <div class="flex gap-10">
+            ${severityBadge(c.severity)}
+            <span class="${c.breached ? 'breach-yes' : 'breach-no'}">${c.breached ? '⚠ BREACHED' : '✓ SAFE'}</span>
+          </div>
+        </div>
+        <div class="cat-reasoning">${c.reasoning || ''}</div>
+      </div>
+    `).join('') : '<p class="text-muted text-small">No per-category data.</p>';
+
+    // Insights
+    document.getElementById('r-insights').innerHTML = insights.length ? insights.map(i =>
+      `<li class="insight-item">${i}</li>`
+    ).join('') : '<li class="insight-item text-muted">No insights available.</li>';
+
+    // Extra observations
+    const extra = r.extra_observations;
+    if (extra && Object.keys(extra).length) {
+      document.getElementById('extra-obs-section').style.display = '';
+      document.getElementById('extra-obs-content').textContent = JSON.stringify(extra, null, 2);
+    }
+
+    // Also load attempts
+    allAttempts = attempts;
+    renderAttempts(allAttempts);
+
+  } catch (e) {
+    loading.style.display = 'none';
+    if (e.message.includes('404') || e.message.includes('not ready')) {
+      notReady.style.display = '';
+    } else {
+      Toast.error('Report error: ' + e.message);
+    }
+  }
+}
+
+// ── Attempts ───────────────────────────────────────────────────
+function renderAttempts(attempts) {
+  const loading  = document.getElementById('attempts-loading');
+  const empty    = document.getElementById('attempts-empty');
+  const list     = document.getElementById('attempts-list');
+  const controls = document.getElementById('attempts-controls');
+  const info     = document.getElementById('attempts-page-info');
+
+  loading.style.display = 'none';
+
+  if (!attempts.length) {
+    empty.style.display = ''; list.innerHTML = '';
+    controls.style.display = 'none';
+    return;
+  }
+  empty.style.display = 'none';
+  controls.style.display = 'flex';
+  info.textContent = `${attempts.length} attempt(s)`;
+
+  list.innerHTML = attempts.map((a, i) => {
+    const breached = a.breachDetected;
+    const verdict  = a.verdict || 'UNKNOWN';
+    const way      = a.way || a.category || `#${i+1}`;
+    const target   = a.target || a.currentCategory || '';
+    const field    = a.field ? ` · ${a.field}` : '';
+    const round    = a.round != null ? ` · Round ${a.round}` : '';
+    const turn     = a.turn_index != null ? ` · Turn ${a.turn_index}` : '';
+
+    return `
+      <div class="attempt-card">
+        <div class="attempt-header">
+          <span class="badge badge-gray">${way}</span>
+          ${target ? `<span class="text-small mono">${target}${field}</span>` : ''}
+          ${round}${turn}
+          <span class="badge ${breached ? 'badge-red' : 'badge-green'} ${breached ? 'breach-yes' : 'breach-no'}" style="margin-left:auto;">
+            ${breached ? '⚠ BREACHED' : '✓ SAFE'}
+          </span>
+          <span class="badge badge-gray">${verdict}</span>
+        </div>
+        ${a.pii_value ? `<div class="text-small mb-2"><strong style="color:var(--accent-red)">PII Found:</strong> <span class="mono">${a.pii_value}</span></div>` : ''}
+        ${a.evidence   ? `<div class="text-small mb-2 text-muted">Evidence: ${a.evidence}</div>` : ''}
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div>
+            <div class="text-small text-muted mb-2">Prompt</div>
+            <div class="prompt-box">${escHtml(a.prompt || a.variationPrompt || '—')}</div>
+          </div>
+          <div>
+            <div class="text-small text-muted mb-2">Response</div>
+            <div class="response-box">${escHtml(a.response || a.response_snippet || a.variationResult || '—')}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function filterAttempts(q) {
+  let filtered = allAttempts;
+  const search  = (q || document.getElementById('search-attempts').value || '').toLowerCase();
+  const bFilter = document.getElementById('filter-breach').value;
+  if (search) {
+    filtered = filtered.filter(a =>
+      (a.prompt || '').toLowerCase().includes(search) ||
+      (a.response || '').toLowerCase().includes(search) ||
+      (a.target || '').toLowerCase().includes(search) ||
+      (a.verdict || '').toLowerCase().includes(search)
+    );
+  }
+  if (bFilter !== '') {
+    filtered = filtered.filter(a => String(!!a.breachDetected) === bFilter);
+  }
+  renderAttempts(filtered);
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── Execution Logs ─────────────────────────────────────────────
+async function loadLogs(page) {
+  logsPage = page || 1;
+  const loading  = document.getElementById('logs-loading');
+  const timeline = document.getElementById('logs-timeline');
+  const info     = document.getElementById('logs-page-info');
+  const prev     = document.getElementById('logs-prev');
+  const next     = document.getElementById('logs-next');
+
+  loading.style.display = 'flex'; timeline.innerHTML = '';
+
+  try {
+    const data = await api(`/jobs/${jobID}/logs?page=${logsPage}&limit=50`);
+    loading.style.display = 'none';
+
+    if (!data.logs.length) {
+      timeline.innerHTML = '<p class="text-muted text-small">No logs recorded yet.</p>';
+      return;
+    }
+
+    timeline.innerHTML = data.logs.map(l => `
+      <div class="node-event ${l.log_level || 'INFO'}">
+        <span class="ne-time">${fmtDate(l.timestamp)}</span>
+        <span class="ne-type">${l.message_type || ''}</span>
+        <span class="ne-msg">${escHtml(l.message_text || '')}</span>
+        ${l.verdict ? `<span class="badge badge-gray" style="flex-shrink:0;">${l.verdict}</span>` : ''}
+      </div>
+    `).join('');
+
+    info.textContent = `Page ${data.page} / ${data.pages} · ${data.total} total`;
+    prev.disabled = data.page <= 1;
+    next.disabled = data.page >= data.pages;
+
+  } catch (e) {
+    loading.style.display = 'none';
+    Toast.error('Logs error: ' + e.message);
+  }
+}
+
+function changePage(delta) {
+  loadLogs(logsPage + delta);
+}
+
+// ── Transactions ───────────────────────────────────────────────
+async function loadTransactions() {
+  const loading = document.getElementById('tx-loading');
+  const list    = document.getElementById('tx-list');
+  loading.style.display = 'flex'; list.innerHTML = '';
+
+  try {
+    const txs = await api(`/jobs/${jobID}/transactions`);
+    loading.style.display = 'none';
+
+    if (!txs.length) {
+      list.innerHTML = '<p class="text-muted text-small">No transaction data yet.</p>';
+      return;
+    }
+
+    list.innerHTML = txs.map(tx => `
+      <div class="node-event INFO">
+        <span class="ne-time">${fmtDate(tx.timestamp)}</span>
+        <span class="ne-type">${escHtml(tx.node_name || '')}</span>
+        <span class="ne-msg">
+          Variations: ${tx.variation_count || 0} · Breaches: ${tx.inc_variation_count || 0}
+          ${tx.breach_detected ? ' · <span style="color:var(--accent-red)">⚠ BREACH</span>' : ''}
+        </span>
+        <button onclick="toggleTxDetail('tx-${tx._id}')" class="btn btn-sm btn-outline">Details</button>
+      </div>
+      <div id="tx-${tx._id}" style="display:none; padding:10px; background:var(--bg-base); border:1px solid var(--border); border-radius:var(--radius); margin:-6px 0 6px; font-family:var(--font-code); font-size:11px; color:#c8d3ea; white-space:pre-wrap; word-break:break-word; max-height:300px; overflow-y:auto;">
+${escHtml(JSON.stringify(tx.state_after || {}, null, 2))}
+      </div>
+    `).join('');
+
+  } catch (e) {
+    loading.style.display = 'none';
+    Toast.error('TX error: ' + e.message);
+  }
+}
+
+function toggleTxDetail(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = el.style.display === 'none' ? '' : 'none';
+}
+
+// ── SSE Live Stream ────────────────────────────────────────────
+function startStream() {
+  if (evtSource) evtSource.close();
+  const term = document.getElementById('terminal');
+  const dot  = document.getElementById('stream-dot');
+  const stxt = document.getElementById('stream-status-text');
+  const btnStart = document.getElementById('btn-stream-start');
+  const btnStop  = document.getElementById('btn-stream-stop');
+
+  logCount = 0;
+  dot.classList.remove('stopped');
+  stxt.textContent = 'Connecting…';
+  btnStart.disabled = true; btnStop.disabled = false;
+
+  evtSource = new EventSource(`${API_BASE}/stream/${jobID}`);
+
+  evtSource.onmessage = (e) => {
+    const msg = JSON.parse(e.data);
+
+    if (msg.type === 'connected') {
+      stxt.textContent = 'Connected — streaming logs';
+    }
+
+    if (msg.type === 'log') {
+      const d = msg.data;
+      logCount++;
+      appendLog(term, d);
+      document.getElementById('stream-count').textContent = `${logCount} events`;
+    }
+
+    if (msg.type === 'report_ready') {
+      appendRawLine(term, '✓ Report ready — switch to Vulnerability Report tab.', 'var(--accent-green)');
+      // Refresh report
+      loadReport();
+    }
+
+    if (msg.type === 'finished') {
+      stxt.textContent = 'Stream finished';
+      dot.classList.add('stopped');
+      btnStart.disabled = false; btnStop.disabled = true;
+      evtSource.close(); evtSource = null;
+      appendRawLine(term, '■ Stream ended.', 'var(--text-dim)');
+      loadJobMeta();
+    }
+
+    if (msg.type === 'error') {
+      appendRawLine(term, '✗ ' + msg.message, 'var(--accent-red)');
+    }
+  };
+
+  evtSource.onerror = () => {
+    stxt.textContent = 'Connection lost';
+    dot.classList.add('stopped');
+    btnStart.disabled = false; btnStop.disabled = true;
+  };
+}
+
+function appendLog(term, d) {
+  const line = document.createElement('div');
+  line.className = `log-line log-${d.log_level || 'INFO'}`;
+  line.innerHTML = `
+    <span class="log-time">${(d.timestamp || '').substring(11,23)}</span>
+    <span class="log-type">[${d.message_type || '?'}]</span>
+    <span class="log-msg">${escHtml(d.message_text || '')}</span>
+  `;
+  term.appendChild(line);
+  if (document.getElementById('auto-scroll').checked) {
+    term.scrollTop = term.scrollHeight;
+  }
+}
+
+function appendRawLine(term, text, color) {
+  const line = document.createElement('div');
+  line.style.cssText = `color:${color}; font-family:var(--font-code); font-size:12px; padding:1px 0;`;
+  line.textContent = text;
+  term.appendChild(line);
+  term.scrollTop = term.scrollHeight;
+}
+
+function stopStream() {
+  if (evtSource) { evtSource.close(); evtSource = null; }
+  document.getElementById('stream-dot').classList.add('stopped');
+  document.getElementById('stream-status-text').textContent = 'Stopped';
+  document.getElementById('btn-stream-start').disabled = false;
+  document.getElementById('btn-stream-stop').disabled  = true;
+}
+
+function clearTerminal() {
+  document.getElementById('terminal').innerHTML = '';
+  logCount = 0;
+  document.getElementById('stream-count').textContent = '';
+}
+</script>
+</body>
+</html>

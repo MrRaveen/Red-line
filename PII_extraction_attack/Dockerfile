@@ -1,12 +1,13 @@
-FROM python:3.10-slim
+FROM redline-base:v1
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY PII_extraction_attack/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+COPY PII_extraction_attack/app/ ./app/
+COPY PII_extraction_attack/wsgi.py .
+COPY PII_extraction_attack/run.py .
+COPY common/ ./common/
 
-EXPOSE 5000
-
-CMD ["python", "run.py", "5000"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8002", "wsgi:app"]

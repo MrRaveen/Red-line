@@ -40,8 +40,20 @@ python -m app.graphs.main_graph.fakeLLM
 python -m app.graphs.main_graph.kafka_beta.consumer
 python -m app.graphs.main_graph.kafka_beta.log_processor.main
 python -m app.graphs.main_graph.agents_beta
+# Navigate to the judge_agent directory (or root, if you set pythonpath)
+# Make sure your virtual environment is activated, if any
+python -m judge_agent.tests.test_judge_out_topic
 
+# base docker
+docker build -t redline-base:v1 -f Dockerfile.base .
 
+#remove laftovers
+docker exec red-line-kafka-1 /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list | Select-String -Pattern '^__' -NotMatch | ForEach-Object { $topic = $_.ToString().Trim(); if ($topic) { docker exec red-line-kafka-1 /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic $topic } }
+
+python test_saga_workflow_pi.py
+python test_saga_workflow_pii.py
+python test_saga_workflow_jailbreak.py
+python test_saga_workflow_hallucination.py
 
 # Run all the services with a new terminal UI in vs code
 ```

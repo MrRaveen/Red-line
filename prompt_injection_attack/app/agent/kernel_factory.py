@@ -33,9 +33,6 @@ def build_kernel() -> Kernel:
 
     kernel.add_service(chat_service)
 
-    # Add your plugins
-    kernel.add_plugin(GetNextCategoryPlugin(), plugin_name="get_next_category_plugin")
-
     return kernel
 
 

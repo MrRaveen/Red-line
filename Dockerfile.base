@@ -1,0 +1,21 @@
+FROM python:3.11-slim
+
+# Install heavy and common dependencies across all microservices
+RUN pip install --no-cache-dir \
+    Flask==3.0.0 \
+    gunicorn==21.2.0 \
+    celery \
+    redis \
+    kafka-python \
+    pydantic \
+    pymongo \
+    python-dotenv \
+    semantic-kernel \
+    openai \
+    pydantic-settings \
+    langgraph \
+    langchain-core \
+    langgraph-checkpoint-postgres \
+    requests \
+    sqlalchemy \
+    sentence_transformers

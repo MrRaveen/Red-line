@@ -143,5 +143,5 @@ if __name__ == '__main__':
     print("  POST /reset")
     print("\nBehavior: Generates code with a mix of real and hallucinated imports.")
     print("          The hallucinated imports will return 404 on registry lookups.")
-    print("\nStarting server on http://localhost:5000")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    print("\nStarting server on http://localhost:4004")
+    app.run(host='0.0.0.0', port=4004, debug=True)

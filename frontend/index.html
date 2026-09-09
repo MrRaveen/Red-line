@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Red-Line — Sign In</title>
+  <meta name="description" content="Red-Line LLM Security Testing Platform — Login" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="auth-page">
+  <div class="auth-box">
+
+    <div class="auth-logo">
+      <div class="logo-big">RL</div>
+      <h1>Red-Line</h1>
+      <p>LLM Security Testing Platform</p>
+    </div>
+
+    <div class="auth-toggle">
+      <button id="btn-login"    class="active" onclick="showLogin()">Sign In</button>
+      <button id="btn-register"               onclick="showRegister()">Register</button>
+    </div>
+
+    <!-- Login Form -->
+    <form id="form-login" onsubmit="doLogin(event)">
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input id="l-username" type="text" class="form-control" placeholder="your username" required />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input id="l-password" type="password" class="form-control" placeholder="••••••••" required />
+      </div>
+      <div id="login-err" class="alert alert-error" style="display:none;"></div>
+      <button type="submit" id="login-btn" class="btn btn-primary btn-lg" style="width:100%;">
+        Sign In
+      </button>
+    </form>
+
+    <!-- Register Form -->
+    <form id="form-register" style="display:none;" onsubmit="doRegister(event)">
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input id="r-username" type="text" class="form-control" placeholder="choose a username" required />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input id="r-email" type="email" class="form-control" placeholder="analyst@company.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input id="r-password" type="password" class="form-control" placeholder="••••••••" required />
+      </div>
+      <div id="reg-err" class="alert alert-error" style="display:none;"></div>
+      <div id="reg-ok"  class="alert alert-success" style="display:none;"></div>
+      <button type="submit" id="reg-btn" class="btn btn-primary btn-lg" style="width:100%;">
+        Create Account
+      </button>
+    </form>
+
+    <p class="text-muted text-small mt-3" style="text-align:center;">
+      Red-Line v1.0
+    </p>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  // Redirect if already logged in
+  if (Auth.isLoggedIn()) window.location = 'dashboard.html';
+
+  function showLogin() {
+    document.getElementById('form-login').style.display    = '';
+    document.getElementById('form-register').style.display = 'none';
+    document.getElementById('btn-login').classList.add('active');
+    document.getElementById('btn-register').classList.remove('active');
+  }
+
+  function showRegister() {
+    document.getElementById('form-login').style.display    = 'none';
+    document.getElementById('form-register').style.display = '';
+    document.getElementById('btn-login').classList.remove('active');
+    document.getElementById('btn-register').classList.add('active');
+  }
+
+  async function doLogin(e) {
+    e.preventDefault();
+    const btn = document.getElementById('login-btn');
+    const err = document.getElementById('login-err');
+    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Signing in…';
+    err.style.display = 'none';
+    try {
+      const data = await api('/auth/login', {
+        method: 'POST',
+        body: {
+          username: document.getElementById('l-username').value.trim(),
+          password: document.getElementById('l-password').value,
+        }
+      });
+      Auth.set(data.userID, data.email || '');
+      window.location = 'dashboard.html';
+    } catch (ex) {
+      err.textContent = ex.message;
+      err.style.display = 'flex';
+      btn.disabled = false; btn.textContent = 'Sign In';
+    }
+  }
+
+  async function doRegister(e) {
+    e.preventDefault();
+    const btn = document.getElementById('reg-btn');
+    const err = document.getElementById('reg-err');
+    const ok  = document.getElementById('reg-ok');
+    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Creating…';
+    err.style.display = 'none'; ok.style.display = 'none';
+    try {
+      await api('/auth/register', {
+        method: 'POST',
+        body: {
+          username: document.getElementById('r-username').value.trim(),
+          email:    document.getElementById('r-email').value.trim(),
+          password: document.getElementById('r-password').value,
+        }
+      });
+      ok.textContent = 'Account created! You can now sign in.';
+      ok.style.display = 'flex';
+      setTimeout(showLogin, 1500);
+    } catch (ex) {
+      err.textContent = ex.message;
+      err.style.display = 'flex';
+    }
+    btn.disabled = false; btn.textContent = 'Create Account';
+  }
+</script>
+</body>
+</html>

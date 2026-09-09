@@ -1,0 +1,35 @@
+{
+    "id":"workflow001",
+    "name":"prompt_injection_v1",
+    "budget":3,
+    "steps":[
+        {
+            "id":"1",
+            "name":"produce_attack",
+            "format":"prompt_injection_v1_format",
+            "topicIn":"prompt_inject_in",
+            "topicOut":"results_out",
+            "service":"prompt_injection_attack",
+            "fallbacks":[
+                {
+                    "functionName":"",
+                    "functionFormat":""
+                }
+            ]
+        },
+        {
+            "id":"2",
+            "name":"judge_evaluation",
+            "format":"judge_format_v1",
+            "topicIn":"judge_in_topic",
+            "topicOut":"results_out",
+            "service":"judge_agent",
+            "fallbacks":[
+                {
+                    "functionName":"",
+                    "functionFormat":""
+                }
+            ]
+        }
+    ]
+}

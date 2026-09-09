@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects — Red-Line</title>
+  <meta name="description" content="Red-Line Security Testing Projects" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">RL</div>
+      <div>
+        <div class="logo-text">Red-Line</div>
+        <div class="logo-sub">SECURITY PLATFORM</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Overview</div>
+      <a class="nav-link" data-page="dashboard.html" href="dashboard.html">
+        Dashboard
+      </a>
+      <div class="nav-section-label">Testing</div>
+      <a class="nav-link" data-page="new-job.html" href="new-job.html">
+        New Attack
+      </a>
+      <a class="nav-link active" data-page="projects.html" href="projects.html">
+        Projects
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-badge">
+        <div class="user-avatar" id="sidebar-avatar">?</div>
+        <span id="sidebar-username" class="text-small"></span>
+      </div>
+      <button onclick="logout()" class="btn btn-sm btn-outline" style="padding:4px 8px; font-size:11px;">
+        Sign out
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-title">Projects</div>
+      <div class="topbar-actions">
+        <a href="new-job.html" class="btn btn-primary btn-sm">New Project / Attack</a>
+      </div>
+    </header>
+
+    <main class="page-body">
+      
+      <div class="card mb-4">
+        <div class="card-header">
+          <span class="card-title">Projects Overview</span>
+          <p class="text-muted text-small" style="text-transform:none; letter-spacing:0; margin-top:6px;">Projects are grouped automatically by the target LLM URL you test.</p>
+        </div>
+        
+        <div id="projects-loader" class="loader-full">
+          <div class="spinner"></div><span>Loading projects...</span>
+        </div>
+        
+        <div id="projects-empty" class="empty-state" style="display:none;">
+          <div class="icon">📁</div>
+          <h3>No projects yet</h3>
+          <p>Launch an attack to automatically create a project for that target.</p>
+          <a href="new-job.html" class="btn btn-primary mt-3">＋ Launch Attack</a>
+        </div>
+        
+        <div id="projects-list" style="display:flex; flex-direction:column; gap:16px;"></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  Auth.require();
+  renderSidebarUser();
+  markActiveSidebarLink();
+
+  async function loadProjects() {
+    const loader = document.getElementById('projects-loader');
+    const empty  = document.getElementById('projects-empty');
+    const list   = document.getElementById('projects-list');
+    
+    try {
+      const data = await api('/projects');
+      loader.style.display = 'none';
+      
+      if (!data || !data.length) {
+        empty.style.display = '';
+        return;
+      }
+      
+      list.innerHTML = data.map(p => `
+        <div class="card" style="border-left: 3px solid var(--accent-blue); padding:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <div>
+              <div style="font-weight:600; font-size:16px; margin-bottom:4px;">${p.project_name || 'Unknown Target'}</div>
+              <div class="text-small text-muted">Last attack: ${fmtRelative(p.last_attack)}</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="text-small text-muted mb-1">Total Attacks Executed</div>
+              <div style="font-size:20px; font-weight:700; font-family:var(--font-code); color:var(--text-primary);">${p.total_jobs}</div>
+            </div>
+          </div>
+          
+          <table style="background:var(--bg-base); border-radius:var(--radius); overflow:hidden;">
+            <thead>
+              <tr>
+                <th>Job Name</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Breaches</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              ${p.jobs.map(j => `
+                <tr>
+                  <td class="mono">${j.job_name || '—'}</td>
+                  <td>${jobTypeBadge(j.job_type)}</td>
+                  <td>${statusBadge(j.status)}</td>
+                  <td class="${j.breaches > 0 ? 'severity-HIGH' : 'text-muted'} mono">${j.breaches || 0}</td>
+                  <td style="text-align:right;">
+                    <a href="job.html?id=${j.job_id}" class="btn btn-sm btn-outline">View Report →</a>
+                    <button onclick="deleteJob('${j.job_id}')" class="btn btn-sm btn-outline" style="border-color:var(--accent-red); color:var(--accent-red); margin-left:5px;">Delete</button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `).join('');
+      
+    } catch (e) {
+      loader.style.display = 'none';
+      Toast.error('Could not load projects: ' + e.message);
+    }
+  }
+
+  loadProjects();
+</script>
+</body>
+</html>
