@@ -8,6 +8,7 @@ import requests
 from sentence_transformers import SentenceTransformer
 from semantic_kernel.connectors.ai.open_ai import OpenAIChatPromptExecutionSettings
 
+from app.config import Config
 from app.graph.state import jbState, Variation
 from app.graph.prompts import (
     IMPROVE_PROMPT,
@@ -17,7 +18,23 @@ from app.graph.prompts import (
     OBSERVER_PROMPT,
     EXTRACT_PROMPT
 )
-from common.kafka_logger import send_transaction_data, send_execution_log
+import sys
+import os
+
+# Ensure repository root is in sys.path so 'common' package can be imported
+_curr = os.path.abspath(os.path.dirname(__file__))
+while _curr and _curr != os.path.dirname(_curr):
+    if os.path.exists(os.path.join(_curr, "common")):
+        if _curr not in sys.path:
+            sys.path.insert(0, _curr)
+        break
+    _curr = os.path.dirname(_curr)
+
+try:
+    from common.kafka_logger import send_transaction_data, send_execution_log
+except ImportError:
+    def send_transaction_data(*args, **kwargs): pass
+    def send_execution_log(*args, **kwargs): pass
 
 def sanitize_state(st: Dict[str, Any]) -> Dict[str, Any]:
     sanitized = {}
@@ -41,7 +58,11 @@ def _log(state: jbState, node_name: str, ret: Dict[str, Any], msg: str = "") -> 
 
 try:
     from common.kernel_factory import build_kernel
-    kernel = build_kernel()
+    kernel = build_kernel(
+        ollama_base_url=Config.OLLAMA_BASE_URL,
+        ollama_model_id=Config.OLLAMA_MODEL_ID,
+        ollama_api_key=Config.OLLAMA_API_KEY
+    )
     print("[+] Kernel ready (Groq)")
 except Exception as e:
     print(f"[!] Kernel init failed ({e}) -> offline fallback mode (templates only).")
