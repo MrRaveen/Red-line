@@ -15,7 +15,23 @@ from app.graph.prompts import (
     GET_RES_OBJECTS_PROMPT,
     OBSERVER_PROMPT
 )
-from common.kafka_logger import send_transaction_data, send_execution_log
+import sys
+import os
+
+# Ensure repository root is in sys.path so 'common' package can be imported
+_curr = os.path.abspath(os.path.dirname(__file__))
+while _curr and _curr != os.path.dirname(_curr):
+    if os.path.exists(os.path.join(_curr, "common")):
+        if _curr not in sys.path:
+            sys.path.insert(0, _curr)
+        break
+    _curr = os.path.dirname(_curr)
+
+try:
+    from common.kafka_logger import send_transaction_data, send_execution_log
+except ImportError:
+    def send_transaction_data(*args, **kwargs): pass
+    def send_execution_log(*args, **kwargs): pass
 
 try:
     from common.kernel_factory import build_kernel
