@@ -1,0 +1,161 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{titlesec}
+
+\titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    
+    {\huge\bfseries IEEE ELEVATE LOCAL PROGRAM \par}
+    \vspace{2cm}
+    
+    {\Large\bfseries PROJECT TITLE \par}
+    {\large Red-line \par}
+    \vspace{1.5cm}
+    
+    {\Large\bfseries DOMAIN \par}
+    {\large Cybersecurity / AI Safety \par}
+    \vspace{1.5cm}
+    
+    {\Large\bfseries GROUP NUMBER \par}
+    {\large [Your Group Number] \par}
+    \vspace{1.5cm}
+    
+    {\Large\bfseries MENTOR NAME \par}
+    {\large [Your Mentor Name] \par}
+    \vspace{1.5cm}
+    
+    {\Large\bfseries MENTEE NAMES \par}
+    {\large [Mentee 1, Mentee 2, ...] \par}
+    \vspace{1.5cm}
+    
+    {\Large\bfseries SUBMISSION DATE \par}
+    {\large \today \par}
+    
+    \vfill
+\end{titlepage}
+
+\newpage
+
+\section*{Project overview}
+\addcontentsline{toc}{section}{Project overview}
+
+\subsection*{PROJECT}
+Red-line
+
+\subsection*{BACKGROUND}
+Red-line is an advanced, microservices-based system designed to simulate, manage, and evaluate various types of adversarial attacks on Large Language Models (LLMs). The platform tests against critical vulnerabilities such as hallucination (forcing fabricated responses), jailbreaking (bypassing safety guardrails using persona adoption and payload splitting), Personal Identifiable Information (PII) extraction (exploiting verbatim sequence memorization), and prompt injection (overriding core system instructions).
+
+\subsection*{PROBLEM STATEMENT}
+As LLMs are increasingly integrated into critical applications, they remain highly vulnerable to adversarial attacks and safety guardrail bypasses. There is a pressing need for a comprehensive, automated testing platform to systematically evaluate LLMs against these sophisticated vulnerabilities before they are deployed in production environments.
+
+\subsection*{WHY THIS PROJECT IS IMPORTANT}
+Ensuring LLMs are safe, secure, and robust against malicious usage is vital for protecting user privacy and maintaining system integrity. By simulating persistent attacks like PII exfiltration and prompt injection in a controlled environment, this project helps developers identify and mitigate vulnerabilities, preventing potential data breaches and unintended model behaviors in the real world.
+
+\subsection*{OBJECTIVES}
+To build a decentralized, highly scalable platform that simulates, manages, and evaluates diverse attacks on LLMs. The project aims to achieve this by leveraging asynchronous event streaming, specialized attack microservices, and a custom web dashboard for real-time monitoring and configuration.
+
+\section*{Project scope}
+\addcontentsline{toc}{section}{Project scope}
+
+\subsection*{WHAT THE PROJECT COVERS}
+The project covers a comprehensive testing platform that includes:
+\begin{itemize}
+    \item Simulation of specific attack vectors: PII Exfiltration, Jailbreak Attacks, Prompt Injection, and Hallucination.
+    \item A decentralized microservices architecture utilizing Docker containerization and Apache Kafka for asynchronous event streaming.
+    \item A SAGA orchestrator for complex distributed state management and transaction rollback.
+    \item An independent AI Judge agent responsible for evaluating the success of the attacks and generating actionable insights.
+    \item A fully custom frontend web dashboard for configuring tests, launching jobs, and viewing real-time logs.
+\end{itemize}
+
+\subsection*{FEATURES IMPLEMENTED}
+\begin{itemize}
+    \item \textbf{Authentication and Dashboard:} Secure login, registration, and a central dashboard providing overviews of total jobs and detected breaches.
+    \item \textbf{Attack Configuration Engine:} Interface for configuring and launching specific attacks against target LLM endpoints.
+    \item \textbf{Live Monitoring:} Real-time streaming of execution logs detailing complex state machine workflows.
+    \item \textbf{Transaction Tracking:} Deep-dive transaction records displaying structured JSON payloads for each attack step and AI Judge observation.
+    \item \textbf{Vulnerability Reports:} High-level reports summarizing tested categories, detected breaches, overall risk levels, and AI Judge insights.
+    \item \textbf{Infrastructure Monitoring:} Visibility into active microservices, Kafka message brokers, and Redis cache.
+\end{itemize}
+
+\subsection*{LIMITATIONS (IF ANY)}
+The system primarily operates in a simulated environment focused on text-based adversarial inputs for LLMs and does not currently evaluate multimodal vulnerabilities.
+
+\section*{Technologies used}
+\addcontentsline{toc}{section}{Technologies used}
+
+\subsection*{PROGRAMMING LANGUAGES}
+Python, JavaScript, HTML5, CSS3
+
+\subsection*{FRAMEWORKS}
+Flask (served via Gunicorn), Faust (for stream processing), Celery (for task queues)
+
+\subsection*{DATABASE}
+Redis (caching and broker), MongoDB (persistent storage)
+
+\subsection*{APIS}
+gRPC, Protocol Buffers (Protobuf)
+
+\subsection*{TOOLS}
+Docker, Docker Compose, Apache Kafka, Git
+
+\subsection*{HARDWARE (IF APPLICABLE)}
+Standard compute infrastructure suitable for containerized applications.
+
+\section*{Implementation}
+\addcontentsline{toc}{section}{Implementation}
+
+\subsection*{DEVELOPMENT PROCESS}
+The system was engineered utilizing a decentralized microservices architecture to ensure scalability and fault tolerance. Docker was employed for seamless containerization across all services. Apache Kafka was integrated as the central message broker to handle asynchronous event streaming, allowing services to operate non-blockingly. To guarantee robust and typed data exchanges between the disparate services, the communication was rigorously structured using gRPC and Protocol Buffers. A frontend interface was built using native web technologies (HTML, CSS, JS) to interact with the backend services seamlessly.
+
+\subsection*{MAJOR MODULES}
+\begin{itemize}
+    \item \textbf{Attack Services}: Independent, specialized microservices dedicated to specific vectors (\texttt{hallucination\_attack}, \texttt{jailbreak\_attack}, \texttt{PII\_extraction\_attack}, and \texttt{prompt\_injection\_attack}).
+    \item \textbf{Core Services}: The operational backbone, featuring the \texttt{main\_service} for general routing, \texttt{judge\_agent} for LLM evaluation, and \texttt{SAGA\_orchestrator} for managing distributed attack workflows.
+    \item \textbf{Event Streaming \& Data Pipeline}: An Apache Kafka message broker integrated with Faust stream processors and Celery task queues. This pipeline is supported by the \texttt{preprocessor\_service}, \texttt{log\_processor\_service}, and \texttt{realtime\_data\_service} to handle ingestion and presentation.
+    \item \textbf{Frontend Application}: A web-based GUI offering an intuitive dashboard, job configuration views, and real-time logging interfaces.
+\end{itemize}
+
+\subsection*{FEATURES COMPLETED}
+Successful implementation of decentralized orchestration via the SAGA pattern, a suite of independent attack generation microservices, real-time Python-based stream processing, an automated AI Judge evaluator, and a comprehensive frontend monitoring and logging dashboard.
+
+\section*{Challenges faced}
+\addcontentsline{toc}{section}{Challenges faced}
+
+\subsection*{TECHNICAL ISSUES}
+Coordinating state and managing transaction rollbacks reliably across distributed, independent microservices was highly complex. Ensuring structured and efficient communication over asynchronous event streams without message loss or duplication presented significant technical hurdles. Furthermore, parsing complex, unstructured outputs from target LLMs for the AI Judge to evaluate required sophisticated prompt engineering and validation logic.
+
+\subsection*{TEAM CHALLENGES}
+Managing the intricate setup of a decentralized system and debugging failures that spanned across multiple isolated microservices required high coordination, unified logging strategies, and clear interface definitions (via Protobuf) among team members. 
+
+\subsection*{TIME MANAGEMENT}
+Handling the asynchronous flows and ensuring that complex, multi-step orchestrated workflows (such as sequential jailbreak attempts followed by PII extraction) finished within acceptable timeframes without blocking system resources proved challenging to balance alongside tight development schedules.
+
+\subsection*{HOW THEY SOLVED THEM}
+The team resolved the distributed state complexity by implementing the SAGA pattern via a dedicated \texttt{SAGA\_orchestrator} microservice, effectively managing transactions and coordinating state reliably. They utilized Faust for robust, scalable Python-based stream processing and strictly enforced structured data flows across all services using gRPC and Protocol Buffers. To address debugging challenges, real-time logging and deep-dive transaction views were integrated directly into the custom frontend dashboard, drastically improving observability.
+
+\section*{Final outcome}
+\addcontentsline{toc}{section}{Final outcome}
+
+\subsection*{FINAL OUTCOME}
+The team delivered a fully functional, highly scalable, and decentralized microservices platform. The Red-line platform stands as a robust tool capable of evaluating LLM vulnerabilities against complex adversarial attacks, complete with an interactive user interface for configuration and monitoring.
+
+\subsection*{TESTING}
+SAGA workflows and inter-service communication were thoroughly evaluated through comprehensive end-to-end test scripts (e.g., testing hallucination, PII, jailbreak, and prompt injection workflows independently). Further manual testing was performed via the web dashboard to ensure correct real-time log ingestion.
+
+\subsection*{PERFORMANCE}
+The event-driven asynchronous architecture (backed by Kafka and Redis) ensures non-blocking, highly performant execution of multiple parallel attack scenarios. The system smoothly scales out attack agents and Celery workers as load increases.
+
+\subsection*{ACHIEVEMENTS}
+Successfully built an automated, AI-driven judge to independently assess LLM outputs alongside a robust SAGA orchestration system, resulting in a state-of-the-art AI security evaluation tool.
+
+\end{document}
