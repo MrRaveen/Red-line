@@ -62,7 +62,8 @@ def find_elbow(tokenScoresTupple: list[tuple[str, float]]) -> tuple[int, float]:
     y = scores
     p1 = np.array([x[0], y[0]])
     p2 = np.array([x[-1], y[-1]])
-    line_vec = p2 - p1
+    line_vec = p2 - p1 #displacement vector from unit vectors - change of direction 
+    #between the p1 and p2 vectors (unit)
     line_vec_norm = line_vec / np.linalg.norm(line_vec)
     distances = []
     for i in range(n):
@@ -72,7 +73,7 @@ def find_elbow(tokenScoresTupple: list[tuple[str, float]]) -> tuple[int, float]:
         proj_point = p1 + proj_length * line_vec_norm
         dist = np.linalg.norm(p - proj_point)
         distances.append(dist)
-    elbow_idx = int(np.argmax(distances))
+    elbow_idx = int(np.argmax(distances))#maximum distance (elbow point as maximum number) from start and end of the curve
     return elbow_idx, scores[elbow_idx]
 
 THINK_RE = re.compile(r'<\s*think\s*>.*?<\s*/\s*think\s*>', re.DOTALL | re.IGNORECASE)
