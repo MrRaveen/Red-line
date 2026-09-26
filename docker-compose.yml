@@ -78,50 +78,50 @@ services:
     restart: always
 
   # ========== PII EXTRACTION ATTACK SERVICES ==========
-  pii-api:
-    build:
-      context: .
-      dockerfile: PII_extraction_attack/Dockerfile
-    ports:
-      - "8002:8002"
-    env_file:
-       - .env
-    volumes:
-      - ./PII_extraction_attack/app:/app/app
-      - ./PII_extraction_attack/wsgi.py:/app/wsgi.py
-      - ./PII_extraction_attack/run.py:/app/run.py
-      - ./common:/app/common
-    command: ["gunicorn", "--bind", "0.0.0.0:8002", "wsgi:app"]
-    restart: always
+  # pii-api:
+  #   build:
+  #     context: .
+  #     dockerfile: PII_extraction_attack/Dockerfile
+  #   ports:
+  #     - "8002:8002"
+  #   env_file:
+  #      - .env
+  #   volumes:
+  #     - ./PII_extraction_attack/app:/app/app
+  #     - ./PII_extraction_attack/wsgi.py:/app/wsgi.py
+  #     - ./PII_extraction_attack/run.py:/app/run.py
+  #     - ./common:/app/common
+  #   command: ["gunicorn", "--bind", "0.0.0.0:8002", "wsgi:app"]
+  #   restart: always
 
-  pii-consumer:
-    build:
-      context: .
-      dockerfile: PII_extraction_attack/Dockerfile
-    env_file:
-       - .env
-    volumes:
-      - ./PII_extraction_attack/app:/app/app
-      - ./PII_extraction_attack/wsgi.py:/app/wsgi.py
-      - ./PII_extraction_attack/run.py:/app/run.py
-      - ./common:/app/common
-    command: ["python", "-m", "app.consumer.v1_consumer"]
-    restart: always
+  # pii-consumer:
+  #   build:
+  #     context: .
+  #     dockerfile: PII_extraction_attack/Dockerfile
+  #   env_file:
+  #      - .env
+  #   volumes:
+  #     - ./PII_extraction_attack/app:/app/app
+  #     - ./PII_extraction_attack/wsgi.py:/app/wsgi.py
+  #     - ./PII_extraction_attack/run.py:/app/run.py
+  #     - ./common:/app/common
+  #   command: ["python", "-m", "app.consumer.v1_consumer"]
+  #   restart: always
 
-  pii-celery:
-    build:
-      context: .
-      dockerfile: PII_extraction_attack/Dockerfile
-    env_file:
-       - .env
-    volumes:
-      - ./PII_extraction_attack/app:/app/app
-      - ./PII_extraction_attack/wsgi.py:/app/wsgi.py
-      - ./PII_extraction_attack/run.py:/app/run.py
-      - ./PII_extraction_attack/run_worker.py:/app/run_worker.py
-      - ./common:/app/common
-    command: ["python", "run_worker.py"]
-    restart: always
+  # pii-celery:
+  #   build:
+  #     context: .
+  #     dockerfile: PII_extraction_attack/Dockerfile
+  #   env_file:
+  #      - .env
+  #   volumes:
+  #     - ./PII_extraction_attack/app:/app/app
+  #     - ./PII_extraction_attack/wsgi.py:/app/wsgi.py
+  #     - ./PII_extraction_attack/run.py:/app/run.py
+  #     - ./PII_extraction_attack/run_worker.py:/app/run_worker.py
+  #     - ./common:/app/common
+  #   command: ["python", "run_worker.py"]
+  #   restart: always
 
   # ========== JAILBREAK ATTACK SERVICES ==========
   # jailbreak-api:
@@ -216,60 +216,60 @@ services:
   #   restart: always
 
   # ========== PROMPT INJECTION ATTACK NEW SERVICES ==========
-  # prompt-new-api:
-  #   build:
-  #     context: .
-  #     dockerfile: prompt_injection_attack_new/Dockerfile
-  #   env_file:
-  #     - .env
-  #   ports:
-  #     - "8005:8005"
-  #   environment:
-  #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-  #     - DATABASE_URI=mongodb://db:27017
-  #   volumes:
-  #     - ./prompt_injection_attack_new/app:/app/app
-  #     - ./prompt_injection_attack_new/wsgi.py:/app/wsgi.py
-  #     - ./prompt_injection_attack_new/run.py:/app/run.py
-  #     - ./common:/app/common
-  #   command: ["gunicorn", "--bind", "0.0.0.0:8005", "wsgi:app"]
-  #   restart: always
+  prompt-new-api:
+    build:
+      context: .
+      dockerfile: prompt_injection_attack_new/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "8005:8005"
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - DATABASE_URI=mongodb://db:27017
+    volumes:
+      - ./prompt_injection_attack_new/app:/app/app
+      - ./prompt_injection_attack_new/wsgi.py:/app/wsgi.py
+      - ./prompt_injection_attack_new/run.py:/app/run.py
+      - ./common:/app/common
+    command: ["gunicorn", "--bind", "0.0.0.0:8005", "wsgi:app"]
+    restart: always
 
-  # prompt-new-consumer:
-  #   build:
-  #     context: .
-  #     dockerfile: prompt_injection_attack_new/Dockerfile
-  #   env_file:
-  #     - .env
-  #   environment:
-  #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-  #     - PROMPT_REQ_TOPIC=prompt_req_topic
-  #   volumes:
-  #     - ./prompt_injection_attack_new/app:/app/app
-  #     - ./prompt_injection_attack_new/wsgi.py:/app/wsgi.py
-  #     - ./prompt_injection_attack_new/run.py:/app/run.py
-  #     - ./common:/app/common
-  #   command: ["python", "-m", "app.consumer.v1_consumer"]
-  #   restart: always
+  prompt-new-consumer:
+    build:
+      context: .
+      dockerfile: prompt_injection_attack_new/Dockerfile
+    env_file:
+      - .env
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - PROMPT_REQ_TOPIC=prompt_req_topic
+    volumes:
+      - ./prompt_injection_attack_new/app:/app/app
+      - ./prompt_injection_attack_new/wsgi.py:/app/wsgi.py
+      - ./prompt_injection_attack_new/run.py:/app/run.py
+      - ./common:/app/common
+    command: ["python", "-m", "app.consumer.v1_consumer"]
+    restart: always
 
-  # prompt-new-celery:
-  #   build:
-  #     context: .
-  #     dockerfile: prompt_injection_attack_new/Dockerfile
-  #   env_file:
-  #     - .env
-  #   environment:
-  #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-  #     - DATABASE_URI=mongodb://db:27017
-  #     - REDIS_HOST=redis
-  #   volumes:
-  #     - ./prompt_injection_attack_new/app:/app/app
-  #     - ./prompt_injection_attack_new/wsgi.py:/app/wsgi.py
-  #     - ./prompt_injection_attack_new/run.py:/app/run.py
-  #     - ./prompt_injection_attack_new/run_worker.py:/app/run_worker.py
-  #     - ./common:/app/common
-  #   command: ["python", "run_worker.py"]
-  #   restart: always
+  prompt-new-celery:
+    build:
+      context: .
+      dockerfile: prompt_injection_attack_new/Dockerfile
+    env_file:
+      - .env
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - DATABASE_URI=mongodb://db:27017
+      - REDIS_HOST=redis
+    volumes:
+      - ./prompt_injection_attack_new/app:/app/app
+      - ./prompt_injection_attack_new/wsgi.py:/app/wsgi.py
+      - ./prompt_injection_attack_new/run.py:/app/run.py
+      - ./prompt_injection_attack_new/run_worker.py:/app/run_worker.py
+      - ./common:/app/common
+    command: ["python", "run_worker.py"]
+    restart: always
 
   # ========== PREPROCESSOR SERVICE ==========
   preprocessor-consumer:
