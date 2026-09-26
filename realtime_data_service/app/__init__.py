@@ -1,7 +1,9 @@
 from flask import Flask
+from flask_cors import CORS
 
 def create_app(config_class=None):
     app = Flask(__name__)
+    CORS(app)
     
     # Load configuration, initialize extensions here
     
