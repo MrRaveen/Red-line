@@ -1,39 +1,86 @@
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
 
+import { authService } from './services/authService';
+
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(authService.isAuthenticated());
 
   if (!isLoggedIn) {
-    return <Login onLogin={() => setIsLoggedIn(true)} />;
+    return <Auth onLogin={() => setIsLoggedIn(true)} />;
   }
 
-  return <Dashboard onLogout={() => setIsLoggedIn(false)} />;
+  const handleLogout = () => {
+    authService.logout();
+    setIsLoggedIn(false);
+  };
+
+  return <Dashboard onLogout={handleLogout} />;
 }
 
-function Login({ onLogin }: { onLogin: () => void }) {
-  const handleLogin = (e: React.FormEvent) => {
+function Auth({ onLogin }: { onLogin: () => void }) {
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // fake login
-    onLogin();
+    setError('');
+
+    try {
+      if (isLogin) {
+        const res = await authService.login(email, password);
+        if (res.ok) {
+          onLogin();
+        } else {
+          setError(res.data.message || 'Login failed');
+        }
+      } else {
+        const res = await authService.register(username, email, password);
+        if (res.status === 'success') {
+          // auto login after register or just switch to login tab
+          setIsLogin(true);
+          setError('Account created! Please login.');
+        } else {
+          setError(res.message || 'Registration failed');
+        }
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+    }
   };
 
   return (
     <div className="login-container">
       <div className="login-box">
-        <h2>Welcome Back</h2>
-        <p>Please enter your credentials to access the dashboard.</p>
-        <form onSubmit={handleLogin}>
+        <h2>{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
+        <p>{isLogin ? 'Please enter your credentials to access the dashboard.' : 'Sign up to get started.'}</p>
+        
+        {error && <div style={{ color: error.includes('created') ? 'green' : 'red', marginBottom: '1rem' }}>{error}</div>}
+
+        <form onSubmit={handleSubmit}>
+          {!isLogin && (
+            <div className="input-group">
+              <label>Username</label>
+              <input type="text" required value={username} onChange={e => setUsername(e.target.value)} placeholder="Username" />
+            </div>
+          )}
           <div className="input-group">
-            <label>Username</label>
-            <input type="text" required placeholder="admin" />
+            <label>Email</label>
+            <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="email@example.com" />
           </div>
           <div className="input-group">
             <label>Password</label>
-            <input type="password" required placeholder="••••••••" />
+            <input type="password" required value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" />
           </div>
-          <button type="submit" className="primary-btn">Login</button>
+          <button type="submit" className="primary-btn">{isLogin ? 'Login' : 'Register'}</button>
         </form>
+        
+        <p style={{ marginTop: '1rem', cursor: 'pointer', color: '#007bff' }} onClick={() => { setIsLogin(!isLogin); setError(''); }}>
+          {isLogin ? "Don't have an account? Register" : "Already have an account? Login"}
+        </p>
       </div>
     </div>
   );

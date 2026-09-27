@@ -1,4 +1,4 @@
-Flask==3.0.0
+flask==2.2.5
 gunicorn==21.2.0
 celery
 redis
@@ -7,3 +7,7 @@ pydantic
 pymongo
 python-dotenv
 flask-cors
+Flask-JWT-Extended
+Flask-MongoEngine
+mongoengine
+werkzeug==2.2.3

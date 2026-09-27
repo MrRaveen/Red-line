@@ -7,7 +7,6 @@ from bson.objectid import ObjectId
 from bson import json_util
 from pymongo import MongoClient, DESCENDING, ASCENDING
 from app.config import Config
-from app.models.user import create_user, check_user
 from app.core.models.job import jobs_collection, including_jobs_collection, JobType
 
 dashboard_bp = Blueprint('dashboard', __name__)
@@ -42,33 +41,33 @@ def _user():
 # AUTH
 # ==================================================================
 
-@dashboard_bp.route('/auth/register', methods=['POST'])
-def register():
-    data = request.get_json() or {}
-    username = data.get("username", "").strip()
-    password = data.get("password", "").strip()
-    email = data.get("email", "").strip()
-    if not username or not password:
-        return jsonify({"error": "username and password required"}), 400
-    uid, err = create_user(username, email, password)
-    if err:
-        return jsonify({"error": err}), 409
-    return jsonify({"message": "Account created", "userID": username}), 201
+# @dashboard_bp.route('/auth/register', methods=['POST'])
+# def register():
+#     data = request.get_json() or {}
+#     username = data.get("username", "").strip()
+#     password = data.get("password", "").strip()
+#     email = data.get("email", "").strip()
+#     if not username or not password:
+#         return jsonify({"error": "username and password required"}), 400
+#     uid, err = create_user(username, email, password)
+#     if err:
+#         return jsonify({"error": err}), 409
+#     return jsonify({"message": "Account created", "userID": username}), 201
 
 
-@dashboard_bp.route('/auth/login', methods=['POST'])
-def login():
-    data = request.get_json() or {}
-    username = data.get("username", "").strip()
-    password = data.get("password", "").strip()
-    user = check_user(username, password)
-    if not user:
-        return jsonify({"error": "Invalid credentials"}), 401
-    return jsonify({
-        "message": "Login successful",
-        "userID": username,
-        "email": user.get("email", "")
-    }), 200
+# @dashboard_bp.route('/auth/login', methods=['POST'])
+# def login():
+#     data = request.get_json() or {}
+#     username = data.get("username", "").strip()
+#     password = data.get("password", "").strip()
+#     user = check_user(username, password)
+#     if not user:
+#         return jsonify({"error": "Invalid credentials"}), 401
+#     return jsonify({
+#         "message": "Login successful",
+#         "userID": username,
+#         "email": user.get("email", "")
+#     }), 200
 
 
 # ==================================================================
