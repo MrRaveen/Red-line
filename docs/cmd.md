@@ -4,7 +4,7 @@
 - Windows configuration
   - python -m venv .venv
   - ./script/run_all.sh
-  - .\.venv\Scripts\Activate.ps1
+  - 
 
 - Create a testing topic (kafka-stream)
 docker exec -it kafka kafka-topics --create \
