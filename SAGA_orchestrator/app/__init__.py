@@ -28,8 +28,10 @@ def create_app(config_class=None):
     # Register blueprints
     from .api.v1_routes import v1_bp
     app.register_blueprint(v1_bp, url_prefix='/api/v1')
-    from .api.dashboard_routes import dashboard_bp
-    app.register_blueprint(dashboard_bp, url_prefix='/api/dashboard')
+    # from .api.dashboard_routes import dashboard_bp
+    # app.register_blueprint(dashboard_bp, url_prefix='/api/dashboard')
     from .api.auth_routes import auth_routes_bp
     app.register_blueprint(auth_routes_bp,url_prefix='/api/auth')
+    from .api.dashboard_routes_v2 import dashboard_bp_v2
+    app.register_blueprint(dashboard_bp_v2,url_prefix='/api/dashboard')
     return app

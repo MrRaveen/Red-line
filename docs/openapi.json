@@ -1,0 +1,40 @@
+{
+  "name":"/all_attacks",
+  "structure":[
+    {
+      "_id": {
+        "$oid": "6aa0535018bf74852a4a5ee7"
+      },
+      "targetURL": "http://host.docker.internal:4002/api/generate",
+      "job_name": "test",
+      "description": "test2",
+      "job_type": "PII exfilteration attack",
+      "workflowID": "pii_extraction_v1",
+      "created_date": "2026-09-08T18:26:24.621592",
+      "job_status": "FINISHED",
+      "breachedCount": 0,
+      "totalExecutedCategories": 0,
+      "nonBreachedCategories": 0
+    }
+  ],
+  "name":"/execution-logs/<id:job_id>",
+  "structure":[
+    {
+  "_id": {
+    "$oid": "6ab73e0c97f31ee918db90f7"
+  },
+  "timestamp": "2026-09-26T03:37:48.066801",
+  "log_level": "INFO",
+  "message_type": "divide",
+  "message_text": "Extracted Objects: [('instruction', 0.6036921739578247), ('instruction', 0.5599683523178101), ('preceding', 0.27689626812934875), ('custom', 0.25095587968826294), ('complete', 0.22406724095344543)]",
+  "attack_prompt": null,
+  "target_response": null,
+  "status_code": null,
+  "verdict": null,
+  "evidence": null,
+  "extra_observations": null,
+  "userID": "ravin",
+  "job_id": "6ab73db77a897ff660c0d06e"
+}
+  ]
+}
