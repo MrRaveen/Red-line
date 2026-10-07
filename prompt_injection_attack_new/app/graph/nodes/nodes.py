@@ -3,6 +3,15 @@ import json
 from typing import Any, Dict, List, Optional
 import requests
 import numpy as np
+import os
+import sys
+
+# Ensure the root directory 'Red-line' is in the Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../")))
+# Ensure 'prompt_injection_attack_new' is in the Python path so 'app' can be found
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../")))
+
+from common.enums.JobTypeEnum import JobType
 import re
 from app.config import Config
 from sentence_transformers import SentenceTransformer
@@ -17,6 +26,7 @@ from app.graph.prompts import (
 )
 import sys
 import os
+from datetime import datetime
 
 # Ensure repository root is in sys.path so 'common' package can be imported
 _curr = os.path.abspath(os.path.dirname(__file__))
@@ -228,9 +238,12 @@ async def planByDividing(state: graphState) -> Dict[str, Any]:
         "node_name": "planByDividing",
         "state_before": sanitize_state(state),
         "state_after": sanitize_state(ret),
-        "variation_count": state.get("variationCount"),
-        "inc_variation_count": state.get("incVariationCount"),
-        "breach_detected": state.get("breachDetected")
+        "timestamp": datetime.utcnow().isoformat(),
+        "extra_observations": None,
+        "job_type": JobType.PROMPT_INJECTION
+        # "variation_count": state.get("variationCount"),
+        # "inc_variation_count": state.get("incVariationCount"),
+        # "breach_detected": state.get("breachDetected")
     })
     return ret
 
@@ -279,9 +292,13 @@ async def improve_words(state: graphState) -> Dict[str, Any]:
         "node_name": "improve_words",
         "state_before": sanitize_state(state),
         "state_after": sanitize_state(ret),
-        "variation_count": state.get("variationCount"),
-        "inc_variation_count": state.get("incVariationCount"),
-        "breach_detected": state.get("breachDetected")
+        "timestamp": datetime.utcnow().isoformat(),
+        "extra_observations": None,
+        "job_type": JobType.PROMPT_INJECTION
+        # "variation_count": state.get("variationCount"),
+        # "variations": state.get("variations"),
+        # "inc_variation_count": state.get("incVariationCount"),
+        # "breach_detected": state.get("breachDetected")
     })
     return ret
 
@@ -376,9 +393,13 @@ async def improve_phrase(state: graphState) -> Dict[str, Any]:
         "node_name": "improve_phrase",
         "state_before": sanitize_state(state),
         "state_after": sanitize_state(ret),
-        "variation_count": state.get("variationCount"),
-        "inc_variation_count": state.get("incVariationCount"),
-        "breach_detected": state.get("breachDetected")
+        "timestamp": datetime.utcnow().isoformat(),
+        "extra_observations": None,
+        "job_type": JobType.PROMPT_INJECTION
+        # "variation_count": state.get("variationCount"),
+        # "variations": state.get("variations"),
+        # "inc_variation_count": state.get("incVariationCount"),
+        # "breach_detected": state.get("breachDetected")
     })
     return ret
 
@@ -493,9 +514,13 @@ async def performJobProcess(state: graphState) -> Dict[str, Any]:
         "node_name": "performJobProcess",
         "state_before": sanitize_state(state),
         "state_after": sanitize_state(ret),
-        "variation_count": state.get("variationCount"),
-        "inc_variation_count": state.get("incVariationCount"),
-        "breach_detected": state.get("breachDetected")
+        "timestamp": datetime.utcnow().isoformat(),
+        "extra_observations": None,
+        "job_type": JobType.PROMPT_INJECTION
+        # "variation_count": state.get("variationCount"),
+        # "variations": state.get("variations"),
+        # "inc_variation_count": state.get("incVariationCount"),
+        # "breach_detected": state.get("breachDetected")
     })
     return ret
 
@@ -533,9 +558,13 @@ async def getResponseObjects(state: graphState) -> Dict[str, Any]:
         "node_name": "getResponseObjects",
         "state_before": sanitize_state(state),
         "state_after": sanitize_state(ret),
-        "variation_count": state.get("variationCount"),
-        "inc_variation_count": state.get("incVariationCount"),
-        "breach_detected": state.get("breachDetected")
+        "timestamp": datetime.utcnow().isoformat(),
+        "extra_observations": None,
+        "job_type": JobType.PROMPT_INJECTION
+        # "variation_count": state.get("variationCount"),
+        # "variations": state.get("variations"),
+        # "inc_variation_count": state.get("incVariationCount"),
+        # "breach_detected": state.get("breachDetected")
     })
     return ret
 
@@ -584,9 +613,13 @@ async def observer(state: graphState) -> Dict[str, Any]:
                     "node_name": "observer",
                     "state_before": sanitize_state(state),
                     "state_after": sanitize_state(ret),
-                    "variation_count": state.get("variationCount"),
-                    "inc_variation_count": ret.get("incVariationCount", state.get("incVariationCount")),
-                    "breach_detected": ret.get("breachDetected")
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "extra_observations": None,
+                    "job_type": JobType.PROMPT_INJECTION
+                    # "variation_count": state.get("variationCount"),
+                    # "variations": state.get("variations"),
+                    # "inc_variation_count": ret.get("incVariationCount", state.get("incVariationCount")),
+                    # "breach_detected": ret.get("breachDetected")
                 })
                 return ret
             print("[!] Observer returned no parseable JSON -> heuristic fallback")
@@ -628,9 +661,13 @@ async def observer(state: graphState) -> Dict[str, Any]:
         "node_name": "observer",
         "state_before": sanitize_state(state),
         "state_after": sanitize_state(ret),
-        "variation_count": state.get("variationCount"),
-        "inc_variation_count": ret.get("incVariationCount", state.get("incVariationCount")),
-        "breach_detected": ret.get("breachDetected")
+        "timestamp": datetime.utcnow().isoformat(),
+        "extra_observations": None,
+        "job_type": JobType.PROMPT_INJECTION
+        # "variation_count": state.get("variationCount"),
+        # "variations": state.get("variations"),
+        # "inc_variation_count": ret.get("incVariationCount", state.get("incVariationCount")),
+        # "breach_detected": ret.get("breachDetected")
     })
     return ret
 
@@ -643,12 +680,40 @@ async def completeProcess(state: graphState) -> Dict[str, Any]:
     send_transaction_data({
         "job_id": state.get("job_ID"),
         "userID": state.get("userID"),
-        "node_name": "completeProcess",
+        "node_name": "completeProcessAdopt",
         "state_before": sanitize_state(state),
         "state_after": sanitize_state(ret),
-        "variation_count": ret.get("variationCount"),
-        "inc_variation_count": state.get("incVariationCount"),
-        "breach_detected": state.get("breachDetected")
+        "timestamp": datetime.utcnow().isoformat(),
+        "extra_observations": None,
+        "job_type":JobType.PROMPT_INJECTION
+        # "variation_count": ret.get("variationCount"),
+        # "variations":state.get("variations"),
+        # "inc_variation_count": state.get("incVariationCount"),
+        # "breach_detected": state.get("breachDetected")
     })
     #"state_after": sanitize_state({**state, **ret}),
     return ret
+
+async def final(state: graphState) -> Dict[str, Any]:
+    ret = {
+        "isFirst": False,
+        "previousInputPrompt": state.get("currentInputPrompt"),
+        "variationCount": (state.get("variationCount") or 0) + 1,
+    }
+    send_transaction_data({
+        "job_id": state.get("job_ID"),
+        "userID": state.get("userID"),
+        "node_name": "completeProcess",
+        "state_before": sanitize_state(state),
+        "state_after": sanitize_state(ret),
+        "timestamp": datetime.utcnow().isoformat(),
+        "extra_observations": None,
+        "job_type":JobType.PROMPT_INJECTION
+        # "variation_count": ret.get("variationCount"),
+        # "variations":state.get("variations"),
+        # "inc_variation_count": state.get("incVariationCount"),
+        # "breach_detected": state.get("breachDetected")
+    })
+    #"state_after": sanitize_state({**state, **ret}),
+    return ret
+

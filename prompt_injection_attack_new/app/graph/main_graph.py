@@ -10,9 +10,12 @@ from app.graph.nodes.nodes import (
     getResponseObjects,
     observer,
     completeProcess,
+    final,
     MAX_VARIATIONS
 )
 from common.kafka_logger import send_transaction_data, send_execution_log
+from datetime import datetime
+from common.enums.JobTypeEnum import JobType
 
 def decidePhase(state: graphState) -> str:
     inc = state.get("incVariationCount") or 0
@@ -56,9 +59,9 @@ def decidePhase(state: graphState) -> str:
         "node_name": "decidePhase",
         "state_before": sanitize_state(state),
         "state_after": {"decision": ret},
-        "variation_count": state.get("variationCount"),
-        "inc_variation_count": state.get("incVariationCount"),
-        "breach_detected": state.get("breachDetected")
+        "timestamp": datetime.utcnow().isoformat(),
+        "extra_observations": None,
+        "job_type": JobType.PROMPT_INJECTION
     })
     
     return ret
@@ -73,6 +76,7 @@ def build_attack_graph() -> StateGraph:
     workflow.add_node("extract_objects", getResponseObjects)
     workflow.add_node("observe", observer)
     workflow.add_node("adapt", completeProcess)
+    workflow.add_node("finalize", final)
 
     workflow.set_entry_point("divide")
     workflow.add_edge("divide", "improve_words")
@@ -83,9 +87,10 @@ def build_attack_graph() -> StateGraph:
     workflow.add_conditional_edges(
         "observe",
         decidePhase,
-        {"adapt": "adapt", "end": END},
+        {"adapt": "adapt", "end": "finalize"},
     )
     workflow.add_edge("adapt", "divide")
+    workflow.add_edge("finalize", END)   
 
     return workflow
 

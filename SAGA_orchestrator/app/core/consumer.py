@@ -57,10 +57,11 @@ def start_consumer():
                     try:
                         data = json.loads(msg.value) if isinstance(msg.value, str) else msg.value
                         
+                        state_before = data.get("state_before", {})
                         state_after = data.get("state_after", {})
-                        job_id = state_after.get("job_ID") or data.get("job_id")
-                        including_job_id = state_after.get("including_job_id") or data.get("including_job_id")
-                        user_id = state_after.get("userID") or data.get("userID")
+                        job_id = data.get("job_id") or data.get("job_ID") or state_before.get("job_ID")
+                        including_job_id = state_before.get("including_job_id") or data.get("including_job_id")
+                        user_id = data.get("userID") or state_before.get("userID")
                         
                         if not job_id or not including_job_id:
                             logger.error(f"Event missing job_id or including_job_id: {data}")
@@ -102,35 +103,19 @@ def start_consumer():
                             
                             # 6. Format the payload if a format is specified
                             payload_data = data.copy()
-                            payload_data["including_job_id"] = new_including_job_id
+                            payload_data["including_job_id"] = str(new_including_job_id)
                             payload_data["job_id"] = job_id
                             payload_data["userID"] = user_id
                             
+                            # Inject fields required by JudgeFormatV1
+                            payload_data["node_name"] = "saga_orchestrator"
+                            # payload_data["job_type"] = parent_job.get("jobType")
+                            
                             if next_step["name"] == "judge_evaluation":
-                                state_after = data.get("state_after", {})
-                                state_before = data.get("state_before", {})
-                                
-                                target_url = state_after.get("target_url")
-                                if not target_url:
-                                    target_url = state_before.get("target_url")
-                                payload_data["target_url"] = target_url
-                                
-                                budget = state_after.get("budget")
-                                if budget is None:
-                                    budget = state_before.get("budget", 3)
-                                payload_data["budget"] = budget
-                                
-                                inc_var = state_after.get("incVariationCount")
-                                if inc_var is None:
-                                    inc_var = state_after.get("number_of_breaches", 0)
-                                payload_data["total_breaches"] = inc_var
-                                
-                                attempts = state_after.get("variations")
-                                if attempts is None:
-                                    attempts = state_after.get("attempts", [])
-                                payload_data["attempts"] = attempts
-                                
-                                payload_data["extra_observations"] = state_after.get("extra_observations", {})
+                                # The attack agent returns its final state in state_after
+                                full_state = data.get("state_after", {})
+                                payload_data["state_before"] = full_state
+                                payload_data["state_after"] = full_state
                             
                             format_name = next_step.get("format")
                             topic_in = next_step.get("topicIn")
@@ -138,7 +123,6 @@ def start_consumer():
                             if format_name:
                                 FormatModelClass = get_format_model(format_name)
                                 if FormatModelClass:
-                                    # We try to validate against the model, missing fields will raise exception
                                     payload_data = FormatModelClass(**payload_data).model_dump(mode='json')
                                 else:
                                     logger.warning(f"Format model {format_name} not found in registry. Sending raw payload.")

@@ -3,7 +3,7 @@ import logging
 import json
 import os
 import sys
-
+from app.graph.state import graphState, sanitize_state
 # Add this to reach the common Kafka producer
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../")))
 from common.kafka_producer import send_message
@@ -53,35 +53,33 @@ async def execute_prompt_injection_graph(job_data: dict):
         
         app = build_attack_graph().compile()
         
-        # Track the final state output by the graph
-        final_state = None
+        # Track the accumulated state manually
+        final_state = initial_state.copy()
         
         async for event in app.astream(initial_state):
             for node_name, node_output in event.items():
-                # Fix 2: Remove double braces so the f-string evaluates properly
                 logger.info(f"[Job {job_id}] Node '{node_name}' completed.")
-                
-                # Keep overwriting to ensure we get the absolute final state
-                final_state = node_output
+                # Update the state with the node's output
+                final_state.update(node_output)
                 
         logger.info(f"Graph execution completed for job {job_id}.")
         
         # Fix 3: Construct the final payload required by SAGA Orchestrator and send it
         if final_state is not None:
-            output_payload = {
-                "job_id": job_id,
-                "including_job_id": including_job_id,
-                "userID": user_id,
-                "status": "FINISHED",
-                "state_after": final_state 
-            }
-            
+            # output_payload = {
+            #     "job_id": job_id,
+            #     "including_job_id": including_job_id,
+            #     "userID": user_id,
+            #     "status": "FINISHED",
+            #     "state_after": sanitize_state(final_state) 
+            # }
+            logger.info(f"[Job {job_id}] Graph execution completed")
             # Send to the results_out topic (which the SAGA Orchestrator listens to)
-            success = send_message("results_out", json.dumps(output_payload))
-            if success:
-                logger.info(f"[Job {job_id}] Successfully published final results to Kafka.")
-            else:
-                logger.error(f"[Job {job_id}] Failed to publish final results to Kafka.")
+            # success = send_message("results_out", output_payload)
+            # if success:
+            #     logger.info(f"[Job {job_id}] Successfully published final results to Kafka.")
+            # else:
+            #     logger.error(f"[Job {job_id}] Failed to publish final results to Kafka.")
         else:
             logger.warning(f"[Job {job_id}] Graph returned no final state. Nothing published.")
 

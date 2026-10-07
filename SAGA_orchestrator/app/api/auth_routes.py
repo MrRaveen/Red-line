@@ -1,6 +1,6 @@
-from SAGA_orchestrator.app.models.TokenBlocklist import TokenBlocklist
-from SAGA_orchestrator.app.services.auth_service import check_user
-from SAGA_orchestrator.app.services.auth_service import create_user
+from ..models.TokenBlocklist import TokenBlocklist
+from ..services.auth_service import check_user
+from ..services.auth_service import create_user
 from flask import Blueprint, jsonify, request
 
 from flask_jwt_extended import (

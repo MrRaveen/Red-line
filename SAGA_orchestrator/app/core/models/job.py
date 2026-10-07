@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 from pymongo import MongoClient
 from typing import Any
 from app.config import Config
-
+from common.enums.JobTypeEnum import JobType
 # MongoDB setup
 MONGO_URI = Config.MONGO_URI
 MONGO_DB = "redline_logs"
@@ -20,12 +20,12 @@ class JobStatus(str, Enum):
     PROCESSING = "PROCESSING"
     FINISHED = "FINISHED"
 
-class JobType(str, Enum):
-    PROMPT_INJECTION = "prompt injection"
-    HALLUCINATION_ATTACK = "halusination attack"
-    PII_EXFILTRATION_ATTACK = "PII exfilteration attack"
-    JAILBREAK_ATTACK = "jailbreak attack"
-    ALL = "all"
+# class JobType(str, Enum):
+#     PROMPT_INJECTION = "prompt_injection_v1"
+#     HALLUCINATION_ATTACK = "hallucination_attack_v1"
+#     PII_EXFILTRATION_ATTACK = "pii_extraction_v1"
+#     JAILBREAK_ATTACK = "jailbreak_attack_v1"
+    # ALL = "all"
 
 class JobModel(BaseModel):
     userID: str

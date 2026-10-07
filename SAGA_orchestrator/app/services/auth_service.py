@@ -3,7 +3,7 @@ from flask_jwt_extended import create_access_token
 from flask import jsonify
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
-from SAGA_orchestrator.app.models.user import Users
+from ..models.user import Users
 def create_user(username: str, email: str, password: str):
     """Create a new user with plain string password storage."""
     if Users.objects(email=email).first():
