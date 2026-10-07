@@ -1,8 +1,9 @@
 from .kafka_producer import send_message
+from .enums.JobTypeEnum import JobType
 import json
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, TypedDict
 from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
@@ -14,15 +15,23 @@ KAFKA_TOPIC = "raw_req_topic"
 # Pydantic Models
 # ============================================================
 
+# class Variation(TypedDict):
+#     variationPrompt: Optional[str]
+#     variationResult: Optional[str]
+#     variationStatusCode: Optional[str]
+#     resultPerVariation: Optional[str]
+
 class TransactionData(BaseModel):
     """Node transaction state data"""
     node_name: str
     timestamp: datetime = Field(default_factory=datetime.utcnow)
+    job_type: JobType
+    # variations: Optional[List[Variation]]
     state_before: Optional[Dict[str, Any]] = None
     state_after: Optional[Dict[str, Any]] = None
-    variation_count: Optional[int] = None
-    inc_variation_count: Optional[int] = None
-    breach_detected: Optional[bool] = None
+    # variation_count: Optional[int] = None
+    # inc_variation_count: Optional[int] = None
+    # breach_detected: Optional[bool] = None
     extra_observations: Optional[Dict[str,Any]] = None
     userID: str
     job_id: str

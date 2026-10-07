@@ -15,10 +15,10 @@ logger = logging.getLogger(__name__)
 
 # Mapping job types to workflow IDs (JSON filenames)
 WORKFLOW_MAP = {
-    JobType.PROMPT_INJECTION: "prompt_injection_v1",
-    JobType.HALLUCINATION_ATTACK: "hallucination_attack_v1",
-    JobType.PII_EXFILTRATION_ATTACK: "pii_extraction_v1",
-    JobType.JAILBREAK_ATTACK: "jailbreak_attack_v1",
+    "prompt_injection_v1":     JobType.PROMPT_INJECTION,
+    "hallucination_attack_v1": JobType.HALLUCINATION,
+    "pii_extraction_v1":       JobType.PII_EXFILTRATION,
+    "jailbreak_attack_v1":     JobType.JAILBREAK,
 }
 
 @celery_app.task(name="start_workflow")
@@ -30,16 +30,17 @@ def start_workflow(job_payload: Dict[str, Any]):
     logger.info(f"Starting workflow for payload: {job_payload}")
     
     try:
-        job_type = JobType(job_payload.get("job_type"))
+        # job_type = JobType(job_payload.get("job_type"))
         
         # 1. Map job type to workflowID if not provided
         workflow_id = job_payload.get("workflowID")
-        if not workflow_id:
-            workflow_id = WORKFLOW_MAP.get(job_type)
-            job_payload["workflowID"] = workflow_id
+        job_payload['job_type'] = WORKFLOW_MAP.get(workflow_id)
+        # if not workflow_id:
+        #     workflow_id = WORKFLOW_MAP.get(job_type)
+        #     job_payload["workflowID"] = workflow_id
             
         if not workflow_id:
-            raise ValueError(f"No workflow mapping found for job type: {job_type}")
+            raise ValueError(f"No workflow mapping found for job type")
 
         # 2. Save job to MongoDB and get job ID
         job_id = create_job(job_payload)

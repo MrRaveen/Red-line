@@ -34,7 +34,7 @@ class JudgeAgentExecution:
         return {"raw_result": text}
 
     async def run(self, userID: str, job_id: str, target_url: str,
-                  budget: int = 3,total_breaches: int = 0, attempts: Optional[List[Any]] = None,
+                  budget: int = 3,variationCount: int = 0,isBreached:Optional[bool]=False, attempts: Optional[List[Any]] = None,
                   extra_observations: Optional[Dict[str, Any]] = None)->bool:
         if attempts is None:
             attempts = []
@@ -52,9 +52,12 @@ class JudgeAgentExecution:
             "userID": userID,
             "job_id": job_id,
             "total_categories_processed": len(attempts),
-            "number_of_breaches": total_breaches,
+            "variationCount": variationCount,
             "attempts": attempts,
             "extra_observations": extra_observations,
+            "isBreached":isBreached,
+            "target_url":target_url,
+            "budget":budget,
             "mongo_records": {
                 "execution_logs_count": len(mongo_records["execution_logs"]),
                 "transaction_data_count": len(mongo_records["transaction_data"]),

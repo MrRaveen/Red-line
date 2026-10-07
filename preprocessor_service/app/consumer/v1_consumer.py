@@ -51,7 +51,7 @@ def start_consumer():
                         data = json.loads(msg.value) if isinstance(msg.value, str) else msg.value
                         
                         # Preprocessing logic matching the streams setup
-                        data.setdefault("processed_at", datetime.utcnow().isoformat())
+                        # data.setdefault("processed_at", datetime.utcnow().isoformat())
                         logger.info(f"Preprocessing payload: {data}")
                         
                         # Send to the preprocessed topic using common producer
