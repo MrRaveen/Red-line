@@ -3,8 +3,8 @@
   - source .venv/bin/activate
 - Windows configuration
   - python -m venv .venv
-  - ./script/run_all.sh
-  - 
+  - .\.venv\Scripts\Activate.ps1
+
 
 - Create a testing topic (kafka-stream)
 docker exec -it kafka kafka-topics --create \
@@ -74,3 +74,32 @@ Select Run All Services from the dropdown menu.
 
 Select Continue without scanning the task output (if prompted).
 ```
+
+curl -X POST "http://localhost:8001/api/v1/start-workflow" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "userID": "ravin",
+    "targetURL": "http://host.docker.internal:4000/api/generate",
+    "job_name": "test",
+    "workflowID": "prompt_injection_v1",
+    "description": "test2"
+  }'
+
+curl -X POST "http://localhost:8001/api/v1/start-workflow"   -H "Content-Type: application/json"   -d '{
+    "userID": "ravin",
+    "targetURL": "http://host.docker.internal:4000/api/generate",
+    "job_name": "mango",
+    "workflowID": "prompt_injection_v1",
+    "description": "buntop1223"
+  }'
+
+
+⚠️ On Linux (Not Your Case)
+
+On native Linux Docker (not Docker Desktop), host.docker.internal does not exist by default. That's why Linux users must add:
+yaml
+
+extra_hosts:
+  - "host.docker.internal:host-gateway"
+
+This tells Docker to map host.docker.internal to the host's gateway IP.

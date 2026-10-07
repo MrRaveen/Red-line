@@ -149,7 +149,7 @@ function RealtimeTab() {
     if (isStreaming) return;
     
     // Connect to the Flask SSE endpoint
-    const url = 'http://127.0.0.1:5000/api/v1/stream';
+    const url = 'http://127.0.0.1:8001/api/v1/stream';
     const sse = new EventSource(url);
     
     sse.onmessage = (e) => {

@@ -5,7 +5,7 @@ import json
 import signal
 import logging
 from kafka import KafkaConsumer
-
+from common.enums.JobTypeEnum import JobType
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -42,22 +42,38 @@ def start_consumer_for_judge_agent():
     
     try:
         while running:
-            # Poll with timeout to allow checking the 'running' flag
             records = consumer.poll(timeout_ms=1000)
             
             for topic_partition, messages in records.items():
                 for msg in messages:
                     try:
                         data = json.loads(msg.value) if isinstance(msg.value, str) else msg.value
-            
-                        # Extract fields with defaults
+                        job_type = data.get('job_type')
                         userID = data.get("userID")
                         job_id = data.get("job_id")
-                        target_url = data.get("target_url")
-                        budget = data.get("budget")
-                        total_breaches = data.get("total_breaches")
-                        attempts = data.get("attempts")  # could be list or None
-                        extra_observations = data.get("extra_observations", {})
+                        state_before = data.get("state_before") or {}
+                        state_after = data.get('state_after') or {}
+                        extra_observations = data.get("extra_observations") or {}
+
+                        # Default values to prevent UnboundLocalError
+                        target_url = None
+                        budget = 3
+                        isBreached = False
+                        variationCount = 0
+                        variations = []
+
+                        if job_type == JobType.PROMPT_INJECTION:
+                            target_url = state_before.get('target_url')
+                            budget = state_before.get('budget', 3)
+                            isBreached = state_before.get('breachDetected', False)
+                            variationCount = state_after.get('variationCount', 0)
+                            variations = state_before.get('variations', [])
+                        elif job_type == JobType.PII_EXFILTRATION:
+                            pass
+                        elif job_type == JobType.JAILBREAK:
+                            pass
+                        elif job_type == JobType.HALLUCINATION:
+                            pass
 
                         # Create and run the agent asynchronously
                         jae = JudgeAgentExecution()
@@ -66,8 +82,9 @@ def start_consumer_for_judge_agent():
                             job_id=job_id,
                             target_url=target_url,
                             budget=budget,
-                            total_breaches=total_breaches,
-                            attempts=attempts,
+                            variationCount=variationCount,
+                            attempts=variations,
+                            isBreached=isBreached,
                             extra_observations=extra_observations
                         ))
                         

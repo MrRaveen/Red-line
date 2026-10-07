@@ -9,11 +9,13 @@ services:
     environment:
       - KAFKA_BROKERS=kafka:9092
       - DATABASE_URI=mongodb://db:27017
+      - HF_HOME=/app/.cache/huggingface
     volumes:
       - ./judge_agent/app:/app/app
       - ./judge_agent/wsgi.py:/app/wsgi.py
       - ./judge_agent/run.py:/app/run.py
       - ./common:/app/common
+      - hf-cache:/app/.cache/huggingface
     command: ["gunicorn", "--bind", "0.0.0.0:8000", "wsgi:app"]
     restart: always
 
@@ -21,6 +23,8 @@ services:
     build:
       context: .
       dockerfile: judge_agent/Dockerfile
+    environment:
+      - HF_HOME=/app/.cache/huggingface  
     env_file:
       - .env
     volumes:
@@ -28,6 +32,7 @@ services:
       - ./judge_agent/wsgi.py:/app/wsgi.py
       - ./judge_agent/run.py:/app/run.py
       - ./common:/app/common
+      - hf-cache:/app/.cache/huggingface
     command: ["python", "-m", "app.consumer.v1_consumer"]
     restart: always
 
@@ -38,6 +43,8 @@ services:
       dockerfile: SAGA_orchestrator/Dockerfile
     ports:
       - "8001:8001"                         # <-- host:container
+    environment:
+      - HF_HOME=/app/.cache/huggingface  
     env_file:
       - .env
     volumes:
@@ -45,6 +52,7 @@ services:
       - ./SAGA_orchestrator/wsgi.py:/app/wsgi.py
       - ./SAGA_orchestrator/run.py:/app/run.py
       - ./common:/app/common
+      - hf-cache:/app/.cache/huggingface
     command: ["gunicorn", "--worker-class", "gthread", "--threads", "10", "--bind", "0.0.0.0:8001", "wsgi:app"]   # <-- bind to 8001
     restart: always
 
@@ -52,6 +60,8 @@ services:
     build:
       context: .
       dockerfile: SAGA_orchestrator/Dockerfile
+    environment:
+      - HF_HOME=/app/.cache/huggingface  
     env_file:
       - .env
     volumes:
@@ -59,6 +69,7 @@ services:
       - ./SAGA_orchestrator/wsgi.py:/app/wsgi.py
       - ./SAGA_orchestrator/run.py:/app/run.py
       - ./common:/app/common
+      - hf-cache:/app/.cache/huggingface
     command: ["python", "-m", "app.core.consumer"]
     restart: always
 
@@ -68,12 +79,15 @@ services:
       dockerfile: SAGA_orchestrator/Dockerfile
     env_file:
       - .env
+    environment:
+      - HF_HOME=/app/.cache/huggingface  
     volumes:
       - ./SAGA_orchestrator/app:/app/app
       - ./SAGA_orchestrator/wsgi.py:/app/wsgi.py
       - ./SAGA_orchestrator/run.py:/app/run.py
       - ./SAGA_orchestrator/run_worker.py:/app/run_worker.py
       - ./common:/app/common
+      - hf-cache:/app/.cache/huggingface
     command: ["python", "run_worker.py"]     # starts Celery worker
     restart: always
 
@@ -91,6 +105,7 @@ services:
   #     - ./PII_extraction_attack/wsgi.py:/app/wsgi.py
   #     - ./PII_extraction_attack/run.py:/app/run.py
   #     - ./common:/app/common
+  #     - hf-cache:/app/.cache/huggingface
   #   command: ["gunicorn", "--bind", "0.0.0.0:8002", "wsgi:app"]
   #   restart: always
 
@@ -105,6 +120,7 @@ services:
   #     - ./PII_extraction_attack/wsgi.py:/app/wsgi.py
   #     - ./PII_extraction_attack/run.py:/app/run.py
   #     - ./common:/app/common
+  #     - hf-cache:/app/.cache/huggingface
   #   command: ["python", "-m", "app.consumer.v1_consumer"]
   #   restart: always
 
@@ -114,12 +130,15 @@ services:
   #     dockerfile: PII_extraction_attack/Dockerfile
   #   env_file:
   #      - .env
+  #   environment:
+  #     - HF_HOME=/app/.cache/huggingface
   #   volumes:
   #     - ./PII_extraction_attack/app:/app/app
   #     - ./PII_extraction_attack/wsgi.py:/app/wsgi.py
   #     - ./PII_extraction_attack/run.py:/app/run.py
   #     - ./PII_extraction_attack/run_worker.py:/app/run_worker.py
   #     - ./common:/app/common
+  #     - hf-cache:/app/.cache/huggingface
   #   command: ["python", "run_worker.py"]
   #   restart: always
 
@@ -137,6 +156,7 @@ services:
   #     - ./jailbreak_attack/wsgi.py:/app/wsgi.py
   #     - ./jailbreak_attack/run.py:/app/run.py
   #     - ./common:/app/common
+  #     - hf-cache:/app/.cache/huggingface
   #   command: ["gunicorn", "--bind", "0.0.0.0:8003", "wsgi:app"]
   #   restart: always
 
@@ -151,6 +171,7 @@ services:
   #     - ./jailbreak_attack/wsgi.py:/app/wsgi.py
   #     - ./jailbreak_attack/run.py:/app/run.py
   #     - ./common:/app/common
+  #     - hf-cache:/app/.cache/huggingface
   #   command: ["python", "-m", "app.consumer.v1_consumer"]
   #   restart: always
 
@@ -160,12 +181,15 @@ services:
   #     dockerfile: jailbreak_attack/Dockerfile
   #   env_file:
   #      - .env
+  #   environment:
+  #     - HF_HOME=/app/.cache/huggingface
   #   volumes:
   #     - ./jailbreak_attack/app:/app/app
   #     - ./jailbreak_attack/wsgi.py:/app/wsgi.py
   #     - ./jailbreak_attack/run.py:/app/run.py
   #     - ./jailbreak_attack/run_worker.py:/app/run_worker.py
   #     - ./common:/app/common
+  #     - hf-cache:/app/.cache/huggingface
   #   command: ["python", "run_worker.py"]
   #   restart: always
 
@@ -183,6 +207,7 @@ services:
   #     - ./hallucination_attack/wsgi.py:/app/wsgi.py
   #     - ./hallucination_attack/run.py:/app/run.py
   #     - ./common:/app/common
+  #     - hf-cache:/app/.cache/huggingface
   #   command: ["gunicorn", "--bind", "0.0.0.0:8004", "wsgi:app"]
   #   restart: always
 
@@ -197,6 +222,7 @@ services:
   #     - ./hallucination_attack/wsgi.py:/app/wsgi.py
   #     - ./hallucination_attack/run.py:/app/run.py
   #     - ./common:/app/common
+  #     - hf-cache:/app/.cache/huggingface
   #   command: ["python", "-m", "app.consumer.v1_consumer"]
   #   restart: always
 
@@ -206,12 +232,15 @@ services:
   #     dockerfile: hallucination_attack/Dockerfile
   #   env_file:
   #      - .env
+  #   environment:
+  #     - HF_HOME=/app/.cache/huggingface
   #   volumes:
   #     - ./hallucination_attack/app:/app/app
   #     - ./hallucination_attack/wsgi.py:/app/wsgi.py
   #     - ./hallucination_attack/run.py:/app/run.py
   #     - ./hallucination_attack/run_worker.py:/app/run_worker.py
   #     - ./common:/app/common
+  #     - hf-cache:/app/.cache/huggingface
   #   command: ["python", "run_worker.py"]
   #   restart: always
 
@@ -227,11 +256,13 @@ services:
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - DATABASE_URI=mongodb://db:27017
+      - HF_HOME=/app/.cache/huggingface
     volumes:
       - ./prompt_injection_attack_new/app:/app/app
       - ./prompt_injection_attack_new/wsgi.py:/app/wsgi.py
       - ./prompt_injection_attack_new/run.py:/app/run.py
       - ./common:/app/common
+      - hf-cache:/app/.cache/huggingface
     command: ["gunicorn", "--bind", "0.0.0.0:8005", "wsgi:app"]
     restart: always
 
@@ -244,11 +275,13 @@ services:
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - PROMPT_REQ_TOPIC=prompt_req_topic
+      - HF_HOME=/app/.cache/huggingface
     volumes:
       - ./prompt_injection_attack_new/app:/app/app
       - ./prompt_injection_attack_new/wsgi.py:/app/wsgi.py
       - ./prompt_injection_attack_new/run.py:/app/run.py
       - ./common:/app/common
+      - hf-cache:/app/.cache/huggingface
     command: ["python", "-m", "app.consumer.v1_consumer"]
     restart: always
 
@@ -259,15 +292,18 @@ services:
     env_file:
       - .env
     environment:
+      - HF_HOME=/app/.cache/huggingface
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - DATABASE_URI=mongodb://db:27017
       - REDIS_HOST=redis
+      - HF_HOME=/app/.cache/huggingface
     volumes:
       - ./prompt_injection_attack_new/app:/app/app
       - ./prompt_injection_attack_new/wsgi.py:/app/wsgi.py
       - ./prompt_injection_attack_new/run.py:/app/run.py
       - ./prompt_injection_attack_new/run_worker.py:/app/run_worker.py
       - ./common:/app/common
+      - hf-cache:/app/.cache/huggingface
     command: ["python", "run_worker.py"]
     restart: always
 
@@ -276,11 +312,14 @@ services:
     build:
       context: .
       dockerfile: preprocessor_service/Dockerfile
+    environment:
+      - HF_HOME=/app/.cache/huggingface  
     env_file:
       - .env
     volumes:
       - ./preprocessor_service/app:/app/app
       - ./common:/app/common
+      - hf-cache:/app/.cache/huggingface
     command: ["python", "-m", "app.consumer.v1_consumer"]
     restart: always
 
@@ -289,11 +328,14 @@ services:
     build:
       context: .
       dockerfile: log_processor_service/Dockerfile
+    environment:
+      - HF_HOME=/app/.cache/huggingface  
     env_file:
       - .env
     volumes:
       - ./log_processor_service/app:/app/app
       - ./common:/app/common
+      - hf-cache:/app/.cache/huggingface
     command: ["python", "-m", "app.consumer.v1_consumer"]
     restart: always
 
@@ -355,6 +397,7 @@ services:
       - redisinsight-data:/data  
 
 volumes:
+  hf-cache:
   kafka-data:
   redis-data:
   redisinsight-data:

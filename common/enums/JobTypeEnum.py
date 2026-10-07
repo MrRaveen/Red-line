@@ -5,3 +5,4 @@ class JobType(str, Enum):
     PII_EXFILTRATION = "PII exfilteration attack"
     JAILBREAK        = "Jailbreak attack"
     HALLUCINATION    = "Hallucination attack"
+
